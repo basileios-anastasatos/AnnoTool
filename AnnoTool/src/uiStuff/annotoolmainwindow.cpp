@@ -1,8 +1,12 @@
-#include "annotoolmainwindow.h"
+#include "include/annotoolmainwindow.h"
+#include "include/zoomcontrol.h"
 
 AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent)
     : QMainWindow(parent) {
     ui.setupUi(this);
+    ZoomControl *z = new ZoomControl(ui.tbView);
+    QAction *za = ui.tbView->addWidget(z);
+    za->setVisible(true);
 }
 
 AnnoToolMainWindow::~AnnoToolMainWindow() {

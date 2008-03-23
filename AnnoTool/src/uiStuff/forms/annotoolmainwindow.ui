@@ -5,12 +5,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>739</width>
+    <height>354</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>AnnoTool - testing</string>
   </property>
   <widget class="QWidget" name="centralwidget" />
   <widget class="QMenuBar" name="menubar">
@@ -18,13 +18,178 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>21</height>
+     <width>739</width>
+     <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionFileOpen" />
+    <addaction name="actionFileClose" />
+    <addaction name="actionFileSave" />
+    <addaction name="separator" />
+    <addaction name="actionFileExit" />
+   </widget>
+   <widget class="QMenu" name="menu_Settings">
+    <property name="title">
+     <string>&amp;Settings</string>
+    </property>
+    <addaction name="actionSettingFolders" />
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionHelpInfo" />
+   </widget>
+   <addaction name="menu_File" />
+   <addaction name="menu_Settings" />
+   <addaction name="menu_Help" />
   </widget>
   <widget class="QStatusBar" name="statusbar" />
+  <widget class="QToolBar" name="tbGeneral">
+   <property name="windowTitle">
+    <string>General</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFileOpen" />
+   <addaction name="actionFileClose" />
+   <addaction name="actionFileSave" />
+  </widget>
+  <widget class="QToolBar" name="tbView">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="tbTools">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionToolPointer" />
+   <addaction name="actionToolRectangle" />
+   <addaction name="actionToolPolygon" />
+   <addaction name="actionToolEllipse" />
+  </widget>
+  <action name="actionFileOpen">
+   <property name="icon">
+    <iconset resource="icons.qrc">:/res/folder_open</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open</string>
+   </property>
+   <property name="statusTip">
+    <string>Open an existing annotation folder</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionFileClose">
+   <property name="icon">
+    <iconset resource="icons.qrc">:/res/folder_close</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+   <property name="statusTip">
+    <string>Close current annotation folder</string>
+   </property>
+  </action>
+  <action name="actionFileExit">
+   <property name="icon">
+    <iconset resource="icons.qrc">:/res/shutdown</iconset>
+   </property>
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+   <property name="statusTip">
+    <string>Exit AnnoTool</string>
+   </property>
+  </action>
+  <action name="actionFileSave">
+   <property name="icon">
+    <iconset resource="icons.qrc">:/res/drive</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+   <property name="statusTip">
+    <string>Save all annotations</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSettingFolders">
+   <property name="text">
+    <string>&amp;Folders</string>
+   </property>
+   <property name="statusTip">
+    <string>Configure the general folder settings</string>
+   </property>
+  </action>
+  <action name="actionHelpInfo">
+   <property name="text">
+    <string>&amp;Info</string>
+   </property>
+   <property name="statusTip">
+    <string>Show information about AnnoTool</string>
+   </property>
+  </action>
+  <action name="actionToolRectangle">
+   <property name="text">
+    <string>Rectangle</string>
+   </property>
+   <property name="statusTip">
+    <string>Select the rectangle tool</string>
+   </property>
+  </action>
+  <action name="actionToolPointer">
+   <property name="text">
+    <string>Pointer</string>
+   </property>
+   <property name="statusTip">
+    <string>Select the pointer tool.</string>
+   </property>
+  </action>
+  <action name="actionToolPolygon">
+   <property name="text">
+    <string>Polygon</string>
+   </property>
+   <property name="statusTip">
+    <string>Select the polygon tool</string>
+   </property>
+  </action>
+  <action name="actionToolEllipse">
+   <property name="text">
+    <string>Ellipse</string>
+   </property>
+   <property name="statusTip">
+    <string>Select the ellipse tool</string>
+   </property>
+  </action>
  </widget>
- <resources />
+ <resources>
+  <include location="icons.qrc" />
+ </resources>
  <connections />
 </ui>

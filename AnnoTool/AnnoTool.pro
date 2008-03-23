@@ -10,7 +10,8 @@ INCLUDEPATH += ./src/uiStuff/include \
 QT += core \
     gui \
     xml
-HEADERS += ./src/annoExceptions/include/AllAnnoExceptions.h \
+HEADERS += ./src/uiStuff/include/zoomcontrol.h \
+    ./src/annoExceptions/include/AllAnnoExceptions.h \
     ./src/annoGraphics/include/AnnoGraphicsControlPoint.h \
     ./src/annoGraphics/include/AnnoGraphicsPixmap.h \
     ./src/annoGraphics/include/AnnoGraphicsPolygon.h \
@@ -24,7 +25,8 @@ HEADERS += ./src/annoExceptions/include/AllAnnoExceptions.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h \
     ./src/uiStuff/include/annotoolmainwindow.h
-SOURCES += ./src/annoGraphics/AnnoGraphicsControlPoint.cpp \
+SOURCES += ./src/uiStuff/zoomcontrol.cpp \
+    ./src/annoGraphics/AnnoGraphicsControlPoint.cpp \
     ./src/annoGraphics/AnnoGraphicsPixmap.cpp \
     ./src/annoGraphics/AnnoGraphicsPolygon.cpp \
     ./src/annoDataTypes/AnnoClassDefinition.cpp \
@@ -38,5 +40,6 @@ SOURCES += ./src/annoGraphics/AnnoGraphicsControlPoint.cpp \
     ./src/annoExceptions/XmlFormatException.cpp \
     ./src/uiStuff/annotoolmainwindow.cpp \
     ./src/main.cpp
-FORMS += ./src/uiStuff/forms/annotoolmainwindow.ui
-RESOURCES += 
+FORMS += ./src/uiStuff/forms/zoomcontrol.ui \
+    ./src/uiStuff/forms/annotoolmainwindow.ui
+RESOURCES += ./src/uiStuff/forms/icons.qrc

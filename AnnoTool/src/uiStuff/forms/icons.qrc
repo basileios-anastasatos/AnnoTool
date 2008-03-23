@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/res" >
+        <file alias="drive" >res/drive_24.png</file>
+        <file alias="folder_close" >res/folder_close_24.png</file>
+        <file alias="folder_open" >res/folder_open_24.png</file>
+        <file alias="shutdown" >res/shutdown.png</file>
+    </qresource>
+</RCC>

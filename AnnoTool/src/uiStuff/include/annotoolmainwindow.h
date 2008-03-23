@@ -2,17 +2,19 @@
 #define ANNOTOOLMAINWINDOW_H
 
 #include <QtGui/QMainWindow>
-#include "ui_annotoolmainwindow.h"
+#include <QtGui/QToolBar>
+#include "../gen/ui_annotoolmainwindow.h"
 
 class AnnoToolMainWindow : public QMainWindow {
         Q_OBJECT
+
+    private:
+        Ui::AnnoToolMainWindowClass ui;
 
     public:
         AnnoToolMainWindow(QWidget *parent = 0);
         ~AnnoToolMainWindow();
 
-    private:
-        Ui::AnnoToolMainWindowClass ui;
 };
 
 #endif // ANNOTOOLMAINWINDOW_H
