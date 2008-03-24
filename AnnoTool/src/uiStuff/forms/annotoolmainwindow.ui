@@ -156,6 +156,9 @@
    </property>
   </action>
   <action name="actionToolRectangle">
+   <property name="icon">
+    <iconset resource="icons.qrc">:/res/tool_rectangle</iconset>
+   </property>
    <property name="text">
     <string>Rectangle</string>
    </property>
@@ -172,6 +175,9 @@
    </property>
   </action>
   <action name="actionToolPolygon">
+   <property name="icon">
+    <iconset resource="icons.qrc">:/res/tool_polygon</iconset>
+   </property>
    <property name="text">
     <string>Polygon</string>
    </property>
