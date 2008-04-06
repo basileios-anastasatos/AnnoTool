@@ -6,11 +6,14 @@ INCLUDEPATH += ./src/uiStuff/include \
     ./src/uiStuff/gen \
     ./src/annoDataTypes/include \
     ./src/annoExceptions/include \
-    ./src/annoGraphics/include
+    ./src/annoGraphics/include \
+    ./src/annoHelper/include
 QT += core \
     gui \
     xml
-HEADERS += ./src/annoHelper/logging/include/GlobalLogger.h \
+HEADERS += ./src/annoHelper/include/XmlHelper.h \
+    ./src/annoDataTypes/include/AnnoComplex.h \
+    ./src/annoHelper/logging/include/GlobalLogger.h \
     ./src/annoHelper/logging/include/SingleFileLogger.h \
     ./src/annoHelper/logging/include/MultiLogger.h \
     ./src/annoHelper/logging/include/DummyLogger.h \
@@ -31,7 +34,9 @@ HEADERS += ./src/annoHelper/logging/include/GlobalLogger.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h \
     ./src/uiStuff/include/annotoolmainwindow.h
-SOURCES += ./src/annoHelper/logging/GlobalLogger.cpp \
+SOURCES += ./src/annoHelper/XmlHelper.cpp \
+    ./src/annoDataTypes/AnnoComplex.cpp \
+    ./src/annoHelper/logging/GlobalLogger.cpp \
     ./src/annoHelper/logging/SingleFileLogger.cpp \
     ./src/annoHelper/logging/MultiLogger.cpp \
     ./src/annoHelper/logging/DummyLogger.cpp \
