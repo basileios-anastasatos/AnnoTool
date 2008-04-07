@@ -2,9 +2,11 @@
 #define XMLHELPER_H_
 
 #include <QString>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
+#include <QUuid>
 #include "AllAnnoExceptions.h"
+
+class QXmlStreamReader;
+class QXmlStreamWriter;
 
 //namespace AnnoTool
 namespace anno {
@@ -19,10 +21,14 @@ namespace anno {
                 static bool skipToEndElement(QString tagName, QXmlStreamReader &reader)
                 throw(XmlException *);
 
-                static void skipToNextStartElement(bool skipCur, QXmlStreamReader &reader)
+                static void skipToNextStartElement(bool skipCur,
+                                                   QXmlStreamReader &reader) throw(XmlException *);
+                static void
+                skipToNextEndElement(bool skipCur, QXmlStreamReader &reader)
                 throw(XmlException *);
-                static void skipToNextEndElement(bool skipCur, QXmlStreamReader &reader)
-                throw(XmlException *);
+
+            public:
+                static QString uuidAsString(const QUuid &uuid);
         };
 
     } //end namespace helper

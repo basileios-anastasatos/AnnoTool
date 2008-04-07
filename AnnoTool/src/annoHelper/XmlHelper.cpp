@@ -1,4 +1,6 @@
 #include "include/XmlHelper.h"
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 //namespace AnnoTool
 namespace anno {
@@ -74,6 +76,13 @@ namespace anno {
             if (reader.hasError()) {
                 throw new XmlException(__FILE__, __LINE__, QString("An error occured while processing XML stream: %1").arg(reader.errorString()));
             }
+        }
+
+        QString XmlHelper::uuidAsString(const QUuid &uuid) {
+            QString str = uuid.toString();
+            str.remove(0, 1);
+            str.remove(str.length() - 1, 1);
+            return str;
         }
 
     } //end namespace helper
