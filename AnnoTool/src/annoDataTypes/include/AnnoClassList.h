@@ -16,34 +16,37 @@ namespace anno {
                 QList<AnnoClassDefinition *> _classes;
 
             private:
-                bool skipTo(QString tagName, QXmlStreamReader &reader)
-                throw(XmlException *);
+                void loadFromFile() throw(IOException *, XmlException *);
+                void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
 
             public:
-                AnnoClassList(QString file);
+                AnnoClassList(const QString &file);
                 virtual ~AnnoClassList();
 
             public:
-                bool contains(QString name) const;
+                bool contains(const QString &name) const;
                 void add(AnnoClassDefinition *anClass) throw(NameConflictException *);
-                void remove(QString name);
-                AnnoClassDefinition *getClass(QString name) const
+                void remove(const QString &name);
+                AnnoClassDefinition *getClass(const QString &name) const
                 throw(NoSuchElementException *);
                 AnnoClassDefinition *getClass(int index) const
                 throw(OutOfRangeException *);
                 QList<QString> getClassNames() const;
                 int classCount() const;
-
-            public:
-                void loadFromFile() throw(IOException *, XmlException *);
-                void writeToFile() const throw(IOException *);
+                QString filePath() const;
+                void setFilePath(const QString &path);
 
             public:
                 void print() const;
 
             public:
-                static AnnoClassList fromXml(QString file) throw(IOException *,
-                        XmlException *);
+                void writeToFile() const throw(IOException *, XmlException *);
+                static AnnoClassList *fromFile(const QString &path)
+                throw(IOException *, XmlException *);
+
+                void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
+                static AnnoClassList *fromXml(QXmlStreamReader &reader)
+                throw(IOException *, XmlException *);
         };
 
     } //end namespace dt

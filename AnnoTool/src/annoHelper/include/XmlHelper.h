@@ -7,6 +7,8 @@
 
 class QXmlStreamReader;
 class QXmlStreamWriter;
+class QPointF;
+class QSizeF;
 
 //namespace AnnoTool
 namespace anno {
@@ -26,6 +28,21 @@ namespace anno {
                 static void
                 skipToNextEndElement(bool skipCur, QXmlStreamReader &reader)
                 throw(XmlException *);
+
+            public:
+                static void writeXmlPoint(QXmlStreamWriter &writer, qreal x, qreal y);
+                static void writeXmlSize(QXmlStreamWriter &writer, qreal width,
+                                         qreal height);
+                static QPointF readXmlPoint(QXmlStreamReader &reader) throw(XmlException *);
+                static QSizeF readXmlSize(QXmlStreamReader &reader) throw(XmlException *);
+
+            public:
+                static XmlFormatException *genExpFormatExpected(const char *file,
+                        int line, const QString &expected, const QString &actual);
+                static XmlFormatException *genExpFormatAttr(const char *file, int line,
+                        const QString &attribute, const QString &value);
+                static XmlException *genExpStreamPos(const char *file, int line,
+                                                     const QString &expected, const QString &actual);
 
             public:
                 static QString uuidAsString(const QUuid &uuid);

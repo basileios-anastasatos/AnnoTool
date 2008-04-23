@@ -21,10 +21,6 @@ namespace anno {
                 AnnoClassDefinition *_parent;
                 //-------------------------------------------
 
-                // private class members
-                //-------------------------------------------
-                //-------------------------------------------
-
                 // public constructors/destructor
                 //-------------------------------------------
             public:
@@ -62,7 +58,7 @@ namespace anno {
                 // public XML stuff
                 //-------------------------------------------
             public:
-                void toXml(QXmlStreamWriter &writer) const;
+                void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 void attributesFromXml(QXmlStreamReader &reader)
                 throw(XmlException *);
                 //-------------------------------------------

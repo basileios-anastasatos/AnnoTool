@@ -12,7 +12,41 @@
   <property name="windowTitle">
    <string>AnnoTool - testing</string>
   </property>
-  <widget class="QWidget" name="centralwidget" />
+  <property name="dockOptions">
+   <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
+  </property>
+  <widget class="QGraphicsView" name="graphicsView">
+   <property name="renderHints">
+    <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+   </property>
+   <property name="viewportUpdateMode">
+    <enum>QGraphicsView::SmartViewportUpdate</enum>
+   </property>
+  </widget>
+  <widget class="AnnoFileListWidget" name="annoFileListWidget">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+  </widget>
+  <widget class="AnnoListWidget" name="annoListWidget">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+  </widget>
+  <widget class="AnnoDataWidget" name="annoDataWidget">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -26,6 +60,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="actionFileNew" />
     <addaction name="actionFileOpen" />
     <addaction name="actionFileClose" />
     <addaction name="actionFileSave" />
@@ -37,6 +72,7 @@
      <string>&amp;Settings</string>
     </property>
     <addaction name="actionSettingFolders" />
+    <addaction name="actionSetImageLoader" />
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -44,7 +80,16 @@
     </property>
     <addaction name="actionHelpInfo" />
    </widget>
+   <widget class="QMenu" name="menu_Project">
+    <property name="title">
+     <string>&amp;Project</string>
+    </property>
+    <addaction name="actionProjectDetails" />
+    <addaction name="separator" />
+    <addaction name="actionProjectAddImage" />
+   </widget>
    <addaction name="menu_File" />
+   <addaction name="menu_Project" />
    <addaction name="menu_Settings" />
    <addaction name="menu_Help" />
   </widget>
@@ -59,9 +104,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionFileNew" />
    <addaction name="actionFileOpen" />
    <addaction name="actionFileClose" />
    <addaction name="actionFileSave" />
+   <addaction name="actionProjectAddImage" />
   </widget>
   <widget class="QToolBar" name="tbView">
    <property name="windowTitle">
@@ -94,7 +141,7 @@
     <iconset resource="icons.qrc">:/res/folder_open</iconset>
    </property>
    <property name="text">
-    <string>&amp;Open</string>
+    <string>&amp;Open Project</string>
    </property>
    <property name="statusTip">
     <string>Open an existing annotation folder</string>
@@ -108,7 +155,7 @@
     <iconset resource="icons.qrc">:/res/folder_close</iconset>
    </property>
    <property name="text">
-    <string>&amp;Close</string>
+    <string>&amp;Close Project</string>
    </property>
    <property name="statusTip">
     <string>Close current annotation folder</string>
@@ -130,7 +177,7 @@
     <iconset resource="icons.qrc">:/res/drive</iconset>
    </property>
    <property name="text">
-    <string>&amp;Save</string>
+    <string>&amp;Save Project</string>
    </property>
    <property name="statusTip">
     <string>Save all annotations</string>
@@ -193,7 +240,56 @@
     <string>Select the ellipse tool</string>
    </property>
   </action>
+  <action name="actionFileNew">
+   <property name="icon">
+    <iconset resource="icons.qrc">:/res/new</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;New Project</string>
+   </property>
+  </action>
+  <action name="actionProjectDetails">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Project &amp;Details</string>
+   </property>
+  </action>
+  <action name="actionProjectAddImage">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Add &amp;Image</string>
+   </property>
+  </action>
+  <action name="actionSetImageLoader">
+   <property name="text">
+    <string>Image &amp;Loader</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AnnoFileListWidget</class>
+   <extends>QDockWidget</extends>
+   <header>../include/annofilelistwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AnnoListWidget</class>
+   <extends>QDockWidget</extends>
+   <header>../include/annolistwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AnnoDataWidget</class>
+   <extends>QDockWidget</extends>
+   <header>../include/annodatawidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="icons.qrc" />
  </resources>

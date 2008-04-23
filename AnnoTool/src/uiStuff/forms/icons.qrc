@@ -6,5 +6,6 @@
         <file alias="tool_polygon" >res/poly_24.png</file>
         <file alias="tool_rectangle" >res/rect_24.png</file>
         <file alias="shutdown" >res/shutdown.png</file>
+        <file alias="new" >res/tbNew_24.png</file>
     </qresource>
 </RCC>

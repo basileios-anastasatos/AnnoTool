@@ -6,24 +6,31 @@
 class AnnoGraphicsPolygon;
 class QGraphicsSceneMouseEvent;
 
-class AnnoGraphicsControlPoint : public QGraphicsEllipseItem {
-    private:
-        AnnoGraphicsPolygon *_parentPolygon;
-        int _parentPolygonPointIndex;
+namespace anno {
+    namespace graphics {
+        class AnnoGraphicsShape;
 
-    protected:
-        virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-        virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+        class AnnoGraphicsControlPoint : public QGraphicsEllipseItem {
+            private:
+                AnnoGraphicsShape *_parentShape;
+                int _index;
 
-    public:
-        AnnoGraphicsControlPoint(AnnoGraphicsPolygon *polygon, int index);
-        virtual ~AnnoGraphicsControlPoint();
+            protected:
+                virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+                virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
-    public:
-        void setupAppearance();
-        void setIndex(int index);
-        int getIndex();
-};
+            public:
+                AnnoGraphicsControlPoint(AnnoGraphicsShape *parent, int index);
+                virtual ~AnnoGraphicsControlPoint();
+
+            public:
+                void setupAppearance();
+                void setIndex(int index);
+                int getIndex();
+        };
+
+    }
+}
 
 #endif /*ANNOGRAPHICSCONTROLPOINT_H_*/
 

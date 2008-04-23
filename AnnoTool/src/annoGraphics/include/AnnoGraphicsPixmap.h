@@ -4,21 +4,25 @@
 #include <QGraphicsPixmapItem>
 
 class QGraphicsSceneMouseEvent;
-class AnnoGraphicsPolygon;
+class QPixmap;
 
-class AnnoGraphicsPixmap : public QObject, public QGraphicsPixmapItem {
-        Q_OBJECT
+namespace anno {
+    namespace graphics {
 
-    private:
-        QVector<AnnoGraphicsPolygon *> _polygons;
+        class AnnoGraphicsPixmap : public QGraphicsPixmapItem {
+            protected:
+                virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+                virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+                virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
-    protected:
-        virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+            public:
+                AnnoGraphicsPixmap(const QPixmap &pixmap, QGraphicsItem *parent = 0);
+                virtual ~AnnoGraphicsPixmap();
 
-    public:
-        AnnoGraphicsPixmap(const QPixmap &pixmap, QGraphicsItem *parent = 0);
-        virtual ~AnnoGraphicsPixmap();
-};
+        };
+
+    }
+}
 
 #endif /*ANNOGRAPHICSPIXMAP_H_*/
 

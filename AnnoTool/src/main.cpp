@@ -3,6 +3,7 @@
 #include <QtGui>
 #include <QApplication>
 #include "annoHelper/logging/include/GlobalLogger.h"
+
 using logging::GlobalLogger;
 
 int main(int argc, char *argv[]) {
@@ -10,6 +11,7 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     AnnoToolMainWindow w;
     w.show();
+    a.connect(&a, SIGNAL(aboutToQuit()), &w, SLOT(on_appClose()));
     a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
     GlobalLogger::instance()->logDebug("entering QApplication loop");
     return a.exec();

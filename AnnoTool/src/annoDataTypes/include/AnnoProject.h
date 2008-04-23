@@ -15,45 +15,59 @@ namespace anno {
     //namespace DataTypes
     namespace dt {
         using namespace ::anno::exc;
-        class AnnoComplex {
+        class AnnoProject {
             private:
+                QString _sourceFile;
+                QString _projectName;
                 QList<QFileInfo> _classPaths;
                 QList<QUuid> _links;
                 QList<QFileInfo> _searchPaths;
                 QUuid _uuid;
 
             private:
+                void loadFromFile() throw(IOException *, XmlException *);
+                void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
                 void loadClassPath(QXmlStreamReader &reader) throw(XmlException *);
                 void loadSearchPath(QXmlStreamReader &reader) throw(XmlException *);
                 void loadLinks(QXmlStreamReader &reader) throw(XmlException *);
 
             public:
-                AnnoComplex();
-                AnnoComplex(const QUuid &uuid);
-                virtual ~AnnoComplex();
+                AnnoProject(const QString &path);
+                AnnoProject(const QString &path, const QUuid &uuid);
+                virtual ~AnnoProject();
 
+            public:
                 void addToClassPath(const QString &file);
                 void addToSearchPath(const QString &dir);
                 void addToLinks(const QString &uuid);
                 bool containsInClassPath(const QString &file) const;
                 bool containsInSearchPath(const QString &dir) const;
+                bool containsInSearchPathAdv(const QFileInfo &dir) const;
                 bool containsInLinks(const QString &uuid) const;
-                const QList<QUuid> *links();
-                const QList<QFileInfo> *searchPath();
-                const QList<QFileInfo> *classPath();
+                QList<QUuid> *links();
+                QList<QFileInfo> *searchPath();
+                QList<QFileInfo> *classPath();
+                QString filePath() const;
+                void setFilePath(const QString &path);
+                QString projectName() const;
+                void setProjectName(const QString &name);
 
-                void print() const;
-
-
+            public:
                 QUuid uuid() const;
                 QString uuidAsString() const;
-                static QString uuidAsString(const QUuid &uuid);
                 void setUuid(const QUuid &uuid);
 
-                static AnnoComplex loadFromFile(const QString &path) throw(IOException *,
+            public:
+                void print() const;
+
+            public:
+                void writeToFile() const throw(IOException *, XmlException *);
+                static AnnoProject *fromFile(const QString &path) throw(IOException *,
                         XmlException *);
-                void writeToFile(const QString &path) const throw(IOException *, XmlFormatException *);
-                void toXml(QXmlStreamWriter &writer) const throw(XmlFormatException *);
+
+                void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
+                static AnnoProject *fromXml(QXmlStreamReader &reader)
+                throw(IOException *, XmlException *);
         };
 
     } //end namespace dt

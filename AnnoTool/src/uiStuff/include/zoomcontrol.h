@@ -18,6 +18,9 @@ class ZoomControl : public QWidget {
         ZoomControl(QWidget *parent = 0);
         ~ZoomControl();
 
+    signals:
+        void zoomChanged(int value);
+
 };
 
 #endif // ZOOMCONTROL_H

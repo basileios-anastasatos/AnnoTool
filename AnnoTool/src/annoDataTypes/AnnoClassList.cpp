@@ -2,16 +2,17 @@
 #include <QFile>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
-#include <iostream>
 #include <QTextStream>
 #include <QMap>
+#include "XmlHelper.h"
 
 //namespace AnnoTool
 namespace anno {
     //namespace DataTypes
     namespace dt {
+        using ::anno::helper::XmlHelper;
 
-        AnnoClassList::AnnoClassList(QString file) {
+        AnnoClassList::AnnoClassList(const QString &file) {
             _sourceFile = file;
         }
 
@@ -24,7 +25,7 @@ namespace anno {
             }
         }
 
-        bool AnnoClassList::contains(QString name) const {
+        bool AnnoClassList::contains(const QString &name) const {
             QListIterator<AnnoClassDefinition *> i(_classes);
             while (i.hasNext()) {
                 if (i.next()->name() == name) {
@@ -43,7 +44,7 @@ namespace anno {
             _classes.append(anClass);
         }
 
-        void AnnoClassList::remove(QString name) {
+        void AnnoClassList::remove(const QString &name) {
             for (int i = 0; i < _classes.size(); ++i) {
                 if (_classes[i]->name() == name) {
                     delete _classes[i];
@@ -52,7 +53,7 @@ namespace anno {
             }
         }
 
-        AnnoClassDefinition *AnnoClassList::getClass(QString name) const
+        AnnoClassDefinition *AnnoClassList::getClass(const QString &name) const
         throw(NoSuchElementException *) {
             for (int i = 0; i < _classes.size(); ++i) {
                 if (_classes[i]->name() == name) {
@@ -65,7 +66,7 @@ namespace anno {
 
         AnnoClassDefinition *AnnoClassList::getClass(int index) const
         throw(OutOfRangeException *) {
-            if(index < 0 || index >= _classes.size()) {
+            if (index < 0 || index >= _classes.size()) {
                 throw new OutOfRangeException(__FILE__, __LINE__, "Given index is out of list bounds.");
             }
 
@@ -85,26 +86,15 @@ namespace anno {
             return _classes.size();
         }
 
-        bool AnnoClassList::skipTo(QString tagName, QXmlStreamReader &reader)
-        throw(XmlException *) {
-            bool found = false;
-            while (!reader.atEnd()) {
-                if (reader.isStartElement() && reader.name() == tagName) {
-                    found = true;
-                    break;
-                }
-                reader.readNext();
-            }
-
-            if (reader.hasError()) {
-                throw new XmlException(__FILE__, __LINE__, QString("An error occured while processing XML stream: %1").arg(reader.errorString()));
-            }
-
-            return found;
+        QString AnnoClassList::filePath() const {
+            return _sourceFile;
         }
 
-        void AnnoClassList::loadFromFile() throw(IOException *,
-                XmlException *) {
+        void AnnoClassList::setFilePath(const QString &path) {
+            _sourceFile = path;
+        }
+
+        void AnnoClassList::loadFromFile() throw(IOException *, XmlException *) {
             QTextStream out(stdout);
             out << "Loading from file " << _sourceFile << endl;
             QFile file(_sourceFile);
@@ -117,18 +107,27 @@ namespace anno {
             out << "File opened" << endl;
             QXmlStreamReader reader(&file);
             reader.setNamespaceProcessing(true);
-            if (!skipTo("annoClassDefinitions", reader)) {
+            if (!XmlHelper::skipToStartElement("annoClassDefinitions", reader)) {
                 throw new XmlFormatException(__FILE__, __LINE__, QString("Cannot load from [%1]. Invalid XML format.").arg(_sourceFile));
             }
 
             out << "Starting class reading..." << endl;
+            loadFromXml(reader);
+            file.close();
+        }
+
+        void AnnoClassList::loadFromXml(QXmlStreamReader &reader)
+        throw(XmlException *) {
+            if (!reader.isStartElement() || reader.name() != "annoClassDefinitions") {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "annoClassDefinitions", reader.name().toString());
+            }
+
             QString classTag("classDef");
             QString attrName("id");
             QString attrParent("extends");
             QMap<QString, QString> parentMap;
-            while (skipTo(classTag, reader)) {
+            while (XmlHelper::skipToStartElement(classTag, reader)) {
                 QString name = reader.attributes().value(attrName).toString();
-                out << "Reading class: " << name << endl;
                 if (name.isEmpty()) {
                     throw new XmlFormatException(__FILE__, __LINE__, "Class id must not be empty.");
                 } else if (contains(name)) {
@@ -142,7 +141,6 @@ namespace anno {
 
                 AnnoClassDefinition *cl = new AnnoClassDefinition(name);
                 cl->attributesFromXml(reader);
-                out << "Finished reading class" << endl;
                 _classes.append(cl);
             }
 
@@ -153,7 +151,7 @@ namespace anno {
             }
         }
 
-        void AnnoClassList::writeToFile() const throw(IOException *) {
+        void AnnoClassList::writeToFile() const throw(IOException *, XmlException *) {
             QTextStream out(stdout);
             out << "Writing to file " << _sourceFile << endl;
             QFile file(_sourceFile);
@@ -165,15 +163,34 @@ namespace anno {
             QXmlStreamWriter writer(&file);
             writer.setAutoFormatting(true);
             writer.writeStartDocument();
+            toXml(writer);
+            writer.writeEndDocument();
+            file.flush();
+            file.close();
+        }
+
+        AnnoClassList *AnnoClassList::fromFile(const QString &path)
+        throw(IOException *, XmlException *) {
+            AnnoClassList *data = new AnnoClassList(path);
+            data->loadFromFile();
+            return data;
+        }
+
+        void AnnoClassList::toXml(QXmlStreamWriter &writer) const
+        throw(XmlException *) {
             writer.writeStartElement("annoClassDefinitions");
             QListIterator<AnnoClassDefinition *> i(_classes);
             while (i.hasNext()) {
                 i.next()->toXml(writer);
             }
             writer.writeEndElement();
-            writer.writeEndDocument();
-            file.flush();
-            file.close();
+        }
+
+        AnnoClassList *AnnoClassList::fromXml(QXmlStreamReader &reader)
+        throw(IOException *, XmlException *) {
+            AnnoClassList *data = new AnnoClassList("unknown");
+            data->loadFromXml(reader);
+            return data;
         }
 
         void AnnoClassList::print() const {

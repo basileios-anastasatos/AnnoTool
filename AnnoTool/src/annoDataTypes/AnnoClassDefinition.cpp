@@ -1,11 +1,13 @@
 #include "include/AnnoClassDefinition.h"
 #include <QListIterator>
 #include <QTextStream>
+#include "XmlHelper.h"
 
 //namespace AnnoTool
 namespace anno {
     //namespace DataTypes
     namespace dt {
+        using ::anno::helper::XmlHelper;
 
         AnnoClassDefinition::AnnoClassDefinition() :
             _className("noName") {
@@ -102,7 +104,7 @@ namespace anno {
             out << "-------------------------" << endl;
         }
 
-        void AnnoClassDefinition::toXml(QXmlStreamWriter &writer) const {
+        void AnnoClassDefinition::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {
             writer.writeStartElement("classDef");
             writer.writeAttribute("id", _className);
             if (hasParent()) {
@@ -121,29 +123,24 @@ namespace anno {
 
         void AnnoClassDefinition::attributesFromXml(QXmlStreamReader &reader)
         throw(XmlException *) {
-            QTextStream out(stdout);
             QString classTag("classDef");
             QString attrTag("attribute");
             QString attrName("name");
 
-            out << "Reading class attributes..." << endl;
-
             if (!reader.isStartElement() || reader.name() != classTag) {
-                throw new XmlException(__FILE__, __LINE__, "Given XML stream is not at correct position.");
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, classTag, reader.name().toString());
             }
 
             while (!reader.atEnd()) {
                 if (reader.isStartElement() && reader.name() == attrTag) {
                     QString val = reader.attributes().value(attrName).toString();
                     addAttribute(val);
-                    out << "added " << val << endl;
                 } else if (reader.isEndElement() && reader.name() == classTag) {
                     reader.readNext();
                     break;
                 }
                 reader.readNext();
             }
-
         }
 
     } //end namespace dt

@@ -1,33 +1,48 @@
-#include "AnnoGraphicsPixmap.h"
-#include "AnnoGraphicsPolygon.h"
+#include "include/AnnoGraphicsPixmap.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QPen>
 #include <QBrush>
-#include <iostream>
 
-AnnoGraphicsPixmap::AnnoGraphicsPixmap(const QPixmap &pixmap,
-                                       QGraphicsItem *parent) :
-    QGraphicsPixmapItem(pixmap, parent) {
-}
+namespace anno {
+    namespace graphics {
 
-AnnoGraphicsPixmap::~AnnoGraphicsPixmap() {
-    for(int i = 0; i < _polygons.size(); ++i) {
-        delete _polygons[i];
-    }
-}
+        AnnoGraphicsPixmap::AnnoGraphicsPixmap(const QPixmap &pixmap,
+                                               QGraphicsItem *parent) :
+            QGraphicsPixmapItem(pixmap, parent) {
+        }
 
-void AnnoGraphicsPixmap::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    if (event->button() == Qt::LeftButton &&
-            (event->modifiers() & Qt::ShiftModifier) != 0 &&
-            (event->modifiers() & Qt::ControlModifier) != 0) {
-        AnnoGraphicsPolygon *poly = new AnnoGraphicsPolygon();
-        QPolygonF p;
-        p << event->pos();
-        poly->setPolygon(p);
-        poly->setZValue(20);
-        poly->setParentItem(this);
-        poly->initControlPoints();
-        _polygons << poly;
+        AnnoGraphicsPixmap::~AnnoGraphicsPixmap() {
+        }
+
+        void AnnoGraphicsPixmap::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+            QGraphicsPixmapItem::mouseMoveEvent(event);
+        }
+
+        void AnnoGraphicsPixmap::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+            QGraphicsPixmapItem::mousePressEvent(event);
+        }
+
+        void AnnoGraphicsPixmap::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+            QGraphicsPixmapItem::mouseReleaseEvent(event);
+        }
+
+//		void AnnoGraphicsPixmap::mousePressEvent(QGraphicsSceneMouseEvent* event)
+//		{
+//			if (event->button() == Qt::LeftButton && (event->modifiers()
+//					& Qt::ShiftModifier) != 0 && (event->modifiers()
+//					& Qt::ControlModifier) != 0)
+//			{
+//								AnnoGraphicsPolygon* poly = new AnnoGraphicsPolygon();
+//								QPolygonF p;
+//								p << event->pos();
+//								poly->setPolygon(p);
+//								poly->setZValue(20);
+//								poly->setParentItem(this);
+//								poly->initControlPoints();
+//								_polygons <<poly;
+//			}
+//		}
+
     }
 }
 

@@ -3,9 +3,11 @@
 
 #include <QMessageBox>
 #include <QGraphicsScene>
-#include "AnnoGraphicsControlPoint.h"
+
 
 #include <iostream>
+
+
 
 AnnoGraphicsPolygon::AnnoGraphicsPolygon() {
     setupAppearance();
@@ -40,7 +42,7 @@ void AnnoGraphicsPolygon::validateCP() {
 void AnnoGraphicsPolygon::initControlPoints() {
     QPolygonF poly = polygon();
     for (int i = 0; i < poly.size(); ++i) {
-        AnnoGraphicsControlPoint *cp = new AnnoGraphicsControlPoint(this, i);
+        AnnoGraphicsControlPoint *cp = new AnnoGraphicsControlPoint(NULL, i);
         cp->setZValue(20);
         cp->setParentItem(this);
         _controlPoints << cp;

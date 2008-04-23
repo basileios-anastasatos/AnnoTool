@@ -7,17 +7,16 @@ namespace anno {
 
         NameConflictException::NameConflictException(const char *file, int line) :
             AnnoException(file, line) {
-
         }
+
         NameConflictException::NameConflictException(const char *file, int line,
                 const QString &msg, AnnoException *cause) :
             AnnoException(file, line, msg, cause) {
-
         }
+
         NameConflictException::NameConflictException(const char *file, int line,
                 const char *msg, AnnoException *cause) :
             AnnoException(file, line, msg, cause) {
-
         }
 
         NameConflictException::~NameConflictException() {

@@ -10,6 +10,7 @@ ZoomControl::~ZoomControl() {
 
 void ZoomControl::on_zoomSlider_valueChanged(int value) {
     ui.editZoom->setText(QString("%1").arg(value));
+    emit zoomChanged(value);
 }
 
 void ZoomControl::on_editZoom_textEdited(const QString &text) {
@@ -21,5 +22,6 @@ void ZoomControl::on_editZoom_textEdited(const QString &text) {
         on_zoomSlider_valueChanged(ui.zoomSlider->value());
     }
 }
+
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

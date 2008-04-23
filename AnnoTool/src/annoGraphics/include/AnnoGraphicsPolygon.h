@@ -2,9 +2,10 @@
 #define ANNOGRAPHICSPOLYGON_H_
 
 #include <QGraphicsPolygonItem>
+#include "AnnoGraphicsControlPoint.h"
 
 class QGraphicsSceneMouseEvent;
-class AnnoGraphicsControlPoint;
+using ::anno::graphics::AnnoGraphicsControlPoint;
 
 class AnnoGraphicsPolygon : public QObject, public QGraphicsPolygonItem {
         Q_OBJECT

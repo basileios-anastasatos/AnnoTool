@@ -1,4 +1,4 @@
-#include "AnnoComplex.h"
+#include "include/AnnoProject.h"
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 #include <QTextStream>
@@ -11,88 +11,170 @@ namespace anno {
     namespace dt {
         using ::anno::helper::XmlHelper;
 
-        AnnoComplex::AnnoComplex() {
+        AnnoProject::AnnoProject(const QString &path) {
+            _sourceFile = path;
         }
 
-        AnnoComplex::AnnoComplex(const QUuid &uuid) {
+        AnnoProject::AnnoProject(const QString &path, const QUuid &uuid) {
+            _sourceFile = path;
             _uuid = uuid;
         }
 
-        AnnoComplex::~AnnoComplex() {
+        AnnoProject::~AnnoProject() {
         }
 
-        void AnnoComplex::addToClassPath(const QString &file) {
+        void AnnoProject::addToClassPath(const QString &file) {
             QFileInfo info(file);
             if (!_classPaths.contains(info)) {
                 _classPaths.append(info);
             }
         }
 
-        void AnnoComplex::addToSearchPath(const QString &dir) {
+        void AnnoProject::addToSearchPath(const QString &dir) {
             QFileInfo info(dir);
             if (!_searchPaths.contains(info)) {
                 _searchPaths.append(info);
             }
         }
 
-        void AnnoComplex::addToLinks(const QString &uuid) {
+        void AnnoProject::addToLinks(const QString &uuid) {
             QUuid id(uuid);
             if (!_links.contains(id)) {
                 _links.append(id);
             }
         }
 
-        bool AnnoComplex::containsInClassPath(const QString &file) const {
+        bool AnnoProject::containsInClassPath(const QString &file) const {
             QFileInfo info(file);
             return _classPaths.contains(info);
         }
 
-        bool AnnoComplex::containsInSearchPath(const QString &dir) const {
+        bool AnnoProject::containsInSearchPath(const QString &dir) const {
             QFileInfo info(dir);
             return _searchPaths.contains(info);
         }
 
-        bool AnnoComplex::containsInLinks(const QString &uuid) const {
+        bool AnnoProject::containsInSearchPathAdv(const QFileInfo &dir) const {
+
+        }
+
+        bool AnnoProject::containsInLinks(const QString &uuid) const {
             QUuid id(uuid);
             return _links.contains(id);
         }
 
-        const QList<QUuid> *AnnoComplex::links() {
+        QList<QUuid> *AnnoProject::links() {
             return &_links;
         }
 
-        const QList<QFileInfo> *AnnoComplex::searchPath() {
+        QList<QFileInfo> *AnnoProject::searchPath() {
             return &_searchPaths;
         }
 
-        const QList<QFileInfo> *AnnoComplex::classPath() {
+        QList<QFileInfo> *AnnoProject::classPath() {
             return &_classPaths;
         }
 
-        void AnnoComplex::setUuid(const QUuid &uuid) {
+        QString AnnoProject::filePath() const {
+            return _sourceFile;
+        }
+
+        void AnnoProject::setFilePath(const QString &path) {
+            _sourceFile = path;
+        }
+
+        QString AnnoProject::projectName() const {
+            return _projectName;
+        }
+
+        void AnnoProject::setProjectName(const QString &name) {
+            _projectName = name;
+        }
+
+        void AnnoProject::setUuid(const QUuid &uuid) {
             _uuid = uuid;
         }
 
-        QUuid AnnoComplex::uuid() const {
+        QUuid AnnoProject::uuid() const {
             return _uuid;
         }
 
-        QString AnnoComplex::uuidAsString() const {
-            return uuidAsString(_uuid);
+        QString AnnoProject::uuidAsString() const {
+            return XmlHelper::uuidAsString(_uuid);
         }
 
-        QString AnnoComplex::uuidAsString(const QUuid &uuid) {
-            QString str = uuid.toString();
-            str.remove(0, 1);
-            str.remove(str.length() - 1, 1);
-            return str;
+        void AnnoProject::loadFromFile() throw(IOException *, XmlException *) {
+            QFile file(_sourceFile);
+            if (!file.exists()) {
+                throw new IOException(__FILE__, __LINE__, QString("Cannot load from [%1]. File does not exist.").arg(_sourceFile));
+            } else if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                throw new IOException(__FILE__, __LINE__, QString("Cannot load from [%1]. File cannot be opened.").arg(_sourceFile));
+            }
+
+            QXmlStreamReader reader(&file);
+            reader.setNamespaceProcessing(true);
+            if (!XmlHelper::skipToStartElement("annoProject", reader)) {
+                throw new XmlFormatException(__FILE__, __LINE__, QString("Cannot load from [%1]. Invalid XML format.").arg(_sourceFile));
+            }
+
+            loadFromXml(reader);
+            file.close();
         }
 
-        void AnnoComplex::writeToFile(const QString &path) const
-        throw(IOException *, XmlFormatException *) {
-            QFile file(path);
+        void AnnoProject::loadFromXml(QXmlStreamReader &reader)
+        throw(XmlException *) {
+            if (!reader.isStartElement() || reader.name() != "annoProject") {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "annoProject", reader.name().toString());
+            }
+
+            QString name = reader.attributes().value("name").toString();
+            if (name.isEmpty()) {
+                throw new XmlFormatException(__FILE__, __LINE__, "Invalid ProjectName.");
+            }
+            _projectName = name;
+
+            QString uuid = reader.attributes().value("uuid").toString();
+            if (uuid.isEmpty()) {
+                throw new XmlFormatException(__FILE__, __LINE__, "Invalid UUID.");
+            }
+            _uuid = QUuid(uuid);
+
+            XmlHelper::skipToNextStartElement(true, reader);
+            if (reader.isStartElement() && reader.name() == "classPath") {
+                loadClassPath(reader);
+                XmlHelper::skipToNextStartElement(false, reader);
+                if (reader.isStartElement() && reader.name() == "link") {
+                    loadLinks(reader);
+                    XmlHelper::skipToNextStartElement(false, reader);
+                    if (reader.isStartElement() && reader.name() == "searchPath") {
+                        loadSearchPath(reader);
+                    } else {
+                        throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML structure, was expecting searchPath");
+                    }
+                } else if (reader.isStartElement() && reader.name() == "searchPath") {
+                    loadSearchPath(reader);
+                } else {
+                    throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML structure, was expecting link or searchPath");
+                }
+            } else if (reader.isStartElement() && reader.name() == "link") {
+                loadLinks(reader);
+                XmlHelper::skipToNextStartElement(false, reader);
+                if (reader.isStartElement() && reader.name() == "searchPath") {
+                    loadSearchPath(reader);
+                } else {
+                    throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML structure, was expecting searchPath");
+                }
+            } else if (reader.isStartElement() && reader.name() == "searchPath") {
+                loadSearchPath(reader);
+            } else {
+                throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML structure, was expecting classPath, link or searchPath");
+            }
+        }
+
+        void AnnoProject::writeToFile() const throw(IOException *, XmlException *) {
+            QFile file(_sourceFile);
             if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                throw new IOException(__FILE__, __LINE__, QString("Cannot write to [%1]. File cannot be opened.").arg(path));
+                throw new IOException(__FILE__, __LINE__, QString("Cannot write to [%1]. File cannot be opened.").arg(_sourceFile));
             }
 
             QXmlStreamWriter writer(&file);
@@ -104,9 +186,17 @@ namespace anno {
             file.close();
         }
 
-        void AnnoComplex::toXml(QXmlStreamWriter &writer) const
-        throw(XmlFormatException *) {
-            writer.writeStartElement("annoComplex");
+        AnnoProject *AnnoProject::fromFile(const QString &path) throw(IOException *,
+                XmlException *) {
+            AnnoProject *data = new AnnoProject(path);
+            data->loadFromFile();
+            return data;
+        }
+
+        void AnnoProject::toXml(QXmlStreamWriter &writer) const
+        throw(XmlException *) {
+            writer.writeStartElement("annoProject");
+            writer.writeAttribute("name", _projectName);
             writer.writeAttribute("uuid", uuidAsString());
             if (!_classPaths.isEmpty()) {
                 writer.writeStartElement("classPath");
@@ -120,7 +210,7 @@ namespace anno {
                 writer.writeStartElement("link");
                 QListIterator<QUuid> i(_links);
                 while (i.hasNext()) {
-                    writer.writeTextElement("uuid", uuidAsString(i.next()));
+                    writer.writeTextElement("uuid", XmlHelper::uuidAsString(i.next()));
                 }
                 writer.writeEndElement();
             }
@@ -137,63 +227,7 @@ namespace anno {
             writer.writeEndElement();
         }
 
-        AnnoComplex AnnoComplex::loadFromFile(const QString &path)
-        throw(IOException *, XmlException *) {
-            QFile file(path);
-            if (!file.exists()) {
-                throw new IOException(__FILE__, __LINE__, QString("Cannot load from [%1]. File does not exist.").arg(path));
-            } else if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                throw new IOException(__FILE__, __LINE__, QString("Cannot load from [%1]. File cannot be opened.").arg(path));
-            }
-
-            QXmlStreamReader reader(&file);
-            reader.setNamespaceProcessing(true);
-            if (!XmlHelper::skipToStartElement("annoComplex", reader)) {
-                throw new XmlFormatException(__FILE__, __LINE__, QString("Cannot load from [%1]. Invalid XML format.").arg(path));
-            }
-
-            QString uuid = reader.attributes().value("uuid").toString();
-            if (uuid.isEmpty()) {
-                throw new XmlFormatException(__FILE__, __LINE__, "Invalid UUID.");
-            }
-            AnnoComplex anno;
-            anno._uuid = QUuid(uuid);
-
-            XmlHelper::skipToNextStartElement(true, reader);
-            if (reader.isStartElement() && reader.name() == "classPath") {
-                anno.loadClassPath(reader);
-                XmlHelper::skipToNextStartElement(false, reader);
-                if (reader.isStartElement() && reader.name() == "link") {
-                    anno.loadLinks(reader);
-                    XmlHelper::skipToNextStartElement(false, reader);
-                    if (reader.isStartElement() && reader.name() == "searchPath") {
-                        anno.loadSearchPath(reader);
-                    } else {
-                        throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML structure, was expecting searchPath");
-                    }
-                } else if (reader.isStartElement() && reader.name() == "searchPath") {
-                    anno.loadSearchPath(reader);
-                } else {
-                    throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML structure, was expecting link or searchPath");
-                }
-            } else if (reader.isStartElement() && reader.name() == "link") {
-                anno.loadLinks(reader);
-                XmlHelper::skipToNextStartElement(false, reader);
-                if (reader.isStartElement() && reader.name() == "searchPath") {
-                    anno.loadSearchPath(reader);
-                } else {
-                    throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML structure, was expecting searchPath");
-                }
-            } else if (reader.isStartElement() && reader.name() == "searchPath") {
-                anno.loadSearchPath(reader);
-            } else {
-                throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML structure, was expecting classPath, link or searchPath");
-            }
-
-            return anno;
-        }
-
-        void AnnoComplex::loadClassPath(QXmlStreamReader &reader)
+        void AnnoProject::loadClassPath(QXmlStreamReader &reader)
         throw(XmlException *) {
             QString tagList("classPath");
             QString tagFile("file");
@@ -214,7 +248,7 @@ namespace anno {
             }
         }
 
-        void AnnoComplex::loadSearchPath(QXmlStreamReader &reader)
+        void AnnoProject::loadSearchPath(QXmlStreamReader &reader)
         throw(XmlException *) {
             QString tagList("searchPath");
             QString tagDir("dir");
@@ -235,7 +269,7 @@ namespace anno {
             }
         }
 
-        void AnnoComplex::loadLinks(QXmlStreamReader &reader) throw(XmlException *) {
+        void AnnoProject::loadLinks(QXmlStreamReader &reader) throw(XmlException *) {
             QString tagList("link");
             QString tagUuid("uuid");
 
@@ -255,9 +289,9 @@ namespace anno {
             }
         }
 
-        void AnnoComplex::print() const {
+        void AnnoProject::print() const {
             QTextStream out(stdout);
-            out << "UUID: " << uuidAsString(_uuid) << endl;
+            out << "UUID: " << uuidAsString() << endl;
             out << "-------------------------" << endl;
 
             if (!_classPaths.isEmpty()) {
@@ -272,7 +306,7 @@ namespace anno {
                 out << endl << "<< Links >>" << endl;
                 QListIterator<QUuid> iLink(_links);
                 while (iLink.hasNext()) {
-                    out << "UUID: " << uuidAsString(iLink.next()) << endl;
+                    out << "UUID: " << XmlHelper::uuidAsString(iLink.next()) << endl;
                 }
                 out << endl;
             }
