@@ -53,7 +53,7 @@ namespace anno {
             return false;
         }
 
-        const Annotation *AnnoFileData::getAnnotation(const QUuid &uuid) {
+        Annotation *AnnoFileData::getAnnotation(const QUuid &uuid) {
             QListIterator<Annotation *> i(_annoList);
             while (i.hasNext()) {
                 Annotation *a = i.next();

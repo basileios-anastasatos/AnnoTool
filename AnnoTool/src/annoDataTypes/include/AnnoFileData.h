@@ -38,7 +38,7 @@ namespace anno {
 
             public:
                 bool containsAnnotation(const QUuid &uuid) const;
-                const Annotation *getAnnotation(const QUuid &uuid);
+                Annotation *getAnnotation(const QUuid &uuid);
                 QUuid imageUuid() const;
                 QString imageUuidAsString() const;
                 QUuid complexUuid() const;
