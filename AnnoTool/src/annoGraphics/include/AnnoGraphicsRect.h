@@ -3,6 +3,7 @@
 
 #include <QGraphicsRectItem>
 #include "AnnoGraphicsShape.h"
+#include "AnnoRectangle.h"
 
 namespace anno {
     namespace graphics {
@@ -10,6 +11,12 @@ namespace anno {
         class AnnoGraphicsRect : public QGraphicsRectItem, public AnnoGraphicsShape {
             private:
                 void setupAppearance();
+                dt::AnnoRectangle *annoRect();
+
+            protected:
+                virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+                virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+                virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
             public:
                 AnnoGraphicsRect(dt::Annotation *anno, QGraphicsItem *parent = 0);
@@ -20,9 +27,27 @@ namespace anno {
                 virtual ~AnnoGraphicsRect();
 
             public:
+                QRectF mapRectToParent(const QRectF &r) const;
+
+            public:
+                virtual void initControlPoints();
+                void validateCpPos();
                 virtual QGraphicsItem *graphicsItem();
-                virtual void paint(QPainter *painter,
-                                   const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+                virtual void shapeMoveBy(qreal deltaX, qreal deltaY);
+                virtual void shapeSizeBy(qreal facX, qreal facY);
+                virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                                   QWidget *widget = 0);
+
+            public:
+                virtual void cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event);
+                virtual void cpMouseReleaseEvent(int index, QGraphicsSceneMouseEvent *event);
+                virtual void cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event);
+
+                // external mouse interface
+            public:
+                virtual void exMouseMoveEvent(QGraphicsSceneMouseEvent *event);
+                virtual void exMousePressEvent(QGraphicsSceneMouseEvent *event);
+                virtual void exMouseReleaseEvent(QGraphicsSceneMouseEvent *event);
         };
 
     }

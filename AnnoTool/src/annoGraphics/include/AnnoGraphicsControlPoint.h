@@ -3,7 +3,6 @@
 
 #include <QGraphicsEllipseItem>
 
-class AnnoGraphicsPolygon;
 class QGraphicsSceneMouseEvent;
 
 namespace anno {
@@ -17,6 +16,7 @@ namespace anno {
 
             protected:
                 virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+                virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
             public:
@@ -27,6 +27,7 @@ namespace anno {
                 void setupAppearance();
                 void setIndex(int index);
                 int getIndex();
+                AnnoGraphicsShape *parentShape();
         };
 
     }

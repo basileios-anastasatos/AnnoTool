@@ -25,6 +25,16 @@ namespace anno {
                 << ")]" << endl;
         }
 
+        AnnoRectangle &AnnoRectangle::operator=(const QRectF &r) {
+            setRect(r.x(), r.y(), r.width(), r.height());
+            return *this;
+        }
+
+        AnnoRectangle &AnnoRectangle::operator=(const AnnoRectangle &r) {
+            setRect(r.x(), r.y(), r.width(), r.height());
+            return *this;
+        }
+
         void AnnoRectangle::toXml(QXmlStreamWriter &writer) const
         throw(XmlException *) {
             writer.writeStartElement("rect");

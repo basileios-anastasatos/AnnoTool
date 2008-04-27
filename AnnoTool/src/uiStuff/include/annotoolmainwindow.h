@@ -8,25 +8,34 @@
 
 class QCloseEvent;
 class QImage;
+class ZoomControl;
 
 class AnnoToolMainWindow : public QMainWindow {
         Q_OBJECT
 
+        // internal members
     private:
         Ui::AnnoToolMainWindowClass ui;
+        ZoomControl *zoomCtrl;
         anno::graphics::AnnoGraphicsScene *_graphicsScene;
 
+        // internal helper methods
     private:
         void clearGraphicsScene();
         void newGraphicsScene(QImage *img = NULL);
+        void fitGraphicsScene();
         void loadGraphicsAnno();
         void updateAnnoWidgets();
         bool checkProjectToClose();
         void configUIproject(bool open);
+        void uncheckTools();
+        void setToolEnabled(bool enabled);
 
+        // overwritten methods
     protected:
         virtual void closeEvent(QCloseEvent *event);
 
+        // internal slots
     private slots:
         void on_actionFileNew_triggered();
         void on_actionFileOpen_triggered();
@@ -39,11 +48,18 @@ class AnnoToolMainWindow : public QMainWindow {
         void annoFileSelectChanged(int row, QUuid image);
         void on_annoListWidget_annoSelectChanged(int row, QUuid anno);
         void on_zoomSlider_valueChanged(int value);
+        void on_actionFitImage_triggered();
 
+        // Tool support
+        void on_actionToolPointer_triggered();
+        void on_actionToolRectangle_triggered();
+
+        // constrctor / destructor
     public:
         AnnoToolMainWindow(QWidget *parent = 0);
         ~AnnoToolMainWindow();
 
+        // public slot interface
     public slots:
         void on_appClose();
 

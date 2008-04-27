@@ -2,20 +2,29 @@ TEMPLATE = app
 TARGET = AnnoTool
 CONFIG -= debug
 UI_DIR = ./src/uiStuff/gen
-INCLUDEPATH += ./src/uiStuff/include \
-    ./src/uiStuff/helper/include \
-    ./src/uiStuff/gen \
-    ./src/annoDataTypes/include \
+INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/annoExceptions/include \
     ./src/annoGraphics/include \
     ./src/annoHelper/include \
     ./src/annoHelper/logging/include \
-    ./src/general/include
+    ./src/general/include \
+    ./src/uiStuff/include \
+    ./src/uiStuff/gen \
+    ./src/uiStuff/helper/include
 QT += core \
     gui \
     xml \
     qt3support
-HEADERS += ./src/general/include/GlobalConfig.h \
+HEADERS += ./src/annoGraphics/include/AllGraphicsTools.h \
+    ./src/annoGraphics/include/AllAnnoGraphics.h \
+    ./src/general/include/importGlobals.h \
+    ./src/general/include/GlobalToolManager.h \
+    ./src/annoGraphics/include/ToolRect.h \
+    ./src/annoGraphics/include/ToolHand.h \
+    ./src/annoGraphics/include/ToolPointer.h \
+    ./src/annoGraphics/include/GraphicsTool.h \
+    ./src/annoGraphics/include/MapperHelper.h \
+    ./src/general/include/GlobalConfig.h \
     ./src/annoGraphics/include/AnnoGraphicsScene.h \
     ./src/annoGraphics/include/AnnoGraphicsRect.h \
     ./src/uiStuff/include/AnnoDataWidget.h \
@@ -64,7 +73,13 @@ HEADERS += ./src/general/include/GlobalConfig.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h \
     ./src/uiStuff/include/annotoolmainwindow.h
-SOURCES += ./src/general/GlobalConfig.cpp \
+SOURCES += ./src/general/GlobalToolManager.cpp \
+    ./src/annoGraphics/ToolRect.cpp \
+    ./src/annoGraphics/ToolHand.cpp \
+    ./src/annoGraphics/ToolPointer.cpp \
+    ./src/annoGraphics/GraphicsTool.cpp \
+    ./src/annoGraphics/MapperHelper.cpp \
+    ./src/general/GlobalConfig.cpp \
     ./src/annoGraphics/AnnoGraphicsScene.cpp \
     ./src/annoGraphics/AnnoGraphicsRect.cpp \
     ./src/uiStuff/AnnoDataWidget.cpp \

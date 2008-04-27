@@ -20,7 +20,11 @@ namespace anno {
                     case dt::ASTypeRectangle: {
                             dt::AnnoRectangle *ar = reinterpret_cast<dt::AnnoRectangle *>(anno->shape());
                             QRectF *rect = static_cast<QRectF *>(ar);
-                            shape = new AnnoGraphicsRect(anno, *rect);
+                            QRectF tmpRect = *rect;
+//						tmpRect.moveTo(0.0, 0.0);
+                            AnnoGraphicsRect *tmp = new AnnoGraphicsRect(anno, tmpRect);
+//						tmp->setPos(rect->topLeft());
+                            shape = tmp;
                             break;
                         }
                     default:

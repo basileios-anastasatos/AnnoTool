@@ -18,6 +18,10 @@ class ZoomControl : public QWidget {
         ZoomControl(QWidget *parent = 0);
         ~ZoomControl();
 
+    public:
+        void setZoom(int value);
+        int getZoom();
+
     signals:
         void zoomChanged(int value);
 

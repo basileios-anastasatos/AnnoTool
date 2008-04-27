@@ -20,6 +20,10 @@ namespace anno {
                 virtual void print() const;
 
             public:
+                AnnoRectangle &operator=(const QRectF &r);
+                AnnoRectangle &operator=(const AnnoRectangle &r);
+
+            public:
                 virtual void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 virtual void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
         };

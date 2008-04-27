@@ -36,11 +36,21 @@ namespace anno {
             invalidate();
         }
 
+        QSize AnnoGraphicsScene::annoImageSize() const {
+            return _image->pixmap().size();
+        }
+
+        AnnoGraphicsPixmap *AnnoGraphicsScene::annoPixmap() {
+            return _image;
+        }
+
         void AnnoGraphicsScene::addAnnoShape(AnnoGraphicsShape *shape) {
             if (shape != NULL && _image != NULL && shape->relatedAnno() != NULL) {
                 _shapes.insert(shape->relatedAnno()->annoId(), shape);
                 QGraphicsItem *gi = shape->graphicsItem();
                 gi->setParentItem(_image);
+                shape->setParentImage(_image);
+                _image->update();
             }
         }
 

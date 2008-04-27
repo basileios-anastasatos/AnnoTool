@@ -4,16 +4,14 @@
 #include "include/DlgProjectDetails.h"
 #include "include/DlgAddImage.h"
 #include "include/DlgLoaderDetails.h"
-#include "AllAnnoExceptions.h"
-#include "AnnoFileData.h"
-#include "GlobalLogger.h"
-#include "GlobalConfig.h"
-#include "GlobalProjectManager.h"
-#include "GlobalImageLoader.h"
-#include "AnnoGraphicsShapeCreator.h"
 
-#include "../annoGraphics/include/AnnoGraphicsScene.h"
-#include "../annoGraphics/include/AnnoGraphicsPixmap.h"
+#include "AllAnnoExceptions.h"
+#include "importGlobals.h"
+#include "AnnoFileData.h"
+
+#include "AnnoGraphicsScene.h"
+#include "AnnoGraphicsPixmap.h"
+#include "AnnoGraphicsShapeCreator.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -21,9 +19,6 @@
 #include <QImage>
 #include <QCloseEvent>
 
-using ::logging::GlobalLogger;
-using ::anno::GlobalProjectManager;
-using ::anno::GlobalImageLoader;
 using namespace ::anno::exc;
 
 AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
@@ -31,14 +26,15 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     _graphicsScene = NULL;
     ui.setupUi(this);
     setCentralWidget(ui.graphicsView);
-    ZoomControl *z = new ZoomControl(ui.tbView);
-    QAction *za = ui.tbView->addWidget(z);
+    zoomCtrl = new ZoomControl(ui.tbView);
+    QAction *za = ui.tbView->addWidget(zoomCtrl);
     za->setVisible(true);
 
     connect(ui.annoFileListWidget, SIGNAL(annoFileSelectChanged(int, QUuid)), this, SLOT(annoFileSelectChanged(int, QUuid)));
-    connect(z, SIGNAL(zoomChanged(int)), this, SLOT(on_zoomSlider_valueChanged(int)));
+    connect(zoomCtrl, SIGNAL(zoomChanged(int)), this, SLOT(on_zoomSlider_valueChanged(int)));
 
     configUIproject(false);
+    setToolEnabled(false);
 }
 
 AnnoToolMainWindow::~AnnoToolMainWindow() {
@@ -46,11 +42,13 @@ AnnoToolMainWindow::~AnnoToolMainWindow() {
 }
 
 void AnnoToolMainWindow::clearGraphicsScene() {
+    setToolEnabled(false);
     if (_graphicsScene != NULL) {
         ui.graphicsView->setScene(NULL);
         delete _graphicsScene;
         _graphicsScene = NULL;
     }
+    GlobalToolManager::instance()->resetAll();
 }
 
 void AnnoToolMainWindow::newGraphicsScene(QImage *img) {
@@ -60,6 +58,23 @@ void AnnoToolMainWindow::newGraphicsScene(QImage *img) {
         _graphicsScene->setAnnoImage(*img);
     }
     ui.graphicsView->setScene(_graphicsScene);
+    GlobalToolManager::instance()->setScene(_graphicsScene);
+    fitGraphicsScene();
+    setToolEnabled(true);
+}
+
+void AnnoToolMainWindow::fitGraphicsScene() {
+    if (_graphicsScene != NULL && _graphicsScene->hasImage()) {
+        QSize imgSize = _graphicsScene->annoImageSize();
+        int vWidth = ui.graphicsView->width() - 4;
+        int vHeight = ui.graphicsView->height() - 4;
+        double factor = (double)vWidth / (double)imgSize.width();
+        if ((imgSize.height() * factor) > vHeight) {
+            factor = (double)vHeight / (double)imgSize.height();
+        }
+        GlobalLogger::instance()->logDebug(QString("Fitting scene with faktor: %1 (%2x%3 -> %4x%5)").arg(factor).arg(imgSize.width()).arg(imgSize.height()).arg(vWidth).arg(vHeight));
+        zoomCtrl->setZoom(static_cast<int>(factor * 100.0));
+    }
 }
 
 void AnnoToolMainWindow::loadGraphicsAnno() {
@@ -114,6 +129,20 @@ void AnnoToolMainWindow::configUIproject(bool open) {
     ui.actionFileSave->setEnabled(open);
     ui.actionProjectDetails->setEnabled(open);
     ui.actionProjectAddImage->setEnabled(open);
+}
+
+void AnnoToolMainWindow::uncheckTools() {
+    ui.actionToolPointer->setChecked(false);
+    ui.actionToolRectangle->setChecked(false);
+    ui.actionToolPolygon->setChecked(false);
+    ui.actionToolEllipse->setChecked(false);
+}
+
+void AnnoToolMainWindow::setToolEnabled(bool enabled) {
+    ui.actionToolPointer->setEnabled(enabled);
+    ui.actionToolRectangle->setEnabled(enabled);
+    ui.actionToolPolygon->setEnabled(enabled);
+    ui.actionToolEllipse->setEnabled(enabled);
 }
 
 void AnnoToolMainWindow::closeEvent(QCloseEvent *event) {
@@ -251,6 +280,7 @@ void AnnoToolMainWindow::on_actionSetImageLoader_triggered() {
 void AnnoToolMainWindow::on_appClose() {
     GlobalLogger::instance()->logInfo("AnnoTool is shutting down");
     GlobalProjectManager::instance()->clear();
+    //TODO reset singletons here!
 }
 
 void AnnoToolMainWindow::annoFileSelectChanged(int row, QUuid image) {
@@ -282,6 +312,22 @@ void AnnoToolMainWindow::on_zoomSlider_valueChanged(int value) {
     statusBar()->showMessage(tr("Scale: %1").arg(f), 1000);
     ui.graphicsView->resetMatrix();
     ui.graphicsView->scale(f, f);
+}
+
+void AnnoToolMainWindow::on_actionFitImage_triggered() {
+    fitGraphicsScene();
+}
+
+void AnnoToolMainWindow::on_actionToolPointer_triggered() {
+    uncheckTools();
+    ui.actionToolPointer->setChecked(true);
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtPointer);
+}
+
+void AnnoToolMainWindow::on_actionToolRectangle_triggered() {
+    uncheckTools();
+    ui.actionToolRectangle->setChecked(true);
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtRect);
 }
 
 

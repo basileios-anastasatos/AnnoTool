@@ -120,6 +120,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionFitImage" />
   </widget>
   <widget class="QToolBar" name="tbTools">
    <property name="windowTitle">
@@ -203,6 +204,9 @@
    </property>
   </action>
   <action name="actionToolRectangle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">:/res/tool_rectangle</iconset>
    </property>
@@ -214,6 +218,9 @@
    </property>
   </action>
   <action name="actionToolPointer">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Pointer</string>
    </property>
@@ -222,6 +229,9 @@
    </property>
   </action>
   <action name="actionToolPolygon">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">:/res/tool_polygon</iconset>
    </property>
@@ -233,6 +243,9 @@
    </property>
   </action>
   <action name="actionToolEllipse">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Ellipse</string>
    </property>
@@ -267,6 +280,11 @@
   <action name="actionSetImageLoader">
    <property name="text">
     <string>Image &amp;Loader</string>
+   </property>
+  </action>
+  <action name="actionFitImage">
+   <property name="text">
+    <string>Fit Image</string>
    </property>
   </action>
  </widget>

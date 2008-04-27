@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 #include <QMap>
 #include <QUuid>
+#include <QSize>
 #include "AnnoGraphicsPixmap.h"
 
 namespace anno {
@@ -27,6 +28,8 @@ namespace anno {
 
             public:
                 void setAnnoImage(const QImage &image);
+                QSize annoImageSize() const;
+                AnnoGraphicsPixmap *annoPixmap();
                 void addAnnoShape(AnnoGraphicsShape *shape);
                 void removeAnnoShape(AnnoGraphicsShape *shape);
                 void removeAnnoShape(const QUuid &annoId);

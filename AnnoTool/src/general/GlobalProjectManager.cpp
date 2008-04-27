@@ -1,13 +1,9 @@
 #include "include/GlobalProjectManager.h"
-#include "GlobalConfig.h"
-#include "../annoHelper/logging/include/GlobalLogger.h"
+#include "importGlobals.h"
 #include <QFileInfo>
 #include <QDir>
 
 namespace anno {
-    using ::logging::GlobalLogger;
-    using ::anno::GlobalConfig;
-
     GlobalProjectManager *GlobalProjectManager::_me = NULL;
 
     GlobalProjectManager::GlobalProjectManager() {
@@ -255,7 +251,14 @@ namespace anno {
         if (!isValid()) {
             throw new IllegalStateException(__FILE__, __LINE__, "Cannot save current data. Invalid data.");
         }
-        //TODO implement this!
+
+        _project->writeToFile();
+        if(saveSub) {
+            QListIterator<dt::AnnoFileData *> i(*_fileList);
+            while(i.hasNext()) {
+                i.next()->writeToFile();
+            }
+        }
     }
 
 }

@@ -10,17 +10,25 @@ ZoomControl::~ZoomControl() {
 
 void ZoomControl::on_zoomSlider_valueChanged(int value) {
     ui.editZoom->setText(QString("%1").arg(value));
-    emit zoomChanged(value);
+    emit 	zoomChanged(value);
 }
 
 void ZoomControl::on_editZoom_textEdited(const QString &text) {
     bool isOk = false;
     int value = text.toInt(&isOk, 10);
-    if(isOk && value >= 10 && value <= 500) {
+    if (isOk && value >= 10 && value <= 500) {
         ui.zoomSlider->setValue(value);
-    } else if(!isOk) {
+    } else if (!isOk) {
         on_zoomSlider_valueChanged(ui.zoomSlider->value());
     }
+}
+
+void ZoomControl::setZoom(int value) {
+    ui.zoomSlider->setValue(value);
+}
+
+int ZoomControl::getZoom() {
+    return ui.zoomSlider->value();
 }
 
 

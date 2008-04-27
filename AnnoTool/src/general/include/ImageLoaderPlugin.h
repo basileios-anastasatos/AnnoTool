@@ -6,6 +6,8 @@
 #include <QString>
 #include <QList>
 
+#define NOFRAME -1
+
 namespace anno {
 
     /**
@@ -151,10 +153,12 @@ namespace anno {
              * reasons this method must return a so-called Null-Image (see QImage()).
              *
              * @param file File to be loaded.
+             * @param frame Frame to be loaded if given file is a video, otherwise
+             * 				use NOFRAME.
              *
              * @return The loaded image or a Null-Image.
              */
-            virtual QImage loadImage(const QFileInfo &file) const = 0;
+            virtual QImage loadImage(const QFileInfo &file, int frame) const = 0;
             //-------------------------------------------------------------------
     };
 

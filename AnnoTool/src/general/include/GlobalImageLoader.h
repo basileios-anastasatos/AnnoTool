@@ -37,7 +37,7 @@ namespace anno {
             virtual QList<QString> imageTypes() const;
             virtual QList<QString> fileTypes() const;
             virtual bool canLoad(const QFileInfo &file) const;
-            virtual QImage loadImage(const QFileInfo &file) const;
+            virtual QImage loadImage(const QFileInfo &file, int frame) const;
     };
 
     /**
@@ -110,8 +110,7 @@ namespace anno {
             };
 
         public:
-            static bool
-            fileTypeLoadable(const QString &ext, ImageLoaderPlugin *plugin);
+            static bool fileTypeLoadable(const QString &ext, ImageLoaderPlugin *plugin);
             bool canLoad(const QString &filePath) const;
             bool canLoad(const QFileInfo &file) const;
 
@@ -120,9 +119,15 @@ namespace anno {
 
             QImage loadImage(const QString &filePath, LoadStrategy s = LoadLinear) const;
             QImage loadImage(const QFileInfo &file, LoadStrategy s = LoadLinear) const;
+            QImage
+            loadImage(const QString &filePath, int frame, LoadStrategy s = LoadLinear) const;
+            QImage
+            loadImage(const QFileInfo &file, int frame, LoadStrategy s = LoadLinear) const;
 
             QImage loadImage(const QString &filePath, int plugin) const;
             QImage loadImage(const QFileInfo &file, int plugin) const;
+            QImage loadImage(const QString &filePath, int frame, int plugin) const;
+            QImage loadImage(const QFileInfo &file, int frame, int plugin) const;
 
         public:
             void addPlugin(ImageLoaderPlugin *plugin);

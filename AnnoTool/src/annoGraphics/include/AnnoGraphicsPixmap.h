@@ -10,6 +10,7 @@ namespace anno {
     namespace graphics {
 
         class AnnoGraphicsPixmap : public QGraphicsPixmapItem {
+                // internal mouse interface
             protected:
                 virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -18,6 +19,12 @@ namespace anno {
             public:
                 AnnoGraphicsPixmap(const QPixmap &pixmap, QGraphicsItem *parent = 0);
                 virtual ~AnnoGraphicsPixmap();
+
+                // external mouse interface
+            public:
+                void exMouseMoveEvent(QGraphicsSceneMouseEvent *event);
+                void exMousePressEvent(QGraphicsSceneMouseEvent *event);
+                void exMouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
         };
 

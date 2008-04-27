@@ -1,5 +1,4 @@
 #include "include/GlobalImageLoader.h"
-//#include <QByteArray>
 #include <QImageReader>
 
 namespace anno {
@@ -38,7 +37,7 @@ namespace anno {
         return reader.canRead();
     }
 
-    QImage DefaultImageLoaderPlugin::loadImage(const QFileInfo &file) const {
+    QImage DefaultImageLoaderPlugin::loadImage(const QFileInfo &file, int frame) const {
         return QImage(file.filePath());
     }
 
@@ -69,7 +68,6 @@ namespace anno {
             setupImageLoader();
         }
         return _me;
-
     }
 
     void GlobalImageLoader::reset() {
@@ -79,8 +77,7 @@ namespace anno {
         }
     }
 
-    bool GlobalImageLoader::fileTypeLoadable(const QString &ext,
-            ImageLoaderPlugin *plugin) {
+    bool GlobalImageLoader::fileTypeLoadable(const QString &ext, ImageLoaderPlugin *plugin) {
         if (plugin != NULL) {
             QList<QString> lst = plugin->fileTypes();
             if (lst.isEmpty()) {
@@ -117,20 +114,28 @@ namespace anno {
     }
 
     QImage GlobalImageLoader::loadImage(const QString &filePath, LoadStrategy s) const {
-        return loadImage(QFileInfo(filePath), s);
+        return loadImage(filePath, NOFRAME, s);
     }
 
     QImage GlobalImageLoader::loadImage(const QFileInfo &file, LoadStrategy s) const {
+        return loadImage(file, NOFRAME, s);
+    }
+
+    QImage GlobalImageLoader::loadImage(const QString &filePath, int frame, LoadStrategy s) const {
+        return loadImage(QFileInfo(filePath), frame, s);
+    }
+
+    QImage GlobalImageLoader::loadImage(const QFileInfo &file, int frame, LoadStrategy s) const {
         switch (s) {
             case LoadDefault: {
                     if (_defaultPlugin != NULL && _defaultPlugin->canLoad(file)) {
-                        return _defaultPlugin->loadImage(file);
+                        return _defaultPlugin->loadImage(file, frame);
                     }
                     break;
                 }
             case LoadLinearRev: {
                     if (_defaultPlugin != NULL && _defaultPlugin->canLoad(file)) {
-                        return _defaultPlugin->loadImage(file);
+                        return _defaultPlugin->loadImage(file, frame);
                     }
                     if (!_pluginList.isEmpty()) {
                         QListIterator<ImageLoaderPlugin *> i(_pluginList);
@@ -138,7 +143,7 @@ namespace anno {
                         while (i.hasPrevious()) {
                             ImageLoaderPlugin *p = i.previous();
                             if (fileTypeLoadable(file.suffix(), p) && p->canLoad(file)) {
-                                return p->loadImage(file);
+                                return p->loadImage(file, frame);
                             }
                         }
                     }
@@ -150,12 +155,12 @@ namespace anno {
                         while (i.hasNext()) {
                             ImageLoaderPlugin *p = i.next();
                             if (fileTypeLoadable(file.suffix(), p) && p->canLoad(file)) {
-                                return p->loadImage(file);
+                                return p->loadImage(file, frame);
                             }
                         }
                     }
                     if (_defaultPlugin != NULL && _defaultPlugin->canLoad(file)) {
-                        return _defaultPlugin->loadImage(file);
+                        return _defaultPlugin->loadImage(file, frame);
                     }
                 }
         }
@@ -164,14 +169,22 @@ namespace anno {
     }
 
     QImage GlobalImageLoader::loadImage(const QString &filePath, int plugin) const {
-        return loadImage(QFileInfo(filePath), plugin);
+        return loadImage(filePath, NOFRAME, plugin);
     }
 
     QImage GlobalImageLoader::loadImage(const QFileInfo &file, int plugin) const {
+        return loadImage(file, NOFRAME, plugin);
+    }
+
+    QImage GlobalImageLoader::loadImage(const QString &filePath, int frame, int plugin) const {
+        return loadImage(QFileInfo(filePath), frame, plugin);
+    }
+
+    QImage GlobalImageLoader::loadImage(const QFileInfo &file, int frame, int plugin) const {
         if (plugin >= 0 && plugin < _pluginList.size()) {
             if (fileTypeLoadable(file.suffix(), _pluginList[plugin])
                     && _pluginList[plugin]->canLoad(file)) {
-                return _pluginList[plugin]->loadImage(file);
+                return _pluginList[plugin]->loadImage(file, frame);
             }
         }
         return QImage();

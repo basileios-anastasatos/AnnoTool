@@ -82,15 +82,15 @@ namespace anno {
 
         void XmlHelper::writeXmlPoint(QXmlStreamWriter &writer, qreal x, qreal y) {
             writer.writeEmptyElement("point");
-            writer.writeAttribute("x", QString::number(x, 'g', 2));
-            writer.writeAttribute("y", QString::number(y, 'g', 2));
+            writer.writeAttribute("x", QString::number(x, 'f', 2));
+            writer.writeAttribute("y", QString::number(y, 'f', 2));
         }
 
         void XmlHelper::writeXmlSize(QXmlStreamWriter &writer, qreal width,
                                      qreal height) {
             writer.writeEmptyElement("size");
-            writer.writeAttribute("w", QString::number(width, 'g', 2));
-            writer.writeAttribute("h", QString::number(height, 'g', 2));
+            writer.writeAttribute("w", QString::number(width, 'f', 2));
+            writer.writeAttribute("h", QString::number(height, 'f', 2));
         }
 
         QPointF XmlHelper::readXmlPoint(QXmlStreamReader &reader)
