@@ -23,30 +23,27 @@ namespace anno {
         }
 
         void AnnoGraphicsControlPoint::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_CP: mousePressEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mousePressEvent(this, event);
             }
-
-            //			_parentShape->cpMousePressEvent(_index, event);
         }
 
         void AnnoGraphicsControlPoint::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_CP: mouseReleaseEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseReleaseEvent(this, event);
             }
-
-            //			_parentShape->cpMouseReleaseEvent(_index, event);
         }
 
         void AnnoGraphicsControlPoint::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_CP: mouseMoveEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseMoveEvent(this, event);
             }
-
-            //			_parentShape->cpMouseMoveEvent(_index, event);
         }
 
         //		void AnnoGraphicsControlPoint::mousePressEvent(

@@ -7,6 +7,7 @@
 #include <QColor>
 #include <QStyle>
 #include <QStyleOptionGraphicsItem>
+#include <QPainter>
 
 #include "importGlobals.h"
 
@@ -89,6 +90,7 @@ namespace anno {
         }
 
         void AnnoGraphicsRect::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: mousePressEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mousePressEvent(this, event);
@@ -96,6 +98,7 @@ namespace anno {
         }
 
         void AnnoGraphicsRect::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: mouseReleaseEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseReleaseEvent(this, event);
@@ -103,6 +106,7 @@ namespace anno {
         }
 
         void AnnoGraphicsRect::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: mouseMoveEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseMoveEvent(this, event);
@@ -111,18 +115,17 @@ namespace anno {
 
         void AnnoGraphicsRect::paint(QPainter *painter,
                                      const QStyleOptionGraphicsItem *option, QWidget *widget) {
-            QStyleOptionGraphicsItem option2(*option);
+            GlobalLogger::instance()->logDebug("AG_RECT: paint.");
             if (isSelected()) {
                 setControlPointsVisible(true);
-                setPen(GlobalConfig::shapeColors.penSelected);
-                setBrush(GlobalConfig::shapeColors.brushSelected);
-                option2.state = option2.state & ~QStyle::State_Selected;
+                painter->setPen(GlobalConfig::shapeColors.penSelected);
+                painter->setBrush(GlobalConfig::shapeColors.brushSelected);
             } else {
                 setControlPointsVisible(false);
-                setPen(GlobalConfig::shapeColors.penNormal);
-                setBrush(GlobalConfig::shapeColors.brushNormal);
+                painter->setPen(GlobalConfig::shapeColors.penNormal);
+                painter->setBrush(GlobalConfig::shapeColors.brushNormal);
             }
-            QGraphicsRectItem::paint(painter, &option2, widget);
+            painter->drawRect(rect());
         }
 
         void AnnoGraphicsRect::setupAppearance() {
@@ -142,11 +145,11 @@ namespace anno {
         }
 
         void AnnoGraphicsRect::cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event) {
-            GlobalLogger::instance()->logDebug(QString("AGRect: CP: MousePressEvent on CP %1").arg(index));
+            GlobalLogger::instance()->logDebug(QString("AG_RECT: cpMousePressEvent on CP %1").arg(index));
         }
 
         void AnnoGraphicsRect::cpMouseReleaseEvent(int index, QGraphicsSceneMouseEvent *event) {
-            GlobalLogger::instance()->logDebug(QString("AGRect: CP: MouseReleaseEvent on CP %1").arg(index));
+            GlobalLogger::instance()->logDebug(QString("AG_RECT: cpMouseReleaseEvent on CP %1").arg(index));
             QRectF rect = QGraphicsRectItem::rect().normalized();
             prepareGeometryChange();
             setRect(rect);
@@ -155,6 +158,7 @@ namespace anno {
         }
 
         void AnnoGraphicsRect::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug(QString("AG_RECT: cpMouseMoveEvent on CP %1").arg(index));
             qreal deltaX = event->scenePos().x() - event->lastScenePos().x();
             qreal deltaY = event->scenePos().y() - event->lastScenePos().y();
             QPointF delta(deltaX, deltaY);
@@ -196,14 +200,17 @@ namespace anno {
         }
 
         void AnnoGraphicsRect::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: exMouseMoveEvent.");
             mouseMoveEvent(event);
         }
 
         void AnnoGraphicsRect::exMousePressEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: exMousePressEvent.");
             mousePressEvent(event);
         }
 
         void AnnoGraphicsRect::exMouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: exMouseReleaseEvent.");
             mouseReleaseEvent(event);
         }
 

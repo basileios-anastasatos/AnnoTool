@@ -16,6 +16,7 @@ namespace anno {
         }
 
         void AnnoGraphicsPixmap::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: mouseMoveEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseMoveEvent(this, event);
@@ -23,7 +24,7 @@ namespace anno {
         }
 
         void AnnoGraphicsPixmap::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-            GlobalLogger::instance()->logDebug("PIXMAP: mousePressEvent");
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: mousePressEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mousePressEvent(this, event);
@@ -31,6 +32,7 @@ namespace anno {
         }
 
         void AnnoGraphicsPixmap::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: mouseReleaseEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseReleaseEvent(this, event);
@@ -38,15 +40,17 @@ namespace anno {
         }
 
         void AnnoGraphicsPixmap::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: exMouseMoveEvent.");
             mouseMoveEvent(event);
         }
 
         void AnnoGraphicsPixmap::exMousePressEvent(QGraphicsSceneMouseEvent *event) {
-            GlobalLogger::instance()->logDebug("PIXMAP: external mousePressEvent");
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: exMousePressEvent.");
             mousePressEvent(event);
         }
 
         void AnnoGraphicsPixmap::exMouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: exMouseReleaseEvent.");
             mouseReleaseEvent(event);
         }
 

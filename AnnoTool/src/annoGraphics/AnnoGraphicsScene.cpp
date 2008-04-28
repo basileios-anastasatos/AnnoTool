@@ -1,5 +1,6 @@
 #include "include/AnnoGraphicsScene.h"
 #include "include/AnnoGraphicsShape.h"
+#include "importGlobals.h"
 
 namespace anno {
     namespace graphics {
@@ -26,6 +27,7 @@ namespace anno {
         }
 
         void AnnoGraphicsScene::setAnnoImage(const QImage &image) {
+            GlobalLogger::instance()->logDebug("AGS: setting image.");
             if (_image != NULL) {
                 removeItem(_image);
                 delete _image;
@@ -45,12 +47,15 @@ namespace anno {
         }
 
         void AnnoGraphicsScene::addAnnoShape(AnnoGraphicsShape *shape) {
+            GlobalLogger::instance()->logDebug("AGS: attempt of adding annotation shape.");
             if (shape != NULL && _image != NULL && shape->relatedAnno() != NULL) {
                 _shapes.insert(shape->relatedAnno()->annoId(), shape);
                 QGraphicsItem *gi = shape->graphicsItem();
                 gi->setParentItem(_image);
                 shape->setParentImage(_image);
+                GlobalLogger::instance()->logDebug("AGS: added shape.");
                 _image->update();
+                GlobalLogger::instance()->logDebug("AGS: updated image after shape insertion.");
             }
         }
 
@@ -64,6 +69,7 @@ namespace anno {
             if (_image != NULL && !_shapes.isEmpty()) {
                 AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
                 if (s != NULL) {
+                    GlobalLogger::instance()->logDebug(QString("AGS: removing shape %1.").arg(annoId));
                     s->graphicsItem()->setParentItem(NULL);
                     _shapes.remove(annoId);
                     delete s;
@@ -75,6 +81,7 @@ namespace anno {
             clearSelection();
             AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
             if (s != NULL) {
+                GlobalLogger::instance()->logDebug(QString("AGS: selecting shape %1.").arg(annoId));
                 s->graphicsItem()->setSelected(true);
             }
         }

@@ -32,6 +32,7 @@ namespace anno {
         }
 
         void AnnoGraphicsShape::validateCpIndices() {
+            GlobalLogger::instance()->logDebug("AG_SH: validating CP indices.");
             int size = _cp.size();
             for (int i = 0; i < size; ++i) {
                 _cp[i]->setIndex(i);
@@ -39,6 +40,7 @@ namespace anno {
         }
 
         void AnnoGraphicsShape::insertControlPoint(int index, AnnoGraphicsControlPoint *cp) {
+            GlobalLogger::instance()->logDebug(QString("AG_SH: inserting CP at %1.").arg(index));
             _cp.insert(index, cp);
             validateCpIndices();
             cp->setParentItem(graphicsItem());
@@ -46,6 +48,7 @@ namespace anno {
 
         void AnnoGraphicsShape::removeControlPoint(int index) {
             if (index >= 0 && index < _cp.size()) {
+                GlobalLogger::instance()->logDebug(QString("AG_SH: removing CP from %1.").arg(index));
                 AnnoGraphicsControlPoint *cp = _cp[index];
                 cp->setParentItem(NULL);
                 _cp.removeAt(index);
@@ -56,6 +59,7 @@ namespace anno {
 
         void AnnoGraphicsShape::moveControlPoint(int index, qreal x, qreal y) {
             if (index >= 0 && index < _cp.size()) {
+                GlobalLogger::instance()->logDebug(QString("AG_SH: moving CP %1.").arg(index));
                 AnnoGraphicsControlPoint *cp = _cp[index];
                 cp->moveBy(x, y);
             }
@@ -63,7 +67,7 @@ namespace anno {
 
         void AnnoGraphicsShape::moveControlPointTo(int index, qreal x, qreal y) {
             if (index >= 0 && index < _cp.size()) {
-                GlobalLogger::instance()->logDebug(QString("Moving CP %1 to [%2;%3]").arg(index).arg(x).arg(y));
+                GlobalLogger::instance()->logDebug(QString("AG_SH: moving CP %1 to [%2;%3].").arg(index).arg(x).arg(y));
                 AnnoGraphicsControlPoint *cp = _cp[index];
                 QRectF rect = cp->rect();
                 cp->setPos(x - (rect.width() / 2.0), y - (rect.height() / 2));
@@ -71,6 +75,7 @@ namespace anno {
         }
 
         void AnnoGraphicsShape::setControlPointsVisible(bool vis) {
+            GlobalLogger::instance()->logDebug(QString("AG_SH: setting CPs to %1.").arg(vis ? "visible" : "invisible"));
             int size = _cp.size();
             for (int i = 0; i < size; ++i) {
                 _cp[i]->setVisible(vis);
