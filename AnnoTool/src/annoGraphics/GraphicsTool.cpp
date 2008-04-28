@@ -1,5 +1,5 @@
 #include "include/GraphicsTool.h"
-#include "allAnnoGraphics.h"
+#include "AllAnnoGraphics.h"
 #include <QGraphicsSceneMouseEvent>
 
 namespace anno {
