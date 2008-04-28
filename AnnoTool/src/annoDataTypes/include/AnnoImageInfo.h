@@ -6,6 +6,10 @@
 #include <QString>
 #include "AllAnnoExceptions.h"
 
+#ifndef NOFRAME
+#define NOFRAME -1
+#endif
+
 class QXmlStreamWriter;
 class QXmlStreamReader;
 
@@ -17,6 +21,7 @@ namespace anno {
         class AnnoImageInfo {
             private:
                 QFileInfo _imagePath;
+                int _frame;
                 QUuid _imageId;
                 QString _imageSource;
                 QString _comment;
@@ -30,6 +35,7 @@ namespace anno {
 
             public:
                 QFileInfo imagePath() const;
+                int frame() const;
                 QUuid imageId() const;
                 QString imageIdAsString() const;
                 QString imageSource() const;
@@ -38,6 +44,7 @@ namespace anno {
             public:
                 void setImagePath(const QString &path);
                 void setImagePath(const QFileInfo &path);
+                void setFrame(int frame);
                 void setImageId(const QUuid &id);
                 void setImageSource(const QString &source);
                 void setComment(const QString &comment);

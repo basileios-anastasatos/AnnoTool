@@ -12,6 +12,7 @@ namespace anno {
         using ::anno::helper::XmlHelper;
 
         AnnoImageInfo::AnnoImageInfo() {
+            _frame = NOFRAME;
         }
 
         AnnoImageInfo::~AnnoImageInfo() {
@@ -19,6 +20,10 @@ namespace anno {
 
         QFileInfo AnnoImageInfo::imagePath() const {
             return _imagePath;
+        }
+
+        int AnnoImageInfo::frame() const {
+            return _frame;
         }
 
         QUuid AnnoImageInfo::imageId() const {
@@ -43,6 +48,12 @@ namespace anno {
 
         void AnnoImageInfo::setImagePath(const QFileInfo &path) {
             _imagePath = path;
+        }
+
+        void AnnoImageInfo::setFrame(int frame) {
+            if(frame >= NOFRAME) {
+                _frame = frame;
+            }
         }
 
         void AnnoImageInfo::setImageId(const QUuid &id) {
@@ -71,7 +82,13 @@ namespace anno {
         void AnnoImageInfo::toXml(QXmlStreamWriter &writer) const
         throw(XmlException *) {
             writer.writeStartElement("imageInfo");
-            writer.writeTextElement("file", _imagePath.filePath());
+
+            writer.writeStartElement("file");
+            if(_frame != NOFRAME) {
+                writer.writeAttribute("frame", QString::number(_frame, 10));
+            }
+            writer.writeCharacters(_imagePath.filePath());
+            writer.writeEndElement();
             writer.writeTextElement("uuid", imageIdAsString());
             writer.writeTextElement("source", _imageSource);
             writer.writeTextElement("comment", _comment);
@@ -87,6 +104,14 @@ namespace anno {
             }
             if (!XmlHelper::skipToStartElement("file", reader)) {
                 throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "file", reader.name().toString());
+            }
+            QString strFrame = reader.attributes().value("frame").toString();
+            if(!strFrame.isEmpty()) {
+                bool ok = false;
+                _frame = strFrame.toInt(&ok, 10);
+                if(!ok) {
+                    throw XmlHelper::genExpFormatAttr(__FILE__, __LINE__, "frame", strFrame);
+                }
             }
             _imagePath = QFileInfo(reader.readElementText());
 

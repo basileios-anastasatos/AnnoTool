@@ -42,7 +42,6 @@ namespace anno {
                 void addToLinks(const QString &uuid);
                 bool containsInClassPath(const QString &file) const;
                 bool containsInSearchPath(const QString &dir) const;
-                bool containsInSearchPathAdv(const QFileInfo &dir) const;
                 bool containsInLinks(const QString &uuid) const;
                 QList<QUuid> *links();
                 QList<QFileInfo> *searchPath();

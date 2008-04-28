@@ -54,10 +54,6 @@ namespace anno {
             return _searchPaths.contains(info);
         }
 
-        bool AnnoProject::containsInSearchPathAdv(const QFileInfo &dir) const {
-
-        }
-
         bool AnnoProject::containsInLinks(const QString &uuid) const {
             QUuid id(uuid);
             return _links.contains(id);
