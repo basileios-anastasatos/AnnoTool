@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<imageAnnotationFile>
+    <imageInfo>
+        <file>img/img002.JPG</file>
+        <uuid>69ea4b17-6b70-4682-af60-2bf4d013c333</uuid>
+        <source></source>
+        <comment></comment>
+    </imageInfo>
+    <annotationInfo>
+        <annotationComplex>550e8400-e29b-11d4-a716-446655440310</annotationComplex>
+    </annotationInfo>
+    <imageAnnotations>
+        <annotation uuid="fe557582-44b7-4ea2-8ebd-6c8fbaf2055b">
+            <shape>
+                <rect>
+                    <point x="1048.89" y="242.22"/>
+                    <size w="491.11" h="504.44"/>
+                </rect>
+            </shape>
+        </annotation>
+        <annotation uuid="ce355289-bf25-4191-84ad-3dd0d961baa3">
+            <shape>
+                <rect>
+                    <point x="437.78" y="488.89"/>
+                    <size w="440.00" h="411.11"/>
+                </rect>
+            </shape>
+        </annotation>
+    </imageAnnotations>
+</imageAnnotationFile>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annoProject name="TestProject_001" uuid="550e8400-e29b-11d4-a716-446655440310">
+    <classPath>
+        <file>classes/ClassData01.atc</file>
+    </classPath>
+    <searchPath>
+        <dir>annotations</dir>
+    </searchPath>
+</annoProject>

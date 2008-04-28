@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+XML-Schema for describing the XML file structure of AnnoTool's XML storage files
+for storing annotation complex data.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:include schemaLocation="annoTool_GeneralTypes_Def.xsd" />
+
+	<!-- Root element -->
+	<!-- *************************************************************** -->
+	<xsd:element name="annoProject" type="typeAnnoProject" />
+	<!-- *************************************************************** -->
+
+	<!-- Root element's type -->
+	<!-- *************************************************************** -->
+	<xsd:complexType name="typeAnnoProject">
+		<xsd:sequence>
+			<!-- Class path to be used to find annotation classes used within this annoComplex -->
+			<xsd:element name="classPath" type="typeFileList" minOccurs="0" maxOccurs="1"/>
+			<!-- <Future Use> UUID list with UUIDs of other annoComplexes which should be linked to this one -->
+			<xsd:element name="link" type="typeUuidList" minOccurs="0" maxOccurs="1"/>
+			<!-- Search path to be used for finding all annotations that belong to this annoComplex -->
+			<xsd:element name="searchPath" type="typeDirList" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+		<xsd:attribute name="uuid" type="typeUuid" use="required" />
+	</xsd:complexType>
+	<!-- *************************************************************** -->
+
+</xsd:schema>

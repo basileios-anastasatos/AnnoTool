@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<imageAnnotationFile>
+    <imageInfo>
+        <file>img/img003.JPG</file>
+        <uuid>e1e20987-b3bd-4f4e-a087-086e41cb0ba6</uuid>
+        <source></source>
+        <comment></comment>
+    </imageInfo>
+    <annotationInfo>
+        <annotationComplex>550e8400-e29b-11d4-a716-446655440310</annotationComplex>
+    </annotationInfo>
+    <imageAnnotations>
+        <annotation uuid="593163fd-c566-4d53-9d1c-8e144c4d65c8">
+            <shape>
+                <rect>
+                    <point x="615.56" y="540.00"/>
+                    <size w="575.56" h="471.11"/>
+                </rect>
+            </shape>
+        </annotation>
+    </imageAnnotations>
+</imageAnnotationFile>

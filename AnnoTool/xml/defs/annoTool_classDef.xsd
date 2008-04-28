@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+XML-Schema for describing the XML file structure of AnnoTool's class definitions
+for annotation classifying.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- Root element -->
+	<!-- *************************************************************** -->
+	<xsd:element name="annoClassDefinitions" type="typeClassDefinitions">
+		<!-- Integrity constraint: class ids/names must be unique -->
+		<xsd:key name="classKey">
+			<xsd:selector xpath="./classDef" />
+			<xsd:field xpath="@id" />
+		</xsd:key>
+	</xsd:element>
+	<!-- *************************************************************** -->
+	
+	<!-- Root element's type -->
+	<!-- *************************************************************** -->
+	<xsd:complexType name="typeClassDefinitions">
+		<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="classDef" type="typeClassDef" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- *************************************************************** -->
+	
+	<!-- classDef element's type -->
+	<!-- *************************************************************** -->
+	<xsd:complexType name="typeClassDef">
+		<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="attribute" type="typeAttribute" />
+		</xsd:sequence>
+		<xsd:attribute name="id" use="required" type="xsd:string" />
+		<xsd:attribute name="extends" use="optional" type="xsd:string" />
+	</xsd:complexType>
+	<!-- *************************************************************** -->
+	
+	<!-- attribute element's type -->
+	<!-- *************************************************************** -->
+	<xsd:complexType name="typeAttribute">
+		<xsd:attribute name="name" use="required" type="xsd:string" />
+	</xsd:complexType>
+	<!-- *************************************************************** -->
+</xsd:schema>

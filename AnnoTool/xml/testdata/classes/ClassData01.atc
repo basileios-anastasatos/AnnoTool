@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annoClassDefinitions>
+  <classDef id="base">
+    <attribute name="attr_01"></attribute>
+    <attribute name="attr_02"></attribute>
+  </classDef>
+  <classDef id="extend_01" extends="base">
+    <attribute name="exAttr1_01"></attribute>
+    <attribute name="exAttr1_02"></attribute>
+  </classDef>
+  <classDef id="extend_02" extends="base">
+    <attribute name="exAttr2_01"></attribute>
+    <attribute name="exAttr2_02"></attribute>
+  </classDef>
+  <classDef id="extend_03" extends="extend_02">
+    <attribute name="exAttr3_01"></attribute>
+    <attribute name="exAttr3_02"></attribute>
+  </classDef>
+  <classDef id="base2">
+    <attribute name="lol1"></attribute>
+    <attribute name="lol2"></attribute>
+  </classDef>
+</annoClassDefinitions>

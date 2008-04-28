@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+XML-Schema for describing some general XML data types used by other AnnoTool
+XML stuff.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- Type for directory paths -->
+	<!-- ***************************************** -->
+	<xsd:simpleType name="typeDir">
+		<xsd:restriction base="xsd:string">
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- ***************************************** -->
+
+	<!-- Type for complete file paths -->
+	<!-- ***************************************** -->
+	<xsd:simpleType name="typeFile">
+		<xsd:restriction base="xsd:string">
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- ***************************************** -->
+
+	<!-- Type for UUIDs -->
+	<!-- ***************************************** -->
+	<xsd:simpleType name="typeUuid">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[0-9a-fA-F]{8}[-]([0-9a-fA-F]{4}[-]){3}[0-9a-fA-F]{12}" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- ***************************************** -->
+
+	<!-- Type for directory path lists -->
+	<!-- ***************************************** -->
+	<xsd:complexType name="typeDirList">
+		<xsd:sequence>
+			<xsd:element name="dir" type="typeDir" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ***************************************** -->
+
+	<!-- Type for file path lists -->
+	<!-- ***************************************** -->
+	<xsd:complexType name="typeFileList">
+		<xsd:sequence>
+			<xsd:element name="file" type="typeFile" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ***************************************** -->
+
+	<!-- Type for UUID lists -->
+	<!-- ***************************************** -->
+	<xsd:complexType name="typeUuidList">
+		<xsd:sequence>
+			<xsd:element name="uuid" type="typeUuid" minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ***************************************** -->
+</xsd:schema>

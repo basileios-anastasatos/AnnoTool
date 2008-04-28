@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+XML-Schema for describing the XML file structure of AnnoTool's XML storage files
+for storing image annotations.
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:include schemaLocation="annoTool_GeneralTypes_Def.xsd" />
+	
+	<!-- Root element -->
+	<!-- *************************************************************** -->
+	<xsd:element name="imageAnnotationFile" type="typeImgAnnoFile">
+		<!-- Integrity constraint: annotation ids must be unique -->
+		<xsd:key name="classKey">
+			<xsd:selector xpath="./imageAnnotations/annotation" />
+			<xsd:field xpath="@uuid" />
+		</xsd:key>
+	</xsd:element>
+	<!-- *************************************************************** -->
+	
+	<!-- Root element's type -->
+	<!-- *************************************************************** -->
+	<xsd:complexType name="typeImgAnnoFile">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<!-- information about the image that is annotated within current XML file -->
+			<xsd:element name="imageInfo" type="typeImgInfo" />
+			<!-- additional annotation information -->
+			<xsd:element name="annotationInfo" type="typeAnnoInfo" />
+			<!-- the actual annotation data -->
+			<xsd:element name="imageAnnotations" type="typeAnnoList" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- *************************************************************** -->
+	
+	<!-- imageInfo type -->
+	<!-- *************************************************************** -->
+	<xsd:complexType name="typeImgInfo">
+		<xsd:sequence>
+			<!-- the file path of the image which all annotations within the 
+				 annotation file belong to -->
+			<xsd:element name="file" minOccurs="1" maxOccurs="1" type="typeFileImg" />
+			<!-- optional image id -->
+			<xsd:element name="uuid" minOccurs="1" maxOccurs="1" type="typeUuid" />
+			<!-- optional information about the image's source -->
+			<xsd:element name="source" minOccurs="0" maxOccurs="1" type="xsd:string" />
+			<!-- optional image comment -->
+			<xsd:element name="comment" minOccurs="0" maxOccurs="1" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- *************************************************************** -->
+
+  <!-- *************************************************************** -->
+  <xsd:complexType name="typeFileImg">
+    <xsd:simpleContent>
+      <xsd:extension base="typeFile">
+        <xsd:attribute name="frame" use="optional" type="xsd:integer" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <!-- *************************************************************** -->
+	
+	<!-- annotationInfo and associated types -->
+	<!-- *************************************************************** -->
+	<xsd:complexType name="typeAnnoInfo">
+		<xsd:sequence>
+			<!-- the id of the annotation complex this annotation information
+				 belongs to, within such a complex, all annotation ids must be unique -->
+			<xsd:element name="annotationComplex" type="typeUuid" minOccurs="1" maxOccurs="1" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- *************************************************************** -->
+	
+	<!-- annotation list and annotation types -->
+	<!-- *************************************************************** -->
+	<xsd:complexType name="typeAnnoList">
+		<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="annotation" type="typeAnnotation" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- annotation type -->
+	<xsd:complexType name="typeAnnotation">
+		<xsd:sequence>
+			<!-- optional annotation comment -->
+			<xsd:element name="comment" minOccurs="0" maxOccurs="1" type="xsd:string" />
+			<!-- optional annotation class list -->
+			<xsd:element name="annoClass" minOccurs="0" maxOccurs="1" type="typeAnnoClass" />
+			<!-- optional actual attribute values -->
+			<xsd:element name="attributeValues" minOccurs="0" maxOccurs="1" type="typeAttrVal" />
+			<!-- actual annotation shape -->
+			<xsd:element name="shape" minOccurs="1" maxOccurs="1" type="typeShape" />
+		</xsd:sequence>
+		<xsd:attribute name="uuid" use="required" type="typeUuid" />
+	</xsd:complexType>
+	
+	<!-- annotation class list type -->
+	<xsd:complexType name="typeAnnoClass">
+		<xsd:sequence>
+			<xsd:element name="class" minOccurs="0" maxOccurs="unbounded" type="typeClass" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- annotation class type -->
+	<xsd:complexType name="typeClass">
+		<xsd:attribute name="id" use="required" type="xsd:string" />
+	</xsd:complexType>
+	
+	<!-- attribute values list type -->
+	<xsd:complexType name="typeAttrVal">
+		<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="attribute" type="typeAttr" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- attribute type -->
+	<xsd:complexType name="typeAttr">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="name" use="required" type="xsd:string" />
+				<xsd:attribute name="class" use="optional" type="xsd:string" />
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	
+	<!-- shape type -->
+	<xsd:complexType name="typeShape">
+		<xsd:choice>
+			<xsd:element name="singlePoint" type="typeSinglePoint" />
+			<xsd:element name="line" type="typeLine" />
+			<xsd:element name="rect" type="typeRect" />
+			<xsd:element name="polygon" type="typePolygon" />
+			<xsd:element name="ellipse" type="typeEllipse" />
+		</xsd:choice>
+	</xsd:complexType>
+	<!-- *************************************************************** -->
+
+	<!-- annotation shape types -->
+	<!-- *************************************************************** -->
+	<!-- coordinate type (primitive type) -->
+	<xsd:simpleType name="coordinate">
+		<xsd:restriction base="xsd:decimal">
+			<xsd:minInclusive value="0" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<!-- point type (primitive type) -->
+	<xsd:complexType name="typePoint">
+		<xsd:attribute name="x" use="required" type="coordinate" />
+		<xsd:attribute name="y" use="required" type="coordinate" />
+	</xsd:complexType>
+
+  <!-- point type (primitive type) -->
+  <xsd:complexType name="typeSize">
+    <xsd:attribute name="w" use="required" type="coordinate" />
+    <xsd:attribute name="h" use="required" type="coordinate" />
+  </xsd:complexType>
+
+	<!-- single point type (annotation shape) -->
+	<xsd:complexType name="typeSinglePoint">
+		<xsd:attribute name="x" use="required" type="coordinate" />
+		<xsd:attribute name="y" use="required" type="coordinate" />
+	</xsd:complexType>
+
+	<!-- line type (annotation shape) -->
+	<xsd:complexType name="typeLine">
+		<xsd:sequence minOccurs="2" maxOccurs="2">
+			<xsd:element name="point" type="typePoint" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- rectangle type (annotation shape) -->
+	<xsd:complexType name="typeRect">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element name="point" type="typePoint" />
+      <xsd:element name="size" type="typeSize" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- polygon type (annotation shape) -->
+	<xsd:complexType name="typePolygon">
+		<xsd:sequence minOccurs="3" maxOccurs="unbounded">
+			<xsd:element name="point" type="typePoint" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<!-- ellipse type (annotation shape) -->
+	<xsd:complexType name="typeEllipse">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element name="center" type="typePoint" />
+		</xsd:sequence>
+		<xsd:attribute name="rx" use="required" type="xsd:decimal" />
+		<xsd:attribute name="ry" use="required" type="xsd:decimal" />
+	</xsd:complexType>
+	<!-- *************************************************************** -->
+</xsd:schema>
