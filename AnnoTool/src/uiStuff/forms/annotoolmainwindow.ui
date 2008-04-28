@@ -295,19 +295,19 @@
   <customwidget>
    <class>AnnoFileListWidget</class>
    <extends>QDockWidget</extends>
-   <header>../include/annofilelistwidget.h</header>
+   <header>AnnoFileListWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AnnoListWidget</class>
    <extends>QDockWidget</extends>
-   <header>../include/annolistwidget.h</header>
+   <header>AnnoListWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>AnnoDataWidget</class>
    <extends>QDockWidget</extends>
-   <header>../include/annodatawidget.h</header>
+   <header>AnnoDataWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
