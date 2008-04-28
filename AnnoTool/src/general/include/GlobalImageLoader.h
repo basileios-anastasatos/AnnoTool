@@ -5,6 +5,10 @@
 #include <QPair>
 #include "ImageLoaderPlugin.h"
 
+#ifndef NOFRAME
+#define NOFRAME -1
+#endif
+
 namespace anno {
     /**
      * This class is an default implementation of the ImageLoaderPlugin interface

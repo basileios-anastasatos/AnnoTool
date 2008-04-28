@@ -51,6 +51,7 @@ namespace anno {
             throw(IllegalStateException *);
             QFileInfo absToRel(const QDir &dir) const throw(IllegalStateException *);
             QDir projectDir() const throw(IllegalStateException *);
+            bool containsInSearchPathAdv(const QFileInfo &dir) const;
             static QString defAnnoFileName(const QUuid &uuid);
 
         public:

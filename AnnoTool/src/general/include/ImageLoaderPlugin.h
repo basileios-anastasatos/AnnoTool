@@ -6,7 +6,9 @@
 #include <QString>
 #include <QList>
 
+#ifndef NOFRAME
 #define NOFRAME -1
+#endif
 
 namespace anno {
 

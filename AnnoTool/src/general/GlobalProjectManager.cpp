@@ -66,7 +66,7 @@ namespace anno {
     }
 
     void GlobalProjectManager::setSelectedFileRow(int index) {
-        if(index >= 0 && index < _fileList->size()) {
+        if (index >= 0 && index < _fileList->size()) {
             _curSelFile = index;
         }
     }
@@ -76,7 +76,7 @@ namespace anno {
     }
 
     dt::AnnoFileData *GlobalProjectManager::selectedFile() {
-        if(_curSelFile >= 0 && _curSelFile < _fileList->size()) {
+        if (_curSelFile >= 0 && _curSelFile < _fileList->size()) {
             return _fileList->at(_curSelFile);
         } else {
             return NULL;
@@ -137,14 +137,36 @@ namespace anno {
         return file.absoluteDir();
     }
 
+    bool GlobalProjectManager::containsInSearchPathAdv(const QFileInfo &dir) const {
+        if (_project->searchPath()->isEmpty()) {
+            return false;
+        }
+
+        QFileInfo cdir = dir;
+        if (dir.isRelative()) {
+            cdir = relToAbs(dir);
+        }
+
+        QListIterator<QFileInfo> i(*_project->searchPath());
+        while (i.hasNext()) {
+            QFileInfo cur = i.next();
+            if (cur.isRelative()) {
+                cur = relToAbs(cur);
+            }
+            if (cdir == cur) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     QString GlobalProjectManager::defAnnoFileName(const QUuid &uuid) {
         QString name("annotations_%1.%2");
         return name.arg(uuid.toString(), GlobalConfig::fileExt.annotations);
     }
 
     void GlobalProjectManager::loadClassDefs() throw(IOException *, XmlException *) {
-        if (_project != NULL && _project->classPath() != NULL
-                && !_project->classPath()->isEmpty()) {
+        if (_project != NULL && _project->classPath() != NULL && !_project->classPath()->isEmpty()) {
             GlobalLogger::instance()->logDebug("Loading class defs.");
             QListIterator<QFileInfo> i(*_project->classPath());
             while (i.hasNext()) {
@@ -171,8 +193,7 @@ namespace anno {
     }
 
     void GlobalProjectManager::loadAnnoFiles() throw(IOException *, XmlException *) {
-        if (_project != NULL && _project->searchPath() != NULL
-                && !_project->searchPath()->isEmpty()) {
+        if (_project != NULL && _project->searchPath() != NULL && !_project->searchPath()->isEmpty()) {
             GlobalLogger::instance()->logDebug("Loading annotation files.");
             QListIterator<QFileInfo> i(*_project->searchPath());
             while (i.hasNext()) {
@@ -207,8 +228,7 @@ namespace anno {
         Q_ASSERT(dir.exist() && dir.isAbsolute());
 
         QStringList filters;
-        filters
-                << FileExtensions::asFilter(GlobalConfig::fileExt.annotations);
+        filters << FileExtensions::asFilter(GlobalConfig::fileExt.annotations);
         QFileInfoList lst = dir.entryInfoList(filters, QDir::Files);
 
         if (!lst.isEmpty()) {
@@ -253,9 +273,9 @@ namespace anno {
         }
 
         _project->writeToFile();
-        if(saveSub) {
+        if (saveSub) {
             QListIterator<dt::AnnoFileData *> i(*_fileList);
-            while(i.hasNext()) {
+            while (i.hasNext()) {
                 i.next()->writeToFile();
             }
         }
