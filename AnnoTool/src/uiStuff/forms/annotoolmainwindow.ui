@@ -68,6 +68,9 @@
     <addaction name="actionFileClose" />
     <addaction name="actionFileSave" />
     <addaction name="separator" />
+    <addaction name="actionFileImport" />
+    <addaction name="actionFileExport" />
+    <addaction name="separator" />
     <addaction name="actionFileExit" />
    </widget>
    <widget class="QMenu" name="menu_Settings">
@@ -288,6 +291,16 @@
   <action name="actionFitImage">
    <property name="text">
     <string>Fit Image</string>
+   </property>
+  </action>
+  <action name="actionFileImport">
+   <property name="text">
+    <string>&amp;Import</string>
+   </property>
+  </action>
+  <action name="actionFileExport">
+   <property name="text">
+    <string>&amp;Export</string>
    </property>
   </action>
  </widget>
