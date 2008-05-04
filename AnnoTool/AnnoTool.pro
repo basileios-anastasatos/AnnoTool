@@ -1,7 +1,10 @@
 TEMPLATE = app
 TARGET = AnnoTool
-CONFIG -= debug
+CONFIG += release debug
+CONFIG -= exceptions_off rtti_off stl_off
 UI_DIR = ./src/uiStuff/gen
+MOC_DIR = ./tmp/moc
+RCC_DIR = ./tmp
 INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/annoExceptions/include \
     ./src/annoGraphics/include \
@@ -15,7 +18,14 @@ QT += core \
     gui \
     xml \
     qt3support
-HEADERS += ./src/annoGraphics/include/AllGraphicsTools.h \
+HEADERS += ./src/libAnnotationDeprecated/include/libAn_Annotation.h \
+    ./src/libAnnotationDeprecated/include/libAn_AnnotationList.h \
+    ./src/libAnnotationDeprecated/include/libAn_AnnoRect.h \
+    ./src/libAnnotationDeprecated/include/libAn_XmlHelpers.h \
+    ./src/general/include/ExporterPlugin.h \
+    ./src/general/include/ImporterPlugin.h \
+    ./src/general/include/GlobalImExportManager.h \
+    ./src/annoGraphics/include/AllGraphicsTools.h \
     ./src/annoGraphics/include/AllAnnoGraphics.h \
     ./src/general/include/importGlobals.h \
     ./src/general/include/GlobalToolManager.h \
@@ -73,7 +83,12 @@ HEADERS += ./src/annoGraphics/include/AllGraphicsTools.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h \
     ./src/uiStuff/include/annotoolmainwindow.h
-SOURCES += ./src/general/GlobalToolManager.cpp \
+SOURCES += ./src/libAnnotationDeprecated/libAn_XmlHelpers.cpp \
+    ./src/libAnnotationDeprecated/libAn_Annotation.cpp \
+    ./src/libAnnotationDeprecated/libAn_AnnotationList.cpp \
+    ./src/libAnnotationDeprecated/libAn_AnnoRect.cpp \
+    ./src/general/GlobalImExportManager.cpp \
+    ./src/general/GlobalToolManager.cpp \
     ./src/annoGraphics/ToolRect.cpp \
     ./src/annoGraphics/ToolHand.cpp \
     ./src/annoGraphics/ToolPointer.cpp \
@@ -138,3 +153,34 @@ FORMS += ./src/uiStuff/forms/AnnoDataWidget.ui \
     ./src/uiStuff/forms/zoomcontrol.ui \
     ./src/uiStuff/forms/annotoolmainwindow.ui
 RESOURCES += ./src/uiStuff/forms/icons.qrc
+win32 { 
+    release { 
+        DESTDIR = ./bin/win32/release
+        OBJECTS_DIR = ./bin/win32/release/obj
+    }
+    debug { 
+        DESTDIR = ./bin/win32/debug
+        OBJECTS_DIR = ./bin/win32/debug/obj
+    }
+}
+unix { 
+    release { 
+        DESTDIR = ./bin/unix/release
+        OBJECTS_DIR = ./bin/unix/release/obj
+    }
+    debug { 
+        DESTDIR = ./bin/unix/debug
+        OBJECTS_DIR = ./bin/unix/debug/obj
+    }
+}
+macx { 
+    release { 
+        DESTDIR = ./bin/macOSX/release
+        OBJECTS_DIR = ./bin/macOSX/release/obj
+    }
+    debug { 
+        DESTDIR = ./bin/macOSX/debug
+        OBJECTS_DIR = ./bin/macOSX/debug/obj
+    }
+}
+
