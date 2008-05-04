@@ -121,12 +121,12 @@ namespace anno {
             bool canLoadNative(const QString &filePath) const;
             bool canLoadNative(const QFileInfo &file) const;
 
-            QImage loadImage(const QString &filePath, LoadStrategy s = LoadLinear) const;
-            QImage loadImage(const QFileInfo &file, LoadStrategy s = LoadLinear) const;
+            QImage loadImage(const QString &filePath, LoadStrategy s = LoadLinearRev) const;
+            QImage loadImage(const QFileInfo &file, LoadStrategy s = LoadLinearRev) const;
             QImage
-            loadImage(const QString &filePath, int frame, LoadStrategy s = LoadLinear) const;
+            loadImage(const QString &filePath, int frame, LoadStrategy s = LoadLinearRev) const;
             QImage
-            loadImage(const QFileInfo &file, int frame, LoadStrategy s = LoadLinear) const;
+            loadImage(const QFileInfo &file, int frame, LoadStrategy s = LoadLinearRev) const;
 
             QImage loadImage(const QString &filePath, int plugin) const;
             QImage loadImage(const QFileInfo &file, int plugin) const;

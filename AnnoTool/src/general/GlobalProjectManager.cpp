@@ -239,7 +239,12 @@ namespace anno {
                 GlobalLogger::instance()->logDebug(QString("Trying load annotation data from [%1].").arg(fi.filePath()));
                 if (fi.exists() && fi.isFile()) {
                     //TODO think of handling symlinks here. further research must be done on this!
-                    _fileList->append(dt::AnnoFileData::fromFile(fi.absoluteFilePath()));
+
+                    if(dt::AnnoFileData::probeFile(fi.absoluteFilePath(), _project->uuid())) {
+                        _fileList->append(dt::AnnoFileData::fromFile(fi.absoluteFilePath()));
+                    } else {
+                        GlobalLogger::instance()->logDebug(QString("Won't load annotation data from [%1]. Wrong Annotation Complex ID").arg(fi.filePath()));
+                    }
                 } else {
                     GlobalLogger::instance()->logWarning(QString("Given annotation file path [%1] seems to be invalid.").arg(fi.filePath()));
                 }

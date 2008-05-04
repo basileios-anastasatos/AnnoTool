@@ -9,6 +9,7 @@
 #include "AnnoGraphicsShape.h"
 #include "AnnoGraphicsShapeCreator.h"
 #include "importGlobals.h"
+#include "annotoolmainwindow.h"
 
 namespace anno {
     namespace graphics {
@@ -100,6 +101,8 @@ namespace anno {
                 _scene->clearSelection();
                 _curShape->graphicsItem()->setSelected(true);
             }
+
+            AnnoToolMainWindow::updateUI();
         }
 
         void ToolRect::mouseReleaseEvent(AnnoGraphicsPixmap *img,
