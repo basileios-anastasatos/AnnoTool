@@ -21,6 +21,8 @@
 
 using namespace ::anno::exc;
 
+AnnoToolMainWindow *AnnoToolMainWindow::_me = NULL;
+
 AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     QMainWindow(parent) {
     _graphicsScene = NULL;
@@ -32,6 +34,7 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
 
     connect(ui.annoFileListWidget, SIGNAL(annoFileSelectChanged(int, QUuid)), this, SLOT(annoFileSelectChanged(int, QUuid)));
     connect(zoomCtrl, SIGNAL(zoomChanged(int)), this, SLOT(on_zoomSlider_valueChanged(int)));
+    _me = this;
 
     configUIproject(false);
     setToolEnabled(false);
@@ -253,7 +256,7 @@ void AnnoToolMainWindow::on_actionProjectAddImage_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionProjectAddImage_triggered");
     DlgAddImage *dlg = new DlgAddImage();
     if (dlg->exec() == QDialog::Accepted) {
-        QList<QString> images = dlg->images();
+        QList< QPair<QString, int> > images = dlg->images();
         if (!images.isEmpty()) {
             GlobalProjectManager *pm = GlobalProjectManager::instance();
             QFileInfo annoPath(dlg->annoSavePath());
@@ -266,10 +269,10 @@ void AnnoToolMainWindow::on_actionProjectAddImage_triggered() {
             }
 
             bool makeRel = dlg->saveImagesRel();
-            QListIterator<QString> i(images);
+            QListIterator< QPair<QString, int> > i(images);
             while (i.hasNext()) {
-                QString img = i.next();
-                QFileInfo imgPath(img);
+                QPair<QString, int> img = i.next();
+                QFileInfo imgPath(img.first);
                 if (makeRel) {
                     imgPath = pm->absToRel(imgPath);
                 }
@@ -281,6 +284,7 @@ void AnnoToolMainWindow::on_actionProjectAddImage_triggered() {
                 ::anno::dt::AnnoImageInfo *imgInfo = fd->imageInfo();
                 imgInfo->setImageId(uuid);
                 imgInfo->setImagePath(imgPath);
+                imgInfo->setFrame(img.second);
 
                 pm->files()->append(fd);
             }
@@ -308,11 +312,12 @@ void AnnoToolMainWindow::annoFileSelectChanged(int row, QUuid image) {
     GlobalProjectManager::instance()->setSelectedFileRow(row);
     ui.annoListWidget->updateData();
     QFileInfo fileName = GlobalProjectManager::instance()->selectedFile()->imageInfo()->imagePath();
+    int frame = GlobalProjectManager::instance()->selectedFile()->imageInfo()->frame();
     if (fileName.isRelative()) {
         fileName = GlobalProjectManager::instance()->relToAbs(fileName);
     }
     GlobalLogger::instance()->logDebug(fileName.filePath());
-    QImage img = GlobalImageLoader::instance()->loadImage(fileName, GlobalImageLoader::LoadLinearRev);
+    QImage img = GlobalImageLoader::instance()->loadImage(fileName, frame, GlobalImageLoader::LoadLinearRev);
     if (img.isNull()) {
         QMessageBox::information(this, "AnnoTool", tr("Cannot load %1.").arg(fileName.filePath()));
         return;
@@ -351,6 +356,12 @@ void AnnoToolMainWindow::on_actionToolRectangle_triggered() {
     uncheckTools();
     ui.actionToolRectangle->setChecked(true);
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtRect);
+}
+
+void AnnoToolMainWindow::updateUI() {
+    if(_me != NULL) {
+        _me->updateAnnoWidgets();
+    }
 }
 
 

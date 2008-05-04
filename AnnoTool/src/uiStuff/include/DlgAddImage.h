@@ -2,6 +2,7 @@
 #define DLGADDIMAGE_H
 
 #include <QtGui/QDialog>
+#include <QPair>
 #include "../gen/ui_DlgAddImage.h"
 
 class DlgAddImage : public QDialog {
@@ -10,7 +11,7 @@ class DlgAddImage : public QDialog {
     private:
         Ui::DlgAddImageClass ui;
         QString _strCount;
-        QList<QString> _imageList;
+        QList< QPair<QString, int> > _imageList;
 
     private:
         void initAnnoPath();
@@ -18,13 +19,14 @@ class DlgAddImage : public QDialog {
     private slots:
         void on_btSelPath_clicked();
         void on_btAddImages_clicked();
+        void on_btAddVideo_clicked();
 
     public:
         DlgAddImage(QWidget *parent = 0);
         ~DlgAddImage();
 
     public:
-        QList<QString> images() const;
+        QList< QPair<QString, int> > images() const;
         bool saveImagesRel() const;
         QString annoSavePath() const;
 

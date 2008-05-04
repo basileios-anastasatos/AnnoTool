@@ -15,6 +15,7 @@ class AnnoToolMainWindow : public QMainWindow {
 
         // internal members
     private:
+        static AnnoToolMainWindow *_me;
         Ui::AnnoToolMainWindowClass ui;
         ZoomControl *zoomCtrl;
         anno::graphics::AnnoGraphicsScene *_graphicsScene;
@@ -58,6 +59,9 @@ class AnnoToolMainWindow : public QMainWindow {
     public:
         AnnoToolMainWindow(QWidget *parent = 0);
         ~AnnoToolMainWindow();
+
+    public:
+        static void updateUI();
 
         // public slot interface
     public slots:
