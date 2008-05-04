@@ -55,6 +55,8 @@ namespace anno {
                 void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 static AnnoFileData *fromXml(QXmlStreamReader &reader)
                 throw(XmlException *);
+
+                static bool probeFile(const QString &file, const QUuid &uuid) throw(IOException *);
         };
 
     } //end namespace dt

@@ -114,8 +114,7 @@ namespace anno {
             file.close();
         }
 
-        void AnnoFileData::loadFromXml(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        void AnnoFileData::loadFromXml(QXmlStreamReader &reader) throw(XmlException *) {
             if (!reader.isStartElement() || reader.name() != "imageAnnotationFile") {
                 throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "imageAnnotationFile", reader.name().toString());
             }
@@ -163,15 +162,14 @@ namespace anno {
             file.close();
         }
 
-        AnnoFileData *AnnoFileData::fromFile(const QString &path)
-        throw(IOException *, XmlException *) {
+        AnnoFileData *AnnoFileData::fromFile(const QString &path) throw(IOException *,
+                XmlException *) {
             AnnoFileData *data = new AnnoFileData(path);
             data->loadFromFile();
             return data;
         }
 
-        void AnnoFileData::toXml(QXmlStreamWriter &writer) const
-        throw(XmlException *) {
+        void AnnoFileData::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {
             writer.writeStartElement("imageAnnotationFile");
             _imageInfo.toXml(writer);
             _annoInfo.toXml(writer);
@@ -186,12 +184,46 @@ namespace anno {
             writer.writeEndElement();
         }
 
-        AnnoFileData *AnnoFileData::fromXml(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        AnnoFileData *AnnoFileData::fromXml(QXmlStreamReader &reader) throw(XmlException *) {
             AnnoFileData *data = new AnnoFileData("unknown");
             data->loadFromXml(reader);
             data->_sourceFile = data->imageInfo()->imageIdAsString();
             return data;
+        }
+
+        bool AnnoFileData::probeFile(const QString &file, const QUuid &uuid)
+        throw(IOException *) {
+            QFile f(file);
+            if (!f.exists()) {
+                throw new IOException(__FILE__, __LINE__, QString("Cannot open [%1]. File does not exist.").arg(file));
+            } else if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                throw new IOException(__FILE__, __LINE__, QString("Cannot open [%1]. File cannot be opened.").arg(file));
+            }
+
+            QXmlStreamReader reader(&f);
+            reader.setNamespaceProcessing(true);
+            if (!XmlHelper::skipToStartElement("imageAnnotationFile", reader)) {
+                return false;
+            }
+            if (!XmlHelper::skipToStartElement("annotationInfo", reader)) {
+                return false;
+            }
+
+            QString tag("annotationComplex");
+            QString tagEnd("annotationInfo");
+            while (!reader.atEnd()) {
+                if (reader.isStartElement() && reader.name() == tag) {
+                    QString val = reader.readElementText();
+                    if (uuid == QUuid(val)) {
+                        return true;
+                    }
+                } else if (reader.isEndElement() && reader.name() == tagEnd) {
+                    break;
+                } else {
+                    reader.readNext();
+                }
+            }
+            return false;
         }
 
     } //end namespace dt
