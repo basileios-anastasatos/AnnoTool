@@ -13,7 +13,7 @@
         <annotation uuid="4129a231-c978-49cc-be1b-90f7b060cfbd">
             <shape>
                 <rect>
-                    <point x="893.33" y="344.44"/>
+                    <point x="473.33" y="111.10"/>
                     <size w="433.33" h="431.11"/>
                 </rect>
             </shape>
@@ -23,6 +23,46 @@
                 <rect>
                     <point x="262.22" y="540.00"/>
                     <size w="377.78" h="335.56"/>
+                </rect>
+            </shape>
+        </annotation>
+        <annotation uuid="63d88e71-009a-4943-9a44-dfe466edfc4d">
+            <shape>
+                <rect>
+                    <point x="890.90" y="235.85"/>
+                    <size w="786.67" h="520.00"/>
+                </rect>
+            </shape>
+        </annotation>
+        <annotation uuid="b1caffdc-1060-4eaa-a85c-4cf403699f79">
+            <shape>
+                <rect>
+                    <point x="901.47" y="812.86"/>
+                    <size w="303.86" h="111.74"/>
+                </rect>
+            </shape>
+        </annotation>
+        <annotation uuid="6ae982aa-f82c-4c08-bc1d-f3c267302c65">
+            <shape>
+                <rect>
+                    <point x="1288.89" y="184.44"/>
+                    <size w="177.78" h="113.33"/>
+                </rect>
+            </shape>
+        </annotation>
+        <annotation uuid="d6326725-6cf1-46ee-9eb1-b4654030763e">
+            <shape>
+                <rect>
+                    <point x="751.11" y="313.33"/>
+                    <size w="822.22" h="488.89"/>
+                </rect>
+            </shape>
+        </annotation>
+        <annotation uuid="5934b3ac-2fe5-45c4-8a6f-2add8876e126">
+            <shape>
+                <rect>
+                    <point x="904.44" y="277.78"/>
+                    <size w="531.11" h="200.00"/>
                 </rect>
             </shape>
         </annotation>

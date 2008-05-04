@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <imageAnnotationFile>
     <imageInfo>
-        <file>img/img002.JPG</file>
+        <file frame="42">img/img002.JPG</file>
         <uuid>69ea4b17-6b70-4682-af60-2bf4d013c333</uuid>
         <source></source>
         <comment></comment>
