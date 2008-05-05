@@ -1,7 +1,10 @@
 TEMPLATE = app
 TARGET = AnnoTool
-CONFIG += release debug
-CONFIG -= exceptions_off rtti_off stl_off
+CONFIG += release
+CONFIG -= exceptions_off \
+    rtti_off \
+    stl_off \
+    debug
 UI_DIR = ./src/uiStuff/gen
 MOC_DIR = ./tmp/moc
 RCC_DIR = ./tmp
@@ -11,6 +14,7 @@ INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/annoHelper/include \
     ./src/annoHelper/logging/include \
     ./src/general/include \
+    ./src/general/imexporter/include \
     ./src/uiStuff/include \
     ./src/uiStuff/gen \
     ./src/uiStuff/helper/include
@@ -18,7 +22,10 @@ QT += core \
     gui \
     xml \
     qt3support
-HEADERS += ./src/libAnnotationDeprecated/include/libAn_Annotation.h \
+HEADERS += ./src/general/imexporter/include/IdlExporterPlugin.h \
+    ./src/general/imexporter/include/IdlImporterPlugin.h \
+    ./src/uiStuff/include/DlgNewProject.h \
+    ./src/libAnnotationDeprecated/include/libAn_Annotation.h \
     ./src/libAnnotationDeprecated/include/libAn_AnnotationList.h \
     ./src/libAnnotationDeprecated/include/libAn_AnnoRect.h \
     ./src/libAnnotationDeprecated/include/libAn_XmlHelpers.h \
@@ -51,7 +58,6 @@ HEADERS += ./src/libAnnotationDeprecated/include/libAn_Annotation.h \
     ./src/annoExceptions/include/IllegalStateException.h \
     ./src/annoDataTypes/include/AnnoAvClassList.h \
     ./src/general/include/GlobalProjectManager.h \
-    ./src/uiStuff/include/dlgnewproject.h \
     ./src/annoDataTypes/include/AnnoFileData.h \
     ./src/annoDataTypes/include/AnnoRectangle.h \
     ./src/annoGraphics/include/AnnoGraphicsShapeCreator.h \
@@ -83,7 +89,10 @@ HEADERS += ./src/libAnnotationDeprecated/include/libAn_Annotation.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h \
     ./src/uiStuff/include/annotoolmainwindow.h
-SOURCES += ./src/libAnnotationDeprecated/libAn_XmlHelpers.cpp \
+SOURCES += ./src/general/imexporter/IdlExporterPlugin.cpp \
+    ./src/general/imexporter/IdlImporterPlugin.cpp \
+    ./src/uiStuff/DlgNewProject.cpp \
+    ./src/libAnnotationDeprecated/libAn_XmlHelpers.cpp \
     ./src/libAnnotationDeprecated/libAn_Annotation.cpp \
     ./src/libAnnotationDeprecated/libAn_AnnotationList.cpp \
     ./src/libAnnotationDeprecated/libAn_AnnoRect.cpp \
@@ -110,7 +119,6 @@ SOURCES += ./src/libAnnotationDeprecated/libAn_XmlHelpers.cpp \
     ./src/annoExceptions/IllegalStateException.cpp \
     ./src/annoDataTypes/AnnoAvClassList.cpp \
     ./src/general/GlobalProjectManager.cpp \
-    ./src/uiStuff/dlgnewproject.cpp \
     ./src/annoDataTypes/AnnoFileData.cpp \
     ./src/annoDataTypes/AnnoRectangle.cpp \
     ./src/annoGraphics/AnnoGraphicsShapeCreator.cpp \
@@ -142,14 +150,15 @@ SOURCES += ./src/libAnnotationDeprecated/libAn_XmlHelpers.cpp \
     ./src/annoExceptions/XmlFormatException.cpp \
     ./src/uiStuff/annotoolmainwindow.cpp \
     ./src/main.cpp
-FORMS += ./src/uiStuff/forms/AnnoDataWidget.ui \
+FORMS += ./src/uiStuff/forms/DlgNewProject.ui \
+    ./src/uiStuff/forms/DlgNewProject.ui \
+    ./src/uiStuff/forms/AnnoDataWidget.ui \
     ./src/uiStuff/forms/AnnoListWidget.ui \
     ./src/uiStuff/forms/DlgLoaderDetails.ui \
     ./src/uiStuff/forms/DlgAddImage.ui \
     ./src/uiStuff/forms/AnnoFileListWidget.ui \
     ./src/uiStuff/forms/DlgFileChooser.ui \
     ./src/uiStuff/forms/DlgProjectDetails.ui \
-    ./src/uiStuff/forms/dlgnewproject.ui \
     ./src/uiStuff/forms/zoomcontrol.ui \
     ./src/uiStuff/forms/annotoolmainwindow.ui
 RESOURCES += ./src/uiStuff/forms/icons.qrc
@@ -183,4 +192,3 @@ macx {
         OBJECTS_DIR = ./bin/macOSX/debug/obj
     }
 }
-
