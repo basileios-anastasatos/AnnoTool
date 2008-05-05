@@ -1,6 +1,6 @@
 #include "include/annotoolmainwindow.h"
 #include "include/zoomcontrol.h"
-#include "include/dlgnewproject.h"
+#include "include/DlgNewProject.h"
 #include "include/DlgProjectDetails.h"
 #include "include/DlgAddImage.h"
 #include "include/DlgLoaderDetails.h"
