@@ -1,19 +1,24 @@
 #ifndef EXPORTERPLUGIN_H_
 #define EXPORTERPLUGIN_H_
 
+#include <QString>
+#include <QFileInfo>
+
 namespace anno {
     class ExporterPlugin {
         protected:
-            ExporterPlugin();
+            ExporterPlugin() {
+            }
 
         public:
-            ~ExporterPlugin();
+            virtual ~ExporterPlugin() {
+            }
 
         public:
-            virtual QString name() const;
-            virtual QString author() const;
-            virtual QString description() const;
-            virtual bool exec(const QFileInfo &startDir);
+            virtual QString name() const = 0;
+            virtual QString author() const = 0;
+            virtual QString description() const = 0;
+            virtual bool exec(const QFileInfo &startDir) = 0;
     };
 }
 

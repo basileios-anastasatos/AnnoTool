@@ -1,23 +1,26 @@
 #ifndef IMPORTERPLUGIN_H_
 #define IMPORTERPLUGIN_H_
 
+#include <QString>
+#include <QFileInfo>
+
 namespace anno {
     class ImporterPlugin {
         protected:
-            ImporterPlugin();
+            ImporterPlugin() {
+            }
 
         public:
-            ~ImporterPlugin();
+            virtual ~ImporterPlugin() {
+            }
 
         public:
-            virtual QString name() const;
-            virtual QString author() const;
-            virtual QString description() const;
-            virtual bool createsProject() const;
-            virtual bool needsProject() const;
-            virtual bool singleFileImport() const;
-            virtual bool singleAnnotationImport() const;
-            virtual bool exec(const QFileInfo &startDir);
+            virtual QString name() const = 0;
+            virtual QString author() const = 0;
+            virtual QString description() const = 0;
+            virtual bool singleFileImport() const = 0;
+            virtual bool singleAnnotationImport() const = 0;
+            virtual bool exec(const QFileInfo &startDir) = 0;
     };
 }
 
