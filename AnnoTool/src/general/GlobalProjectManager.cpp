@@ -225,7 +225,7 @@ namespace anno {
 
     void GlobalProjectManager::loadAnnoFilesFromDir(QDir dir) throw(IOException *,
             XmlException *) {
-        Q_ASSERT(dir.exist() && dir.isAbsolute());
+        Q_ASSERT(dir.exists() && dir.isAbsolute());
 
         QStringList filters;
         filters << FileExtensions::asFilter(GlobalConfig::fileExt.annotations);
