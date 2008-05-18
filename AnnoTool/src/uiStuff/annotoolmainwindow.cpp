@@ -13,6 +13,12 @@
 #include "AnnoGraphicsPixmap.h"
 #include "AnnoGraphicsShapeCreator.h"
 
+#include "DlgImporter.h"
+#include "DlgExporter.h"
+#include "ImporterPlugin.h"
+#include "ExporterPlugin.h"
+#include "IdlExporterPlugin.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QApplication>
@@ -27,6 +33,11 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     QMainWindow(parent) {
     _graphicsScene = NULL;
     ui.setupUi(this);
+
+#ifdef DEBUG
+    setWindowTitle("AnnoTool - DEBUG");
+#endif
+
     setCentralWidget(ui.graphicsView);
     zoomCtrl = new ZoomControl(ui.tbView);
     QAction *za = ui.tbView->addWidget(zoomCtrl);
@@ -135,6 +146,8 @@ bool AnnoToolMainWindow::checkProjectToClose() {
 void AnnoToolMainWindow::configUIproject(bool open) {
     ui.actionFileClose->setEnabled(open);
     ui.actionFileSave->setEnabled(open);
+    ui.actionFileImport->setEnabled(open);
+    ui.actionFileExport->setEnabled(open);
     ui.actionProjectDetails->setEnabled(open);
     ui.actionProjectAddImage->setEnabled(open);
 }
@@ -167,8 +180,15 @@ void AnnoToolMainWindow::on_actionFileNew_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionFileNew_triggered");
     if (checkProjectToClose()) {
         DlgNewProject *dlg = new DlgNewProject(this);
-        if (dlg->exec() == QDialog::Accepted) {
-            QMessageBox::information(this, "AnnoTool", "New Project ;-)");
+        QUuid projectUuid = QUuid::createUuid();
+        dlg->setProjectUuid(projectUuid);
+        GlobalProjectManager *pm = GlobalProjectManager::instance();
+        if (!pm->isValid() && dlg->exec() == QDialog::Accepted) {
+            QFileInfo projectPath = dlg->projectPathAsFileInfo();
+            pm->newEmpty(projectPath.filePath() + "/" + dlg->projectName() + "."
+                         + GlobalConfig::fileExt.projects, projectUuid);
+            pm->project()->setProjectName(dlg->projectName());
+            pm->project()->addToSearchPath(dlg->defaultPath());
             configUIproject(true);
             updateAnnoWidgets();
         }
@@ -240,6 +260,38 @@ void AnnoToolMainWindow::on_actionFileSave_triggered() {
     }
 }
 
+void AnnoToolMainWindow::on_actionFileImport_triggered() {
+    DlgImporter *dlg = new DlgImporter(this);
+    if (dlg->exec() == QDialog::Accepted) {
+        anno::ImporterPlugin *p = dlg->getSelectedImporterPtr();
+        if (p != NULL) {
+            if (!p->exec(QFileInfo(GlobalProjectManager::instance()->projectDir(), QString()))) {
+                GlobalLogger::instance()->logError(QString("Importer plugin [%1] finished execution with an error.").arg(p->name()));
+            } else {
+                updateAnnoWidgets();
+            }
+        } else {
+            GlobalLogger::instance()->logError("The selected importer plugin could not be retrieved from the ImportManager.");
+        }
+    }
+}
+
+void AnnoToolMainWindow::on_actionFileExport_triggered() {
+    DlgExporter *dlg = new DlgExporter(this);
+    if (dlg->exec() == QDialog::Accepted) {
+        anno::ExporterPlugin *p = dlg->getSelectedExporterPtr();
+        if (p != NULL) {
+            if (!p->exec(QFileInfo(GlobalProjectManager::instance()->projectDir(), QString()))) {
+                GlobalLogger::instance()->logError(QString("Exporter plugin [%1] finished execution with an error.").arg(p->name()));
+            } else {
+                updateAnnoWidgets();
+            }
+        } else {
+            GlobalLogger::instance()->logError("The selected exporter plugin could not be retrieved from the ExportManager.");
+        }
+    }
+}
+
 void AnnoToolMainWindow::on_actionFileExit_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionFileExit_triggered");
     close();
@@ -260,11 +312,11 @@ void AnnoToolMainWindow::on_actionProjectAddImage_triggered() {
         if (!images.isEmpty()) {
             GlobalProjectManager *pm = GlobalProjectManager::instance();
             QFileInfo annoPath(dlg->annoSavePath());
-//			QFileInfo tmpPath = annoPath;
+            //			QFileInfo tmpPath = annoPath;
             if (!pm->containsInSearchPathAdv(annoPath)) {
                 pm->project()->searchPath()->append(annoPath);
             }
-            if(annoPath.isRelative()) {
+            if (annoPath.isRelative()) {
                 annoPath = pm->relToAbs(annoPath);
             }
 
@@ -310,7 +362,9 @@ void AnnoToolMainWindow::on_appClose() {
 void AnnoToolMainWindow::annoFileSelectChanged(int row, QUuid image) {
     GlobalLogger::instance()->logDebug(QString("Selected new annotation file with index %1 and UUID %2").arg(row).arg(image.toString()));
     GlobalProjectManager::instance()->setSelectedFileRow(row);
+    GlobalProjectManager::instance()->resetSelectedAnno();
     ui.annoListWidget->updateData();
+    ui.annoDataWidget->updateData();
     QFileInfo fileName = GlobalProjectManager::instance()->selectedFile()->imageInfo()->imagePath();
     int frame = GlobalProjectManager::instance()->selectedFile()->imageInfo()->frame();
     if (fileName.isRelative()) {
@@ -329,7 +383,9 @@ void AnnoToolMainWindow::annoFileSelectChanged(int row, QUuid image) {
 }
 
 void AnnoToolMainWindow::on_annoListWidget_annoSelectChanged(int row, QUuid anno) {
+    GlobalProjectManager::instance()->setSelectedAnnoRow(row);
     _graphicsScene->selectShape(anno);
+    ui.annoDataWidget->updateData();
 }
 
 void AnnoToolMainWindow::on_zoomSlider_valueChanged(int value) {
@@ -359,7 +415,7 @@ void AnnoToolMainWindow::on_actionToolRectangle_triggered() {
 }
 
 void AnnoToolMainWindow::updateUI() {
-    if(_me != NULL) {
+    if (_me != NULL) {
         _me->updateAnnoWidgets();
     }
 }

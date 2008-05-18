@@ -1,10 +1,8 @@
 #include "include/AnnoListWidget.h"
 #include "AnnoFileListModelAdapter.h"
-#include "GlobalLogger.h"
-#include "GlobalProjectManager.h"
+#include "importGlobals.h"
 
-using ::logging::GlobalLogger;
-using ::anno::GlobalProjectManager;
+#include <QItemSelectionModel>
 
 AnnoListWidget::AnnoListWidget(QWidget *parent) :
     QDockWidget(parent), _strCount("%1 annotations loaded") {
@@ -14,12 +12,11 @@ AnnoListWidget::AnnoListWidget(QWidget *parent) :
     ui.trAnnoList->setModel(_model);
     ui.lbCount->setText(_strCount.arg(0));
 
-    //	connect(ui.lstFiles->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(on_lstFiles_currentRowChanged(
-    //					const QModelIndex&, const QModelIndex&)));
+    connect(ui.trAnnoList->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(on_trAnnoList_currentRowChanged(
+                const QModelIndex &, const QModelIndex &)));
 }
 
 AnnoListWidget::~AnnoListWidget() {
-
 }
 
 void AnnoListWidget::updateData() {
@@ -28,16 +25,14 @@ void AnnoListWidget::updateData() {
     update();
 }
 
-void AnnoListWidget::on_trAnnoList_clicked(const QModelIndex &index) {
-    if (_curIndex != index) {
-        GlobalLogger::instance()->logDebug("Native selection changed");
-        emit 		annoSelectChanged(index.row(), GlobalProjectManager::instance()->selectedFile()->annoList()->at(index.row())->annoId());
-        _curIndex = index;
+void AnnoListWidget::on_trAnnoList_currentRowChanged(const QModelIndex &cur,
+        const QModelIndex &prev) {
+    if (GlobalProjectManager::instance()->isValid() && GlobalProjectManager::instance()->selectedFile() != NULL) {
+        if (cur.isValid() && cur.row() < GlobalProjectManager::instance()->selectedFile()->annoList()->size()) {
+            GlobalLogger::instance()->logDebug("Native selection changed");
+            emit annoSelectChanged(cur.row(), GlobalProjectManager::instance()->selectedFile()->annoList()->at(cur.row())->annoId());
+        }
     }
-}
-
-void AnnoListWidget::on_trAnnoList_activated(const QModelIndex &index) {
-    GlobalLogger::instance()->logDebug("Native activated");
 }
 
 

@@ -12,7 +12,7 @@ DlgNewProject::~DlgNewProject() {
 }
 
 void DlgNewProject::on_btSelProjectPath_clicked() {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Select Project Folder"));
+    QString path = QFileDialog::getExistingDirectory(this, tr("Where to store project data?"));
     ui.editProjectPath->setText(path);
 }
 
