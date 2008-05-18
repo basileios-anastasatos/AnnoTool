@@ -17,12 +17,17 @@ INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/general/imexporter/include \
     ./src/uiStuff/include \
     ./src/uiStuff/gen \
-    ./src/uiStuff/helper/include
+    ./src/uiStuff/helper/include \
+    ./src/libAnnotationDeprecated/include
 QT += core \
     gui \
     xml \
     qt3support
-HEADERS += ./src/general/imexporter/include/IdlExporterPlugin.h \
+HEADERS += ./src/uiStuff/include/DlgImporter.h \
+    ./src/uiStuff/include/DlgExporter.h \
+    ./src/uiStuff/helper/include/AnnoDataClassesModelAdapter.h \
+    ./src/uiStuff/helper/include/AnnoDataModelAdapter.h \
+    ./src/general/imexporter/include/IdlExporterPlugin.h \
     ./src/general/imexporter/include/IdlImporterPlugin.h \
     ./src/uiStuff/include/DlgNewProject.h \
     ./src/libAnnotationDeprecated/include/libAn_Annotation.h \
@@ -89,7 +94,11 @@ HEADERS += ./src/general/imexporter/include/IdlExporterPlugin.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h \
     ./src/uiStuff/include/annotoolmainwindow.h
-SOURCES += ./src/general/imexporter/IdlExporterPlugin.cpp \
+SOURCES += ./src/uiStuff/DlgImporter.cpp \
+    ./src/uiStuff/DlgExporter.cpp \
+    ./src/uiStuff/helper/AnnoDataClassesModelAdapter.cpp \
+    ./src/uiStuff/helper/AnnoDataModelAdapter.cpp \
+    ./src/general/imexporter/IdlExporterPlugin.cpp \
     ./src/general/imexporter/IdlImporterPlugin.cpp \
     ./src/uiStuff/DlgNewProject.cpp \
     ./src/libAnnotationDeprecated/libAn_XmlHelpers.cpp \
@@ -150,7 +159,8 @@ SOURCES += ./src/general/imexporter/IdlExporterPlugin.cpp \
     ./src/annoExceptions/XmlFormatException.cpp \
     ./src/uiStuff/annotoolmainwindow.cpp \
     ./src/main.cpp
-FORMS += ./src/uiStuff/forms/DlgNewProject.ui \
+FORMS += ./src/uiStuff/forms/DlgImporter.ui \
+    ./src/uiStuff/forms/DlgExporter.ui \
     ./src/uiStuff/forms/DlgNewProject.ui \
     ./src/uiStuff/forms/AnnoDataWidget.ui \
     ./src/uiStuff/forms/AnnoListWidget.ui \
