@@ -1,14 +1,14 @@
-#ifndef ANNOLISTMODELADAPTER_H_
-#define ANNOLISTMODELADAPTER_H_
+#ifndef ANNODATAMODELADAPTER_H_
+#define ANNODATAMODELADAPTER_H_
 
 #include <QAbstractTableModel>
 
-class AnnoListModelAdapter : public QAbstractTableModel {
+class AnnoDataModelAdapter : public QAbstractTableModel {
         Q_OBJECT
 
     public:
-        AnnoListModelAdapter(QObject *parent = 0);
-        virtual ~AnnoListModelAdapter();
+        AnnoDataModelAdapter(QObject *parent = 0);
+        virtual ~AnnoDataModelAdapter();
 
     public:
         virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -20,6 +20,6 @@ class AnnoListModelAdapter : public QAbstractTableModel {
         void update();
 };
 
-#endif /*ANNOLISTMODELADAPTER_H_*/
+#endif /*ANNODATAMODELADAPTER_H_*/
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

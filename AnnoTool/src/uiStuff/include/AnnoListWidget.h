@@ -13,11 +13,9 @@ class AnnoListWidget : public QDockWidget {
         Ui::AnnoListWidgetClass ui;
         AnnoListModelAdapter *_model;
         QString _strCount;
-        QModelIndex _curIndex;
 
     private slots:
-        void on_trAnnoList_clicked(const QModelIndex &index);
-        void on_trAnnoList_activated(const QModelIndex &index);
+        void on_trAnnoList_currentRowChanged(const QModelIndex &, const QModelIndex &);
 
     public:
         AnnoListWidget(QWidget *parent = 0);

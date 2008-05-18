@@ -3,6 +3,8 @@
 
 #include <QtGui/QDockWidget>
 #include "../gen/ui_AnnoDataWidget.h"
+#include "AnnoDataModelAdapter.h"
+#include "AnnoDataClassesModelAdapter.h"
 #include <QUuid>
 
 class AnnoDataWidget : public QDockWidget {
@@ -10,10 +12,24 @@ class AnnoDataWidget : public QDockWidget {
 
     private:
         Ui::AnnoDataWidgetClass ui;
+        AnnoDataModelAdapter *_modelAttributes;
+        AnnoDataClassesModelAdapter *_modelClasses;
+
+    private slots:
+        void on_actionAddAttribute_triggered();
+        void on_actionRemoveAttribute_triggered();
+        void on_actionAddClass_triggered();
+        void on_actionRemoveClass_triggered();
+
+        void on_trAttributes_activated(const QModelIndex &index);
 
     public:
         AnnoDataWidget(QWidget *parent = 0);
         ~AnnoDataWidget();
+
+    public:
+        void updateData();
+        void clearData();
 
     public slots:
         void annoSelectChanged(int row, QUuid anno);

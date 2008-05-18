@@ -42,6 +42,8 @@ class AnnoToolMainWindow : public QMainWindow {
         void on_actionFileOpen_triggered();
         void on_actionFileClose_triggered();
         void on_actionFileSave_triggered();
+        void on_actionFileImport_triggered();
+        void on_actionFileExport_triggered();
         void on_actionFileExit_triggered();
         void on_actionProjectDetails_triggered();
         void on_actionProjectAddImage_triggered();
