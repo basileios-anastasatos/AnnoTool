@@ -21,6 +21,7 @@ namespace anno {
             dt::AnnoAvClassList *_classList;
             QList<dt::AnnoFileData *> *_fileList;
             int _curSelFile;
+            int _curSelAnno;
 
         private:
             GlobalProjectManager();
@@ -39,9 +40,18 @@ namespace anno {
             QList<dt::AnnoFileData *> *files();
             bool isValid() const;
             void clear();
+            void newEmpty(const QString &projectPath, const QUuid &projectUuid) throw(IllegalStateException *);
+
+        public:
+            void resetSelectedFile();
+            void resetSelectedAnno();
             void setSelectedFileRow(int index);
+            void setSelectedAnnoRow(int index);
             int selectedFileRow() const;
+            int selectedAnnoRow() const;
             dt::AnnoFileData *selectedFile();
+            dt::Annotation *selectedAnno();
+            QUuid selectedAnnoUuid();
 
         public:
             QFileInfo relToAbs(const QFileInfo &file) const

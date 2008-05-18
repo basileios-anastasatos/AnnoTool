@@ -3,12 +3,14 @@
 
 #include "GlobalConfig.h"
 #include "GlobalImageLoader.h"
+#include "GlobalImExportManager.h"
 #include "GlobalProjectManager.h"
 #include "GlobalToolManager.h"
 #include "GlobalLogger.h"
 
 using ::anno::GlobalConfig;
 using ::anno::GlobalImageLoader;
+using ::anno::GlobalImExportManager;
 using ::anno::GlobalProjectManager;
 using ::anno::GlobalToolManager;
 using ::logging::GlobalLogger;

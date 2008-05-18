@@ -11,6 +11,7 @@ namespace anno {
         _classList = NULL;
         _fileList = NULL;
         _curSelFile = -1;
+        _curSelAnno = -1;
     }
 
     GlobalProjectManager::~GlobalProjectManager() {
@@ -63,6 +64,29 @@ namespace anno {
             delete _fileList;
             _fileList = NULL;
         }
+        _curSelFile = -1;
+        _curSelAnno = -1;
+    }
+
+    void GlobalProjectManager::newEmpty(const QString &projectPath, const QUuid &projectUuid)
+    throw(IllegalStateException *) {
+        if (isValid()) {
+            throw new IllegalStateException(__FILE__, __LINE__, "A project is already a current project.");
+        }
+
+        _project = new dt::AnnoProject(projectPath, projectUuid);
+        _classList = new dt::AnnoAvClassList();
+        _fileList = new QList<dt::AnnoFileData *>();
+        _curSelFile = -1;
+        _curSelAnno = -1;
+    }
+
+    void GlobalProjectManager::resetSelectedFile() {
+        _curSelFile = -1;
+    }
+
+    void GlobalProjectManager::resetSelectedAnno() {
+        _curSelAnno = -1;
     }
 
     void GlobalProjectManager::setSelectedFileRow(int index) {
@@ -71,8 +95,18 @@ namespace anno {
         }
     }
 
+    void GlobalProjectManager::setSelectedAnnoRow(int index) {
+        if (index >= 0 && selectedFile() != NULL && index < selectedFile()->annoList()->size()) {
+            _curSelAnno = index;
+        }
+    }
+
     int GlobalProjectManager::selectedFileRow() const {
         return _curSelFile;
+    }
+
+    int GlobalProjectManager::selectedAnnoRow() const {
+        return _curSelAnno;
     }
 
     dt::AnnoFileData *GlobalProjectManager::selectedFile() {
@@ -80,6 +114,22 @@ namespace anno {
             return _fileList->at(_curSelFile);
         } else {
             return NULL;
+        }
+    }
+
+    dt::Annotation *GlobalProjectManager::selectedAnno() {
+        if (_curSelAnno >= 0 && selectedFile() != NULL && _curSelAnno < selectedFile()->annoList()->size()) {
+            return selectedFile()->annoList()->at(_curSelAnno);
+        } else {
+            return NULL;
+        }
+    }
+
+    QUuid GlobalProjectManager::selectedAnnoUuid() {
+        if (selectedAnno() != NULL) {
+            return selectedAnno()->annoId();
+        } else {
+            return QUuid();
         }
     }
 
@@ -240,7 +290,7 @@ namespace anno {
                 if (fi.exists() && fi.isFile()) {
                     //TODO think of handling symlinks here. further research must be done on this!
 
-                    if(dt::AnnoFileData::probeFile(fi.absoluteFilePath(), _project->uuid())) {
+                    if (dt::AnnoFileData::probeFile(fi.absoluteFilePath(), _project->uuid())) {
                         _fileList->append(dt::AnnoFileData::fromFile(fi.absoluteFilePath()));
                     } else {
                         GlobalLogger::instance()->logDebug(QString("Won't load annotation data from [%1]. Wrong Annotation Complex ID").arg(fi.filePath()));

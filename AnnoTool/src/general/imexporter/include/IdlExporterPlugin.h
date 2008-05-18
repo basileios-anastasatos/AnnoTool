@@ -2,10 +2,15 @@
 #define IDLEXPORTERPLUGIN_H_
 
 #include "ExporterPlugin.h"
+#include "AnnoRectangle.h"
+#include "libAn_AnnoRect.h"
 
 namespace anno {
 
     class IdlExporterPlugin : public anno::ExporterPlugin {
+        private:
+            libAn::AnnoRect convRect(dt::AnnoRectangle *rect);
+
         public:
             IdlExporterPlugin();
             virtual ~IdlExporterPlugin();
