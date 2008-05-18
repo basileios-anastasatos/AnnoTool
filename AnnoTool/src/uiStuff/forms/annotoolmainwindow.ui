@@ -16,6 +16,14 @@
    <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QGraphicsView" name="graphicsView">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>56</y>
+     <width>655</width>
+     <height>277</height>
+    </rect>
+   </property>
    <property name="renderHints">
     <set>QPainter::Antialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
    </property>
@@ -27,6 +35,14 @@
    </property>
   </widget>
   <widget class="AnnoFileListWidget" name="annoFileListWidget">
+   <property name="geometry">
+    <rect>
+     <x>659</x>
+     <y>56</y>
+     <width>80</width>
+     <height>90</height>
+    </rect>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -35,6 +51,14 @@
    </attribute>
   </widget>
   <widget class="AnnoListWidget" name="annoListWidget">
+   <property name="geometry">
+    <rect>
+     <x>659</x>
+     <y>150</y>
+     <width>80</width>
+     <height>89</height>
+    </rect>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -43,6 +67,14 @@
    </attribute>
   </widget>
   <widget class="AnnoDataWidget" name="annoDataWidget">
+   <property name="geometry">
+    <rect>
+     <x>659</x>
+     <y>243</y>
+     <width>80</width>
+     <height>90</height>
+    </rect>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -99,8 +131,25 @@
    <addaction name="menu_Settings" />
    <addaction name="menu_Help" />
   </widget>
-  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QStatusBar" name="statusbar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>333</y>
+     <width>739</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QToolBar" name="tbGeneral">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>22</y>
+     <width>201</width>
+     <height>34</height>
+    </rect>
+   </property>
    <property name="windowTitle">
     <string>General</string>
    </property>
@@ -117,6 +166,14 @@
    <addaction name="actionProjectAddImage" />
   </widget>
   <widget class="QToolBar" name="tbView">
+   <property name="geometry">
+    <rect>
+     <x>201</x>
+     <y>22</y>
+     <width>70</width>
+     <height>34</height>
+    </rect>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -129,6 +186,14 @@
    <addaction name="actionFitImage" />
   </widget>
   <widget class="QToolBar" name="tbTools">
+   <property name="geometry">
+    <rect>
+     <x>271</x>
+     <y>22</y>
+     <width>163</width>
+     <height>34</height>
+    </rect>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -143,9 +208,31 @@
    <addaction name="actionToolPolygon" />
    <addaction name="actionToolEllipse" />
   </widget>
+  <widget class="QToolBar" name="tbAnnotation">
+   <property name="geometry">
+    <rect>
+     <x>434</x>
+     <y>22</y>
+     <width>305</width>
+     <height>34</height>
+    </rect>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRemoveAnnotation" />
+   <addaction name="actionZtoFront" />
+  </widget>
   <action name="actionFileOpen">
    <property name="icon">
-    <iconset resource="icons.qrc">:/res/folder_open</iconset>
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/folder_open</normaloff>:/res/folder_open</iconset>
    </property>
    <property name="text">
     <string>&amp;Open Project</string>
@@ -159,7 +246,8 @@
   </action>
   <action name="actionFileClose">
    <property name="icon">
-    <iconset resource="icons.qrc">:/res/folder_close</iconset>
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/folder_close</normaloff>:/res/folder_close</iconset>
    </property>
    <property name="text">
     <string>&amp;Close Project</string>
@@ -170,7 +258,8 @@
   </action>
   <action name="actionFileExit">
    <property name="icon">
-    <iconset resource="icons.qrc">:/res/shutdown</iconset>
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/shutdown</normaloff>:/res/shutdown</iconset>
    </property>
    <property name="text">
     <string>E&amp;xit</string>
@@ -181,7 +270,8 @@
   </action>
   <action name="actionFileSave">
    <property name="icon">
-    <iconset resource="icons.qrc">:/res/drive</iconset>
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/drive</normaloff>:/res/drive</iconset>
    </property>
    <property name="text">
     <string>&amp;Save Project</string>
@@ -214,7 +304,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">:/res/tool_rectangle</iconset>
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/tool_rectangle</normaloff>:/res/tool_rectangle</iconset>
    </property>
    <property name="text">
     <string>Rectangle</string>
@@ -239,7 +330,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="icons.qrc">:/res/tool_polygon</iconset>
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/tool_polygon</normaloff>:/res/tool_polygon</iconset>
    </property>
    <property name="text">
     <string>Polygon</string>
@@ -261,7 +353,8 @@
   </action>
   <action name="actionFileNew">
    <property name="icon">
-    <iconset resource="icons.qrc">:/res/new</iconset>
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/new</normaloff>:/res/new</iconset>
    </property>
    <property name="text">
     <string>&amp;New Project</string>
@@ -301,6 +394,16 @@
   <action name="actionFileExport">
    <property name="text">
     <string>&amp;Export</string>
+   </property>
+  </action>
+  <action name="actionRemoveAnnotation">
+   <property name="text">
+    <string>Remove Annotation</string>
+   </property>
+  </action>
+  <action name="actionZtoFront">
+   <property name="text">
+    <string>Bring To Front</string>
    </property>
   </action>
  </widget>

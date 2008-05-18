@@ -9,6 +9,12 @@
     <height>300</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>200</width>
+    <height>0</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Annotation Data</string>
   </property>
@@ -16,66 +22,122 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
-     <width>188</width>
-     <height>142</height>
+     <y>0</y>
+     <width>171</width>
+     <height>191</height>
     </rect>
    </property>
-   <property name="frameShape">
-    <enum>QFrame::Box</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Plain</enum>
-   </property>
-   <layout class="QGridLayout">
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <item row="0" column="0">
-     <layout class="QVBoxLayout">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>2</number>
+      </property>
       <item>
-       <layout class="QHBoxLayout">
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QLabel" name="lbUuid">
+         <widget class="QToolButton" name="btAttrAdd">
           <property name="text">
-           <string>UUID</string>
-          </property>
-          <property name="buddy">
-           <cstring>editUuid</cstring>
+           <string>...</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="editUuid" />
+         <widget class="QToolButton" name="btAttrRem">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="btClassAdd">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="btClassRem">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
       <item>
-       <widget class="QGroupBox" name="grpAttr">
-        <property name="title">
-         <string>Attributes</string>
+       <widget class="QTreeView" name="trAttributes">
+        <property name="rootIsDecorated">
+         <bool>false</bool>
         </property>
-        <layout class="QGridLayout">
-         <item row="0" column="0">
-          <widget class="Q3ListView" name="lstAttr">
-           <property name="showToolTips">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="uniformRowHeights">
+         <bool>true</bool>
+        </property>
+        <property name="itemsExpandable">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListView" name="lstClasses">
+        <property name="sizePolicy">
+         <sizepolicy vsizetype="Fixed" hsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="modelColumn">
+         <number>0</number>
+        </property>
+        <property name="uniformItemSizes">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>
     </item>
    </layout>
   </widget>
+  <action name="actionAddAttribute">
+   <property name="text">
+    <string>Add Attribute</string>
+   </property>
+  </action>
+  <action name="actionRemoveAttribute">
+   <property name="text">
+    <string>Remove Attribute</string>
+   </property>
+  </action>
+  <action name="actionAddClass">
+   <property name="text">
+    <string>Add Class</string>
+   </property>
+  </action>
+  <action name="actionRemoveClass">
+   <property name="text">
+    <string>Remove Class</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11" />
- <customwidgets>
-  <customwidget>
-   <class>Q3ListView</class>
-   <extends>Q3Frame</extends>
-   <header>q3listview.h</header>
-  </customwidget>
- </customwidgets>
  <resources />
  <connections />
 </ui>

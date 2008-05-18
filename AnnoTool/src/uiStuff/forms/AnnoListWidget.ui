@@ -9,6 +9,12 @@
     <height>300</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>200</width>
+    <height>0</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Image Annotations</string>
   </property>
@@ -31,22 +37,10 @@
     <number>0</number>
    </property>
    <layout class="QGridLayout">
-    <property name="leftMargin">
+    <property name="margin">
      <number>0</number>
     </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <property name="horizontalSpacing">
-     <number>0</number>
-    </property>
-    <property name="verticalSpacing">
+    <property name="spacing">
      <number>0</number>
     </property>
     <item row="0" column="0">
@@ -56,6 +50,12 @@
       </property>
       <item>
        <widget class="QTreeView" name="trAnnoList">
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="showDropIndicator" stdset="0">
+         <bool>false</bool>
+        </property>
         <property name="rootIsDecorated">
          <bool>false</bool>
         </property>
@@ -64,6 +64,12 @@
         </property>
         <property name="itemsExpandable">
          <bool>false</bool>
+        </property>
+        <property name="allColumnsShowFocus">
+         <bool>true</bool>
+        </property>
+        <property name="headerHidden">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
