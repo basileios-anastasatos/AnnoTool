@@ -2,13 +2,22 @@
 
 #include <QtGui>
 #include <QApplication>
-#include "annoHelper/logging/include/GlobalLogger.h"
+#include "importGlobals.h"
+#include "IdlImporterPlugin.h"
+#include "IdlExporterPlugin.h"
 
-using logging::GlobalLogger;
 
 int main(int argc, char *argv[]) {
     GlobalLogger::instance()->logInfo("AnnoTool starting up");
     QApplication a(argc, argv);
+
+    // Im- & Exporter Plugins
+    //----------------------------------------------------------------
+    GlobalImExportManager *ieman = GlobalImExportManager::instance();
+    ieman->addImporter(new anno::IdlImporterPlugin());
+    ieman->addExporter(new anno::IdlExporterPlugin());
+    //----------------------------------------------------------------
+
     AnnoToolMainWindow w;
     w.show();
     a.connect(&a, SIGNAL(aboutToQuit()), &w, SLOT(on_appClose()));
