@@ -14,6 +14,10 @@ namespace anno {
         AnnoInfo::AnnoInfo() {
         }
 
+        AnnoInfo::AnnoInfo(const QUuid &uuid) :
+            _annoComplex(uuid) {
+        }
+
         AnnoInfo::~AnnoInfo() {
         }
 
@@ -35,13 +39,11 @@ namespace anno {
 
         void AnnoInfo::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {
             writer.writeStartElement("annotationInfo");
-            writer.writeTextElement("annotationComplex",
-                                    XmlHelper::uuidAsString(_annoComplex));
+            writer.writeTextElement("annotationComplex", XmlHelper::uuidAsString(_annoComplex));
             writer.writeEndElement();
         }
 
-        void AnnoInfo::loadFromXml(QXmlStreamReader &reader)
-        throw(XmlFormatException *) {
+        void AnnoInfo::loadFromXml(QXmlStreamReader &reader) throw(XmlFormatException *) {
             QString tagInfo("annotationInfo");
             QString tagCmplx("annotationComplex");
 
@@ -59,8 +61,7 @@ namespace anno {
             reader.readNext();
         }
 
-        AnnoInfo AnnoInfo::fromXml(QXmlStreamReader &reader)
-        throw(XmlFormatException *) {
+        AnnoInfo AnnoInfo::fromXml(QXmlStreamReader &reader) throw(XmlFormatException *) {
             AnnoInfo data;
             data.loadFromXml(reader);
             return data;

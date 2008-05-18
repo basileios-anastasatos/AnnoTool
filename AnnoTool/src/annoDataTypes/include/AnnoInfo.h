@@ -21,6 +21,7 @@ namespace anno {
 
             public:
                 AnnoInfo();
+                AnnoInfo(const QUuid &uuid);
                 virtual ~AnnoInfo();
 
             public:

@@ -12,14 +12,11 @@ namespace libAn {
         public:
             AnnotationList() {
             }
-            ;
             AnnotationList(const std::string &file) {
                 load(file);
             }
-            ;
             ~AnnotationList() {
             }
-            ;
 
             //AnnotationList(const AnnotationList& other);
         private:
@@ -37,34 +34,27 @@ namespace libAn {
             std::string name() const {
                 return m_sName;
             }
-            ;
             std::string path() const {
                 return m_sPath;
             }
-            ;
 
             unsigned size() const {
                 return m_vAnnotations.size();
             }
-            ;
 
             const Annotation &annotation(unsigned i) const {
                 return m_vAnnotations[i];
             }
-            ;
             Annotation &annotation(unsigned i) {
                 return m_vAnnotations[i];
             }
-            ;
 
             const Annotation &operator[](unsigned i) const {
                 return m_vAnnotations[i];
             }
-            ;
             Annotation &operator[](unsigned i) {
                 return m_vAnnotations[i];
             }
-            ;
 
             const Annotation &findByName(const std::string &, int frameNr = -1,
                                          bool useAbsPath = true) const;
