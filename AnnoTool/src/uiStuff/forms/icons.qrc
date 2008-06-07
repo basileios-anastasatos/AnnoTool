@@ -1,11 +1,23 @@
 <RCC>
     <qresource prefix="/res" >
+        <file alias="attr_add" >res/actionAddAttr.png</file>
+        <file alias="class_add" >res/actionAddClass.png</file>
+        <file alias="attr_rem" >res/actionRemAttr.png</file>
+        <file alias="class_rem" >res/actionRemClass.png</file>
+        <file alias="addImg" >res/addImg.png</file>
+        <file alias="annoToolLogo_16" >res/annotool16.png</file>
         <file alias="drive" >res/drive_24.png</file>
+        <file alias="tool_ellipse" >res/ellipse_24.png</file>
         <file alias="folder_close" >res/folder_close_24.png</file>
         <file alias="folder_open" >res/folder_open_24.png</file>
+        <file alias="tool_pointerS" >res/pointer_24.png</file>
         <file alias="tool_polygon" >res/poly_24.png</file>
         <file alias="tool_rectangle" >res/rect_24.png</file>
         <file alias="shutdown" >res/shutdown.png</file>
+        <file alias="delete" >res/tbDel_24.png</file>
+        <file alias="fitImg" >res/tbFitImg.png</file>
         <file alias="new" >res/tbNew_24.png</file>
+        <file alias="tool_point" >res/tbPoint_24.png</file>
+        <file alias="toFront" >res/tbToFront_24.png</file>
     </qresource>
 </RCC>

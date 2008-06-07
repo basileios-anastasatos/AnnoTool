@@ -10,7 +10,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>AnnoTool - testing</string>
+   <string>AnnoTool v2</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+   <normaloff>:/res/annoToolLogo_16</normaloff>:/res/annoToolLogo_16</iconset>
   </property>
   <property name="dockOptions">
    <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
@@ -25,13 +29,13 @@
     </rect>
    </property>
    <property name="renderHints">
-    <set>QPainter::Antialiasing|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
+    <set>QPainter::Antialiasing</set>
    </property>
    <property name="cacheMode">
     <set>QGraphicsView::CacheBackground</set>
    </property>
    <property name="viewportUpdateMode">
-    <enum>QGraphicsView::MinimalViewportUpdate</enum>
+    <enum>QGraphicsView::SmartViewportUpdate</enum>
    </property>
   </widget>
   <widget class="AnnoFileListWidget" name="annoFileListWidget">
@@ -146,7 +150,7 @@
     <rect>
      <x>0</x>
      <y>22</y>
-     <width>201</width>
+     <width>167</width>
      <height>34</height>
     </rect>
    </property>
@@ -168,9 +172,9 @@
   <widget class="QToolBar" name="tbView">
    <property name="geometry">
     <rect>
-     <x>201</x>
+     <x>167</x>
      <y>22</y>
-     <width>70</width>
+     <width>43</width>
      <height>34</height>
     </rect>
    </property>
@@ -188,9 +192,9 @@
   <widget class="QToolBar" name="tbTools">
    <property name="geometry">
     <rect>
-     <x>271</x>
+     <x>210</x>
      <y>22</y>
-     <width>163</width>
+     <width>167</width>
      <height>34</height>
     </rect>
    </property>
@@ -204,6 +208,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionToolPointer" />
+   <addaction name="actionToolSinglePoint" />
    <addaction name="actionToolRectangle" />
    <addaction name="actionToolPolygon" />
    <addaction name="actionToolEllipse" />
@@ -211,9 +216,9 @@
   <widget class="QToolBar" name="tbAnnotation">
    <property name="geometry">
     <rect>
-     <x>434</x>
+     <x>377</x>
      <y>22</y>
-     <width>305</width>
+     <width>362</width>
      <height>34</height>
     </rect>
    </property>
@@ -318,6 +323,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/tool_pointerS</normaloff>:/res/tool_pointerS</iconset>
+   </property>
    <property name="text">
     <string>Pointer</string>
    </property>
@@ -343,6 +352,10 @@
   <action name="actionToolEllipse">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/tool_ellipse</normaloff>:/res/tool_ellipse</iconset>
    </property>
    <property name="text">
     <string>Ellipse</string>
@@ -372,6 +385,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/addImg</normaloff>:/res/addImg</iconset>
+   </property>
    <property name="text">
     <string>Add &amp;Image</string>
    </property>
@@ -382,6 +399,10 @@
    </property>
   </action>
   <action name="actionFitImage">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/fitImg</normaloff>:/res/fitImg</iconset>
+   </property>
    <property name="text">
     <string>Fit Image</string>
    </property>
@@ -397,13 +418,36 @@
    </property>
   </action>
   <action name="actionRemoveAnnotation">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/delete</normaloff>:/res/delete</iconset>
+   </property>
    <property name="text">
     <string>Remove Annotation</string>
    </property>
   </action>
   <action name="actionZtoFront">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/toFront</normaloff>:/res/toFront</iconset>
+   </property>
    <property name="text">
     <string>Bring To Front</string>
+   </property>
+  </action>
+  <action name="actionToolSinglePoint">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/tool_point</normaloff>:/res/tool_point</iconset>
+   </property>
+   <property name="text">
+    <string>Single Point</string>
+   </property>
+   <property name="statusTip">
+    <string>Select the single point tool</string>
    </property>
   </action>
  </widget>

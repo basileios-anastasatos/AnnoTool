@@ -12,7 +12,7 @@ int AnnoDataClassesModelAdapter::rowCount(const QModelIndex &parent) const {
     if (GlobalProjectManager::instance()->isValid() && GlobalProjectManager::instance()->selectedAnno() != NULL) {
         anno::dt::Annotation *cur = GlobalProjectManager::instance()->selectedAnno();
         if (cur != NULL) {
-            return cur->classes()->size();
+            return cur->classCount();
         }
     }
 
@@ -28,9 +28,9 @@ QVariant AnnoDataClassesModelAdapter::data(const QModelIndex &index, int role) c
     if (pm->isValid() && index.isValid()) {
         anno::dt::Annotation *cur = GlobalProjectManager::instance()->selectedAnno();
 
-        if (cur != NULL && index.row() >= 0 && index.row() < cur->classes()->size() && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
+        if (cur != NULL && index.row() >= 0 && index.row() < cur->classCount() && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
             if (index.column() == 0) {
-                QString cname = cur->classes()->at(index.row());
+                QString cname = cur->getClass(index.row());
                 return cname;
             }
         }

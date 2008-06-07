@@ -6,6 +6,8 @@
 #include "../gen/ui_annotoolmainwindow.h"
 #include "AnnoGraphicsScene.h"
 
+#include "annoTypesForward.h"
+
 class QCloseEvent;
 class QImage;
 class ZoomControl;
@@ -45,6 +47,7 @@ class AnnoToolMainWindow : public QMainWindow {
         void on_actionFileImport_triggered();
         void on_actionFileExport_triggered();
         void on_actionFileExit_triggered();
+        void on_actionHelpInfo_triggered();
         void on_actionProjectDetails_triggered();
         void on_actionProjectAddImage_triggered();
         void on_actionSetImageLoader_triggered();
@@ -52,10 +55,20 @@ class AnnoToolMainWindow : public QMainWindow {
         void on_annoListWidget_annoSelectChanged(int row, QUuid anno);
         void on_zoomSlider_valueChanged(int value);
         void on_actionFitImage_triggered();
+        void on_actionZtoFront_triggered();
+        void on_actionRemoveAnnotation_triggered();
+
+        void onPM_fileListUpdate();
+        void onPM_annoListUpdate();
+        void onPM_annoFileSelectChanged(int row, QUuid imageId, ::anno::dt::AnnoFileData *annoFile);
+        void onPM_annoSelectChanged(int row, QUuid annoId, ::anno::dt::Annotation *anno);
 
         // Tool support
         void on_actionToolPointer_triggered();
+        void on_actionToolSinglePoint_triggered();
         void on_actionToolRectangle_triggered();
+        void on_actionToolPolygon_triggered();
+        void on_actionToolEllipse_triggered();
 
         // constrctor / destructor
     public:

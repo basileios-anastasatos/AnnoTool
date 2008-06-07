@@ -14,6 +14,8 @@ AnnoListWidget::AnnoListWidget(QWidget *parent) :
 
     connect(ui.trAnnoList->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(on_trAnnoList_currentRowChanged(
                 const QModelIndex &, const QModelIndex &)));
+
+    setStyleSheet("QTreeView::item:selected { border: 1px solid #000000; } QTreeView { selection-color: red; selection-color-background: blue; }");
 }
 
 AnnoListWidget::~AnnoListWidget() {
@@ -28,9 +30,9 @@ void AnnoListWidget::updateData() {
 void AnnoListWidget::on_trAnnoList_currentRowChanged(const QModelIndex &cur,
         const QModelIndex &prev) {
     if (GlobalProjectManager::instance()->isValid() && GlobalProjectManager::instance()->selectedFile() != NULL) {
-        if (cur.isValid() && cur.row() < GlobalProjectManager::instance()->selectedFile()->annoList()->size()) {
+        if (cur.isValid() && cur.row() < GlobalProjectManager::instance()->selectedFile()->annoCount()) {
             GlobalLogger::instance()->logDebug("Native selection changed");
-            emit annoSelectChanged(cur.row(), GlobalProjectManager::instance()->selectedFile()->annoList()->at(cur.row())->annoId());
+            emit annoSelectChanged(cur.row(), GlobalProjectManager::instance()->selectedFile()->getAnnotation(cur.row())->annoId());
         }
     }
 }

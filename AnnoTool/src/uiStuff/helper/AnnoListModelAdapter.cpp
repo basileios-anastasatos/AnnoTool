@@ -15,7 +15,7 @@ int AnnoListModelAdapter::rowCount(const QModelIndex &parent) const {
     if (GlobalProjectManager::instance()->isValid()) {
         anno::dt::AnnoFileData *cur = GlobalProjectManager::instance()->selectedFile();
         if (cur != NULL) {
-            return cur->annoList()->size();
+            return cur->annoCount();
         }
     }
 
@@ -31,9 +31,14 @@ QVariant AnnoListModelAdapter::data(const QModelIndex &index, int role) const {
     if (pm->isValid() && index.isValid()) {
         anno::dt::AnnoFileData *cur = GlobalProjectManager::instance()->selectedFile();
 
-        if (cur != NULL && index.row() >= 0 && index.row() < cur->annoList()->size() && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
+        if (cur != NULL && index.row() >= 0 && index.row() < cur->annoCount() && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
             if (index.column() == 0) {
-                return cur->annoList()->at(index.row())->annoIdAsString();
+                anno::dt::Annotation *curAnno = cur->getAnnotation(index.row());
+                QString data = curAnno->annoIdAsString();
+                if(curAnno->isModified()) {
+                    data = "* " + data;
+                }
+                return data;
             }
         }
     }

@@ -46,12 +46,18 @@
           <property name="text">
            <string>...</string>
           </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QToolButton" name="btAttrRem">
           <property name="text">
            <string>...</string>
+          </property>
+          <property name="autoRaise">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -60,6 +66,9 @@
           <property name="text">
            <string>...</string>
           </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -67,7 +76,23 @@
           <property name="text">
            <string>...</string>
           </property>
+          <property name="autoRaise">
+           <bool>true</bool>
+          </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
@@ -117,27 +142,45 @@
    </layout>
   </widget>
   <action name="actionAddAttribute">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/attr_add</normaloff>:/res/attr_add</iconset>
+   </property>
    <property name="text">
     <string>Add Attribute</string>
    </property>
   </action>
   <action name="actionRemoveAttribute">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/attr_rem</normaloff>:/res/attr_rem</iconset>
+   </property>
    <property name="text">
     <string>Remove Attribute</string>
    </property>
   </action>
   <action name="actionAddClass">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/class_add</normaloff>:/res/class_add</iconset>
+   </property>
    <property name="text">
     <string>Add Class</string>
    </property>
   </action>
   <action name="actionRemoveClass">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/class_rem</normaloff>:/res/class_rem</iconset>
+   </property>
    <property name="text">
     <string>Remove Class</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11" />
- <resources />
+ <resources>
+  <include location="icons.qrc" />
+ </resources>
  <connections />
 </ui>

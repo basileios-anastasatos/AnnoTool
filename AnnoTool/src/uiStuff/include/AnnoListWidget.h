@@ -15,7 +15,7 @@ class AnnoListWidget : public QDockWidget {
         QString _strCount;
 
     private slots:
-        void on_trAnnoList_currentRowChanged(const QModelIndex &, const QModelIndex &);
+        void on_trAnnoList_currentRowChanged(const QModelIndex &cur, const QModelIndex &prev);
 
     public:
         AnnoListWidget(QWidget *parent = 0);

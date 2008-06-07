@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/res" >
+        <file alias="annoToolLogo_big" >res/annotoolbig.png</file>
+    </qresource>
+</RCC>

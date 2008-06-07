@@ -12,7 +12,7 @@ AnnoFileListModelAdapter::~AnnoFileListModelAdapter() {
 
 int AnnoFileListModelAdapter::rowCount(const QModelIndex &parent) const {
     if (GlobalProjectManager::instance()->isValid()) {
-        return GlobalProjectManager::instance()->files()->size();
+        return GlobalProjectManager::instance()->fileCount();
     } else {
         return 0;
     }
@@ -25,16 +25,19 @@ int AnnoFileListModelAdapter::columnCount(const QModelIndex &parent) const {
 QVariant AnnoFileListModelAdapter::data(const QModelIndex &index, int role) const {
     GlobalProjectManager *pm = GlobalProjectManager::instance();
     if (pm != NULL && pm->isValid() && index.isValid()) {
-        if (index.row() >= 0 && index.row() < pm->files()->size() && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
-            anno::dt::AnnoFileData *cur = pm->files()->at(index.row());
+        if (index.row() >= 0 && index.row() < pm->fileCount() && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
+            anno::dt::AnnoFileData *cur = pm->getAnnoFile(index.row());
             if (index.column() == 0) {
                 QString name(cur->imageInfo()->imagePath().fileName());
+                if(cur->isModified()) {
+                    name = "* " + name;
+                }
                 if(cur->imageInfo()->frame() != NOFRAME) {
                     name.append(QString("#%1").arg(cur->imageInfo()->frame()));
                 }
                 return name;
             } else if (index.column() == 1) {
-                return pm->files()->at(index.row())->imageUuidAsString();
+                return pm->getAnnoFile(index.row())->imageUuidAsString();
             }
         }
     }

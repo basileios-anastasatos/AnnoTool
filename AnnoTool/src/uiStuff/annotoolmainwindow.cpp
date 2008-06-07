@@ -4,6 +4,7 @@
 #include "include/DlgProjectDetails.h"
 #include "include/DlgAddImage.h"
 #include "include/DlgLoaderDetails.h"
+#include "include/DlgAbout.h"
 
 #include "AllAnnoExceptions.h"
 #include "importGlobals.h"
@@ -34,8 +35,8 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     _graphicsScene = NULL;
     ui.setupUi(this);
 
-#ifdef DEBUG
-    setWindowTitle("AnnoTool - DEBUG");
+#ifdef QT_DEBUG
+    setWindowTitle("AnnoTool v2 [Debug Version]");
 #endif
 
     setCentralWidget(ui.graphicsView);
@@ -43,9 +44,20 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     QAction *za = ui.tbView->addWidget(zoomCtrl);
     za->setVisible(true);
 
-    connect(ui.annoFileListWidget, SIGNAL(annoFileSelectChanged(int, QUuid)), this, SLOT(annoFileSelectChanged(int, QUuid)));
-    connect(zoomCtrl, SIGNAL(zoomChanged(int)), this, SLOT(on_zoomSlider_valueChanged(int)));
+    bool connectOk = true;
+    connectOk &= connect(ui.annoFileListWidget, SIGNAL(annoFileSelectChanged(int, QUuid)), this, SLOT(annoFileSelectChanged(int, QUuid)));
+    connectOk &= connect(zoomCtrl, SIGNAL(zoomChanged(int)), this, SLOT(on_zoomSlider_valueChanged(int)));
     _me = this;
+
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+    connectOk &= connect(pm, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SLOT(onPM_fileListUpdate()));
+    connectOk &= connect(pm, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SLOT(onPM_annoListUpdate()));
+    connectOk &= connect(pm, SIGNAL(curAnnoFileSelChanged(int, QUuid, ::anno::dt::AnnoFileData *)), this, SLOT(onPM_annoFileSelectChanged(int, QUuid, ::anno::dt::AnnoFileData *)));
+    connectOk &= connect(pm, SIGNAL(curAnnoSelChanged(int, QUuid, ::anno::dt::Annotation *)), this, SLOT(onPM_annoSelectChanged(int, QUuid, ::anno::dt::Annotation *)));
+
+    if(!connectOk) {
+        GlobalLogger::instance()->logError("CONNECT-ERROR: AnnoToolMainWindow::AnnoToolMainWindow(QWidget)");
+    }
 
     configUIproject(false);
     setToolEnabled(false);
@@ -97,8 +109,8 @@ void AnnoToolMainWindow::loadGraphicsAnno() {
     if (_graphicsScene != NULL && GlobalProjectManager::instance()->isValid()) {
         GlobalLogger::instance()->logDebug("MW: loading annotation shapes into scene.");
         anno::dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
-        if (curFile != NULL && !curFile->annoList()->isEmpty()) {
-            QListIterator<anno::dt::Annotation *> i(*curFile->annoList());
+        if (curFile != NULL && curFile->annoCount() != 0) {
+            QListIterator<anno::dt::Annotation *> i = curFile->getAnnoIterator();
             int j = 0;
             while (i.hasNext()) {
                 anno::dt::Annotation *cur = i.next();
@@ -155,6 +167,7 @@ void AnnoToolMainWindow::configUIproject(bool open) {
 void AnnoToolMainWindow::uncheckTools() {
     GlobalLogger::instance()->logDebug("MW: unchecking graphics tools.");
     ui.actionToolPointer->setChecked(false);
+    ui.actionToolSinglePoint->setChecked(false);
     ui.actionToolRectangle->setChecked(false);
     ui.actionToolPolygon->setChecked(false);
     ui.actionToolEllipse->setChecked(false);
@@ -163,9 +176,13 @@ void AnnoToolMainWindow::uncheckTools() {
 void AnnoToolMainWindow::setToolEnabled(bool enabled) {
     GlobalLogger::instance()->logDebug(QString("MW: setting graphics tools to %1").arg(enabled ? "enabled" : "disabled"));
     ui.actionToolPointer->setEnabled(enabled);
+    ui.actionToolSinglePoint->setEnabled(enabled);
     ui.actionToolRectangle->setEnabled(enabled);
     ui.actionToolPolygon->setEnabled(enabled);
     ui.actionToolEllipse->setEnabled(enabled);
+
+    ui.actionZtoFront->setEnabled(enabled);
+    ui.actionRemoveAnnotation->setEnabled(enabled);
 }
 
 void AnnoToolMainWindow::closeEvent(QCloseEvent *event) {
@@ -214,7 +231,7 @@ void AnnoToolMainWindow::on_actionFileOpen_triggered() {
             try {
                 GlobalProjectManager *pm = GlobalProjectManager::instance();
                 pm->loadFromFile(fileName, true);
-                GlobalLogger::instance()->logInfo(QString("Loaded project '%1': %2 classes, %3 AnnotationFiles.").arg(pm->project()->projectName()).arg(pm->classes()->classCount()).arg(pm->files()->count()));
+                GlobalLogger::instance()->logInfo(QString("Loaded project '%1': %2 classes, %3 AnnotationFiles.").arg(pm->project()->projectName()).arg(pm->classCount()).arg(pm->fileCount()));
                 configUIproject(true);
                 updateAnnoWidgets();
             } catch(AnnoException *e) {
@@ -297,6 +314,12 @@ void AnnoToolMainWindow::on_actionFileExit_triggered() {
     close();
 }
 
+void AnnoToolMainWindow::on_actionHelpInfo_triggered() {
+    DlgAbout *dlg = new DlgAbout(this);
+    dlg->exec();
+    delete dlg;
+}
+
 void AnnoToolMainWindow::on_actionProjectDetails_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionProjectDetails_triggered");
     DlgProjectDetails *dlg = new DlgProjectDetails(this);
@@ -338,7 +361,7 @@ void AnnoToolMainWindow::on_actionProjectAddImage_triggered() {
                 imgInfo->setImagePath(imgPath);
                 imgInfo->setFrame(img.second);
 
-                pm->files()->append(fd);
+                pm->addAnnoFile(fd);
             }
             updateAnnoWidgets();
         }
@@ -362,30 +385,12 @@ void AnnoToolMainWindow::on_appClose() {
 void AnnoToolMainWindow::annoFileSelectChanged(int row, QUuid image) {
     GlobalLogger::instance()->logDebug(QString("Selected new annotation file with index %1 and UUID %2").arg(row).arg(image.toString()));
     GlobalProjectManager::instance()->setSelectedFileRow(row);
-    GlobalProjectManager::instance()->resetSelectedAnno();
-    ui.annoListWidget->updateData();
-    ui.annoDataWidget->updateData();
-    QFileInfo fileName = GlobalProjectManager::instance()->selectedFile()->imageInfo()->imagePath();
-    int frame = GlobalProjectManager::instance()->selectedFile()->imageInfo()->frame();
-    if (fileName.isRelative()) {
-        fileName = GlobalProjectManager::instance()->relToAbs(fileName);
-    }
-    GlobalLogger::instance()->logDebug(fileName.filePath());
-    QImage img = GlobalImageLoader::instance()->loadImage(fileName, frame, GlobalImageLoader::LoadLinearRev);
-    if (img.isNull()) {
-        QMessageBox::information(this, "AnnoTool", tr("Cannot load %1.").arg(fileName.filePath()));
-        return;
-    }
-
-    newGraphicsScene(&img);
-    loadGraphicsAnno();
-    //	ui.graphicsView->invalidateScene();
 }
 
 void AnnoToolMainWindow::on_annoListWidget_annoSelectChanged(int row, QUuid anno) {
     GlobalProjectManager::instance()->setSelectedAnnoRow(row);
-    _graphicsScene->selectShape(anno);
-    ui.annoDataWidget->updateData();
+//	_graphicsScene->selectShape(anno);
+//	ui.annoDataWidget->updateData();
 }
 
 void AnnoToolMainWindow::on_zoomSlider_valueChanged(int value) {
@@ -400,6 +405,70 @@ void AnnoToolMainWindow::on_actionFitImage_triggered() {
     fitGraphicsScene();
 }
 
+void AnnoToolMainWindow::on_actionZtoFront_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionZtoFront_triggered");
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+    if(pm->selectedAnno() != NULL) {
+        _graphicsScene->selectShape(pm->selectedAnnoUuid());
+        _graphicsScene->bringSelShapeToFront();
+    }
+}
+
+void AnnoToolMainWindow::on_actionRemoveAnnotation_triggered() {
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+    anno::dt::AnnoFileData *curFile = pm->selectedFile();
+    if(curFile != NULL) {
+        anno::dt::Annotation *curAnno = pm->selectedAnno();
+        if(curAnno != NULL) {
+            _graphicsScene->removeAnnoShape(curAnno->annoId());
+            curFile->removeAnnotation(curAnno->annoId());
+            //pm->setSelectedAnnoRow();
+        }
+    }
+}
+
+void AnnoToolMainWindow::onPM_fileListUpdate() {
+    GlobalLogger::instance()->logDebug("MW: onPM_fileListUpdate");
+    ui.annoFileListWidget->updateData();
+}
+
+void AnnoToolMainWindow::onPM_annoListUpdate() {
+    GlobalLogger::instance()->logDebug("MW: onPM_annoListUpdate");
+    ui.annoListWidget->updateData();
+}
+
+void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::anno::dt::AnnoFileData *annoFile) {
+    GlobalLogger::instance()->logDebug("MW: onPM_annoFileSelectChanged");
+
+    ui.annoListWidget->updateData();
+    ui.annoDataWidget->updateData();
+
+    QFileInfo fileName = annoFile->imageInfo()->imagePath();
+    int frame = annoFile->imageInfo()->frame();
+    if (fileName.isRelative()) {
+        fileName = GlobalProjectManager::instance()->relToAbs(fileName);
+    }
+    GlobalLogger::instance()->logDebug(QString("Loading image [%1]").arg(fileName.filePath()));
+
+    QImage img = GlobalImageLoader::instance()->loadImage(fileName, frame, GlobalImageLoader::LoadLinearRev);
+    if (img.isNull()) {
+        GlobalLogger::instance()->logError(QString("Could not load image [%1]").arg(fileName.filePath()));
+        QMessageBox::information(this, "AnnoTool", tr("Cannot load %1.").arg(fileName.filePath()));
+        return;
+    }
+
+    newGraphicsScene(&img);
+    loadGraphicsAnno();
+    //	ui.graphicsView->invalidateScene();
+}
+
+void AnnoToolMainWindow::onPM_annoSelectChanged(int row, QUuid annoId,
+        ::anno::dt::Annotation *anno) {
+    GlobalLogger::instance()->logDebug(QString("Selected annotation [%1]").arg(row));
+    _graphicsScene->selectShape(annoId);
+    ui.annoDataWidget->updateData();
+}
+
 void AnnoToolMainWindow::on_actionToolPointer_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionToolPointer_triggered");
     uncheckTools();
@@ -407,11 +476,32 @@ void AnnoToolMainWindow::on_actionToolPointer_triggered() {
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtPointer);
 }
 
+void AnnoToolMainWindow::on_actionToolSinglePoint_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionToolSinglePoint_triggered");
+    uncheckTools();
+    ui.actionToolSinglePoint->setChecked(true);
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtSinglePoint);
+}
+
 void AnnoToolMainWindow::on_actionToolRectangle_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionToolRectangle_triggered");
     uncheckTools();
     ui.actionToolRectangle->setChecked(true);
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtRect);
+}
+
+void AnnoToolMainWindow::on_actionToolPolygon_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionToolPolygon_triggered");
+    uncheckTools();
+    ui.actionToolPolygon->setChecked(true);
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtNone);
+}
+
+void AnnoToolMainWindow::on_actionToolEllipse_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionToolEllipse_triggered");
+    uncheckTools();
+    ui.actionToolEllipse->setChecked(true);
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtNone);
 }
 
 void AnnoToolMainWindow::updateUI() {

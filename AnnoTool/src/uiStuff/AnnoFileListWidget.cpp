@@ -38,7 +38,7 @@ void AnnoFileListWidget::updateData() {
 void AnnoFileListWidget::on_lstFiles_currentRowChanged(
     const QModelIndex &current, const QModelIndex &previous) {
     GlobalLogger::instance()->logDebug("Native selection changed");
-    emit annoFileSelectChanged(current.row(), GlobalProjectManager::instance()->files()->at(current.row())->imageUuid());
+    emit annoFileSelectChanged(current.row(), GlobalProjectManager::instance()->getAnnoFile(current.row())->imageUuid());
 }
 
 

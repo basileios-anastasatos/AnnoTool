@@ -1,4 +1,5 @@
 #include "include/AnnoDataWidget.h"
+#include "DlgEditAttribute.h"
 #include "importGlobals.h"
 
 AnnoDataWidget::AnnoDataWidget(QWidget *parent) :
@@ -14,6 +15,9 @@ AnnoDataWidget::AnnoDataWidget(QWidget *parent) :
     ui.btAttrRem->setDefaultAction(ui.actionRemoveAttribute);
     ui.btClassAdd->setDefaultAction(ui.actionAddClass);
     ui.btClassRem->setDefaultAction(ui.actionRemoveClass);
+
+    connect(ui.trAttributes->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(on_trAttributes_currentRowChanged(
+                const QModelIndex &, const QModelIndex &)));
 }
 
 AnnoDataWidget::~AnnoDataWidget() {
@@ -22,10 +26,29 @@ AnnoDataWidget::~AnnoDataWidget() {
 
 void AnnoDataWidget::on_actionAddAttribute_triggered() {
     GlobalLogger::instance()->logDebug("AnnoDataWidget: add attribute");
+    ::anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
+    if (curAnno != NULL) {
+        DlgEditAttribute *dlg = new DlgEditAttribute(curAnno, this);
+        if(dlg->exec() == QDialog::Accepted) {
+            anno::dt::AnnoAttribute attr(curAnno);
+            attr.setName(dlg->getAttrName());
+            attr.setClassName(dlg->getClassName());
+            attr.setValue(dlg->getValue());
+            curAnno->addAttribute(attr);
+            updateData();
+        }
+        delete dlg;
+    }
 }
 
 void AnnoDataWidget::on_actionRemoveAttribute_triggered() {
     GlobalLogger::instance()->logDebug("AnnoDataWidget: remove attribute");
+    anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
+    QModelIndex index = ui.trAttributes->selectionModel()->currentIndex();
+    if (curAnno != NULL) {
+        curAnno->removeAttribute(index.row());
+        updateData();
+    }
 }
 
 void AnnoDataWidget::on_actionAddClass_triggered() {
@@ -37,8 +60,21 @@ void AnnoDataWidget::on_actionRemoveClass_triggered() {
 }
 
 void AnnoDataWidget::on_trAttributes_activated(const QModelIndex &index) {
-    anno::dt::AnnoAttribute attr = GlobalProjectManager::instance()->selectedAnno()->attributes()->at(index.row());
-    GlobalLogger::instance()->logDebug(QString("AnnoDataWidget: activated %1").arg(attr.name));
+    anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
+    if (curAnno != NULL) {
+        anno::dt::AnnoAttribute *attr = curAnno->getAttribute(index.row());
+        if (attr != NULL) {
+            DlgEditAttribute *dlg = new DlgEditAttribute(curAnno, this);
+            dlg->setClassName(attr->className());
+            dlg->setAttrName(attr->name());
+            dlg->setValue(attr->value());
+            dlg->setEditMode(true);
+            if(dlg->exec() == QDialog::Accepted) {
+                attr->setValue(dlg->getValue());
+            }
+            delete dlg;
+        }
+    }
 }
 
 void AnnoDataWidget::updateData() {
@@ -46,6 +82,13 @@ void AnnoDataWidget::updateData() {
     _modelClasses->update();
     //ui.lbCount->setText(_strCount.arg(_model->rowCount(QModelIndex())));
     update();
+}
+
+void AnnoDataWidget::setToolsEnabled(bool enabled) {
+    ui.actionAddAttribute->setEnabled(enabled);
+    ui.actionRemoveAttribute->setEnabled(enabled);
+    ui.actionAddClass->setEnabled(enabled);
+    ui.actionRemoveClass->setEnabled(enabled);
 }
 
 void AnnoDataWidget::annoSelectChanged(int row, QUuid anno) {

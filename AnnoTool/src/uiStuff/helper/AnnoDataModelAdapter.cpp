@@ -12,7 +12,7 @@ int AnnoDataModelAdapter::rowCount(const QModelIndex &parent) const {
     if (GlobalProjectManager::instance()->isValid() && GlobalProjectManager::instance()->selectedFile() != NULL) {
         anno::dt::Annotation *cur = GlobalProjectManager::instance()->selectedAnno();
         if (cur != NULL) {
-            return cur->attributes()->size();
+            return cur->attributeCount();
         }
     }
 
@@ -28,16 +28,16 @@ QVariant AnnoDataModelAdapter::data(const QModelIndex &index, int role) const {
     if (pm->isValid() && index.isValid()) {
         anno::dt::Annotation *cur = GlobalProjectManager::instance()->selectedAnno();
 
-        if (cur != NULL && index.row() >= 0 && index.row() < cur->attributes()->size() && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
+        if (cur != NULL && index.row() >= 0 && index.row() < cur->attributeCount() && (role == Qt::DisplayRole || role == Qt::ToolTipRole)) {
             if (index.column() == 0) {
-                anno::dt::AnnoAttribute attr = cur->attributes()->at(index.row());
-                if(attr.className.isEmpty()) {
-                    return attr.name;
+                anno::dt::AnnoAttribute *attr = cur->getAttribute(index.row());
+                if(attr->className().isEmpty()) {
+                    return attr->name();
                 } else {
-                    return attr.className + ":" + attr.name;
+                    return attr->className() + ":" + attr->name();
                 }
             } else if (index.column() == 1) {
-                return cur->attributes()->at(index.row()).value;
+                return cur->getAttribute(index.row())->value();
             }
         }
     }
