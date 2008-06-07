@@ -51,21 +51,19 @@ namespace anno {
             }
         }
 
-        AnnoClassDefinition *AnnoAvClassList::getClass(const QString &name) const
-        throw(NoSuchElementException *) {
+        AnnoClassDefinition *AnnoAvClassList::getClass(const QString &name) const {
             for (int i = 0; i < _classes.size(); ++i) {
                 if (_classes[i]->name() == name) {
                     return _classes[i];
                 }
             }
 
-            throw new NoSuchElementException(__FILE__, __LINE__, QString("Given annotation class [%1] cannot be found.").arg(name));
+            return NULL;
         }
 
-        AnnoClassDefinition *AnnoAvClassList::getClass(int index) const
-        throw(OutOfRangeException *) {
+        AnnoClassDefinition *AnnoAvClassList::getClass(int index) const {
             if (index < 0 || index >= _classes.size()) {
-                throw new OutOfRangeException(__FILE__, __LINE__, "Given index is out of list bounds.");
+                return NULL;
             }
 
             return _classes[index];

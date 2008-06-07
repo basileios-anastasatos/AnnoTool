@@ -2,7 +2,7 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QTextStream>
-#include "XmlHelper.h"
+#include "importGlobals.h"
 
 //namespace AnnoTool
 namespace anno {
@@ -10,37 +10,57 @@ namespace anno {
     namespace dt {
         using ::anno::helper::XmlHelper;
 
-        AnnoAttribute::AnnoAttribute() {
+        AnnoAttribute::AnnoAttribute(Annotation *parAnno) :
+            _modified(false), _parAnno(parAnno) {
+        }
+
+        AnnoAttribute::AnnoAttribute(Annotation *parAnno, const QString &name,
+                                     const QString &className, const QString &value) :
+            _modified(false), _parAnno(parAnno) {
+            _name = name;
+            _className = className;
+            _value = value;
         }
 
         AnnoAttribute::AnnoAttribute(const QString &name, const QString &className,
-                                     const QString &value) {
-            this->name = name;
-            this->className = className;
-            this->value = value;
+                                     const QString &value) :
+            _modified(false), _parAnno(NULL) {
+            _name = name;
+            _className = className;
+            _value = value;
         }
 
-        AnnoAttribute::~AnnoAttribute() {
+        void AnnoAttribute::setModified(bool mod) {
+            _modified = mod;
+            if (_parAnno != NULL) {
+                if (mod) {
+                    _parAnno->onAttrModified(this);
+                } else {
+                    _parAnno->onAttrModifyReset(this);
+                }
+            }
         }
 
         void AnnoAttribute::print() const {
             QTextStream out(stdout);
-            out << "[" << name << ", " << className << ", '" << value << "']" << endl;
+            out << "[" << _name << ", " << _className << ", '" << _value << "']" << endl;
         }
 
-        void AnnoAttribute::toXml(QXmlStreamWriter &writer) const
-        throw(XmlException *) {
+        bool AnnoAttribute::operator==(const AnnoAttribute &attr) const {
+            return ((_name == attr._name) && (_className == attr._className));
+        }
+
+        void AnnoAttribute::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {
             writer.writeStartElement("attribute");
-            writer.writeAttribute("name", name);
-            if (!className.isEmpty()) {
-                writer.writeAttribute("class", className);
+            writer.writeAttribute("name", _name);
+            if (!_className.isEmpty()) {
+                writer.writeAttribute("class", _className);
             }
-            writer.writeCharacters(value);
+            writer.writeCharacters(_value);
             writer.writeEndElement();
         }
 
-        void AnnoAttribute::loadFromXml(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        void AnnoAttribute::loadFromXml(QXmlStreamReader &reader) throw(XmlException *) {
             QString tagAttr("attribute");
 
             if (!reader.isStartElement() || reader.name() != tagAttr) {
@@ -54,20 +74,21 @@ namespace anno {
             if (valName.isEmpty()) {
                 throw XmlHelper::genExpFormatAttr(__FILE__, __LINE__, "name", "!empty!");
             }
-            name = valName;
-            className = valClass;
-            value = val;
+            _name = valName;
+            _className = valClass;
+            _value = val;
         }
 
-        AnnoAttribute AnnoAttribute::fromXml(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        AnnoAttribute AnnoAttribute::fromXml(QXmlStreamReader &reader) throw(XmlException *) {
             AnnoAttribute data;
             data.loadFromXml(reader);
             return data;
         }
 
-        Annotation::Annotation() {
+        Annotation::Annotation(QObject *parent) :
+            QObject(parent), _modified(false) {
             _shape = NULL;
+            setAllNotifications(false);
         }
 
         Annotation::~Annotation() {
@@ -76,40 +97,61 @@ namespace anno {
             }
         }
 
-        QUuid Annotation::annoId() const {
-            return _annoId;
+        void Annotation::setModified(bool mod) {
+            bool tmp = _modified;
+            _modified = mod;
+
+            if (_notify) {
+                if(mod) {
+                    emit modified(this);
+                } else {
+                    emit modifyReset(this);
+                }
+            }
+            if (_notifyOnChange && _modified != tmp) {
+                emit modifyStateChanged(this, tmp, mod);
+            }
         }
 
-        QString Annotation::annoIdAsString() const {
-            return XmlHelper::uuidAsString(_annoId);
+        void Annotation::resetModifiedState(bool noNotify) {
+            bool tmpNotify = _notify;
+            bool tmpNotifyOnChange = _notifyOnChange;
+            bool tmpNotifyAttr = _notifyAttr;
+
+            if (noNotify) {
+                _notify = false;
+                _notifyOnChange = false;
+                _notifyAttr = false;
+            }
+
+            QMutableListIterator<AnnoAttribute> it(_annoAttributes);
+            while (it.hasNext()) {
+                it.next().setModified(false);
+            }
+            setModified(false);
+
+            if (noNotify) {
+                _notify = tmpNotify;
+                _notifyOnChange = tmpNotifyOnChange;
+                _notifyAttr = tmpNotifyAttr;
+            }
         }
 
-        QString Annotation::comment() const {
-            return _comment;
+        void Annotation::onAttrModified(AnnoAttribute *attr) {
+            if (attr != NULL) {
+                if (_notifyAttr) {
+                    emit attributeModified(this, attr);
+                }
+                if (attr->isModified()) {
+                    setModified(true);
+                }
+            }
         }
 
-        AnnoShape *Annotation::shape() {
-            return _shape;
-        }
-
-        QList<QString> *Annotation::classes() {
-            return &_annoClasses;
-        }
-
-        QList<AnnoAttribute> *Annotation::attributes() {
-            return &_annoAttributes;
-        }
-
-        void Annotation::setAnnoId(const QUuid &uuid) {
-            _annoId = uuid;
-        }
-
-        void Annotation::setComment(const QString &comment) {
-            _comment = comment;
-        }
-
-        void Annotation::setShape(AnnoShape *shape) {
-            _shape = shape;
+        void Annotation::onAttrModifyReset(AnnoAttribute *attr) {
+            if (attr != NULL && _notifyAttr) {
+                emit attributeModifyReset(this, attr);
+            }
         }
 
         void Annotation::print() const {
@@ -135,6 +177,65 @@ namespace anno {
             _shape->print();
 
             out << "--------------------------------------" << endl;
+        }
+
+        void Annotation::addClass(const QString &val) {
+            if(!_annoClasses.contains(val)) {
+                _annoClasses.append(val);
+                setModified(true);
+            }
+        }
+
+        void Annotation::addAttribute(AnnoAttribute attr) {
+            if(!_annoAttributes.contains(attr)) {
+                attr.setParentAnno(this);
+                _annoAttributes.append(attr);
+                setModified(true);
+            }
+        }
+
+        QString Annotation::getClass(int index) const {
+            if(index >= 0 && index < _annoClasses.size()) {
+                return _annoClasses[index];
+            }
+            return QString();
+        }
+
+        AnnoAttribute *Annotation::getAttribute(int index) {
+            if(index >= 0 && index < _annoAttributes.size()) {
+                return &_annoAttributes[index];
+            }
+            return NULL;
+        }
+
+        const AnnoAttribute *Annotation::getAttribute(int index) const {
+            if(index >= 0 && index < _annoAttributes.size()) {
+                return &_annoAttributes[index];
+            }
+            return NULL;
+        }
+
+        void Annotation::removeClass(int index) {
+            if(index >= 0 && index < _annoClasses.size()) {
+                _annoClasses.removeAt(index);
+                setModified(true);
+            }
+        }
+
+        void Annotation::removeClass(const QString &val) {
+            int idx = _annoClasses.indexOf(val, 0);
+            if(idx >= 0) {
+                _annoClasses.removeAt(idx);
+                setModified(true);
+            }
+        }
+
+        void Annotation::removeAttribute(int index) {
+            if(index >= 0 && index < _annoAttributes.size()) {
+                _annoAttributes[index].setParentAnno(NULL);
+                _annoAttributes.removeAt(index);
+                setModified(true);
+            }
         }
 
         void Annotation::annoClassesToXml(QXmlStreamWriter &writer) const
@@ -211,7 +312,7 @@ namespace anno {
 
             while (!reader.atEnd()) {
                 if (reader.isStartElement() && reader.name() == tagAttr) {
-                    _annoAttributes.append(AnnoAttribute::fromXml(reader));
+                    addAttribute(AnnoAttribute::fromXml(reader));
                 } else if (reader.isEndElement() && reader.name() == tagList) {
                     reader.readNext();
                     break;
@@ -251,8 +352,7 @@ namespace anno {
             reader.readNext();
         }
 
-        Annotation *Annotation::fromXml(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        Annotation *Annotation::fromXml(QXmlStreamReader &reader) throw(XmlException *) {
             Annotation *data = new Annotation();
             data->loadFromXml(reader);
             return data;

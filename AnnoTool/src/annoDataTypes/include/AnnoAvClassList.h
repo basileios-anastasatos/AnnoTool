@@ -4,7 +4,6 @@
 #include "AnnoClassDefinition.h"
 
 namespace anno {
-
     namespace dt {
 
         class AnnoAvClassList {
@@ -19,10 +18,8 @@ namespace anno {
                 bool contains(const QString &name) const;
                 void add(AnnoClassDefinition *anClass) throw(NameConflictException *);
                 void remove(const QString &name);
-                AnnoClassDefinition *getClass(const QString &name) const
-                throw(NoSuchElementException *);
-                AnnoClassDefinition *getClass(int index) const
-                throw(OutOfRangeException *);
+                AnnoClassDefinition *getClass(const QString &name) const;
+                AnnoClassDefinition *getClass(int index) const;
                 QList<QString> getClassNames() const;
                 int classCount() const;
 

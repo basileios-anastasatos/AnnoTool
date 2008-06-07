@@ -9,10 +9,11 @@ namespace anno {
 
         class AnnoGraphicsShapeCreator {
             private:
-                AnnoGraphicsShapeCreator();
+                AnnoGraphicsShapeCreator() {
+                }
 
-            public:
-                virtual ~AnnoGraphicsShapeCreator();
+                ~AnnoGraphicsShapeCreator() {
+                }
 
             public:
                 static AnnoGraphicsShape *toGraphicsShape(dt::Annotation *anno);

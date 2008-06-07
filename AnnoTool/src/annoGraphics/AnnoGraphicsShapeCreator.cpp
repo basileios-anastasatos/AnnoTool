@@ -1,16 +1,12 @@
 #include "include/AnnoGraphicsShapeCreator.h"
 #include "include/AnnoGraphicsRect.h"
+#include "include/AnnoGraphicsSinglePoint.h"
 #include "AnnoRectangle.h"
+#include "AnnoSinglePoint.h"
 
 namespace anno {
 
     namespace graphics {
-
-        AnnoGraphicsShapeCreator::AnnoGraphicsShapeCreator() {
-        }
-
-        AnnoGraphicsShapeCreator::~AnnoGraphicsShapeCreator() {
-        }
 
         AnnoGraphicsShape *AnnoGraphicsShapeCreator::toGraphicsShape(
             dt::Annotation *anno) {
@@ -26,6 +22,9 @@ namespace anno {
 //						tmp->setPos(rect->topLeft());
                             shape = tmp;
                             break;
+                        }
+                    case dt::ASTypeSinglePoint: {
+                            shape = new AnnoGraphicsSinglePoint(anno);
                         }
                     default:
                         break;

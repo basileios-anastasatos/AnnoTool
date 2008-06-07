@@ -3,9 +3,11 @@
 #include <QXmlStreamWriter>
 #include "XmlHelper.h"
 #include "AnnoRectangle.h"
+#include "AnnoSinglePoint.h"
 
 //namespace AnnoTool
 namespace anno {
+
     //namespace DataTypes
     namespace dt {
         using ::anno::helper::XmlHelper;
@@ -16,17 +18,19 @@ namespace anno {
         AnnoShape::~AnnoShape() {
         }
 
-        AnnoShape *AnnoShape::fromXml(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        AnnoShape *AnnoShape::fromXml(QXmlStreamReader &reader) throw(XmlException *) {
             QString tagShape("shape");
-            if(!reader.isStartElement() || reader.name() != tagShape) {
+            if (!reader.isStartElement() || reader.name() != tagShape) {
                 throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, tagShape, reader.name().toString());
             }
 
             AnnoShape *shape = NULL;
             XmlHelper::skipToNextStartElement(true, reader);
-            if(reader.isStartElement() && reader.name() == "rect") {
+            if (reader.isStartElement() && reader.name() == "rect") {
                 shape = new AnnoRectangle();
+                shape->loadFromXml(reader);
+            } else if (reader.isStartElement() && reader.name() == "singlePoint") {
+                shape = new AnnoSinglePoint();
                 shape->loadFromXml(reader);
             } else {
                 QString msg("Unsupported annotation shape: %1");

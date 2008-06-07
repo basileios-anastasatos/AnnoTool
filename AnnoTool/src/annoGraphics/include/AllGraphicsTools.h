@@ -5,6 +5,7 @@
 #include "ToolPointer.h"
 #include "ToolHand.h"
 #include "ToolRect.h"
+#include "ToolSinglePoint.h"
 
 #endif /*ALLGRAPHICSTOOLS_H_*/
 

@@ -92,7 +92,7 @@ namespace anno {
             dt::Annotation *anno = new dt::Annotation();
             anno->setAnnoId(QUuid::createUuid());
             anno->setShape(arect);
-            annoFile->annoList()->append(anno);
+            annoFile->addAnnotation(anno);
 
             AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
             if (s != NULL) {

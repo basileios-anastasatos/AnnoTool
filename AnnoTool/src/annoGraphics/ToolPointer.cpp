@@ -2,6 +2,8 @@
 #include "AllAnnoGraphics.h"
 #include <QGraphicsSceneMouseEvent>
 
+#include "importGlobals.h"
+
 namespace anno {
     namespace graphics {
 
@@ -45,8 +47,9 @@ namespace anno {
         void ToolPointer::mousePressEvent(AnnoGraphicsShape *shape,
                                           QGraphicsSceneMouseEvent *event) {
             event->accept();
-            _scene->clearSelection();
-            shape->graphicsItem()->setSelected(true);
+            //_scene->selectShape(shape->relatedAnno()->annoId());
+            GlobalProjectManager::instance()->setSelectedAnnoRow(shape->relatedAnno()->annoId());
+            //TODO so anpassen dass an dieser stelle eine UUID selektiert werden kann!
         }
 
         void ToolPointer::mouseReleaseEvent(AnnoGraphicsShape *shape,

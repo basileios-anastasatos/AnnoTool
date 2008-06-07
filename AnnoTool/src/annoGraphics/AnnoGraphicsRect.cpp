@@ -17,6 +17,8 @@ namespace anno {
         AnnoGraphicsRect::AnnoGraphicsRect(dt::Annotation *anno, QGraphicsItem *parent) :
             QGraphicsRectItem(parent), AnnoGraphicsShape(anno) {
             setupAppearance();
+            QRectF r = QGraphicsRectItem::rect();
+            setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(anno->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
         }
 
         AnnoGraphicsRect::AnnoGraphicsRect(dt::Annotation *anno, const QRectF &rect,
@@ -24,6 +26,8 @@ namespace anno {
             QGraphicsRectItem(rect, parent), AnnoGraphicsShape(anno) {
             setupAppearance();
             initControlPoints();
+            QRectF r = QGraphicsRectItem::rect();
+            setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(anno->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
         }
 
         AnnoGraphicsRect::AnnoGraphicsRect(dt::Annotation *anno, qreal x, qreal y,
@@ -31,6 +35,8 @@ namespace anno {
             QGraphicsRectItem(x, y, width, height, parent), AnnoGraphicsShape(anno) {
             setupAppearance();
             initControlPoints();
+            QRectF r = QGraphicsRectItem::rect();
+            setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(anno->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
         }
 
         AnnoGraphicsRect::~AnnoGraphicsRect() {
@@ -80,8 +86,12 @@ namespace anno {
                 moveBy(deltaX, deltaY);
                 QRectF rect = mapRectToParent(QGraphicsRectItem::rect());
                 *annoRect() = rect;
-                annoRect()->print();
-                GlobalLogger::instance()->logDebug(QString("Moved rect to (%1;%2))").arg(rect.topLeft().x()).arg(rect.topLeft().y()));
+                _anno->setModified(true);
+
+                QRectF r = rect;
+                setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(relatedAnno()->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
+                //annoRect()->print();
+                //GlobalLogger::instance()->logDebug(QString("Moved rect to (%1;%2))").arg(rect.topLeft().x()).arg(rect.topLeft().y()));
             }
         }
 
@@ -196,6 +206,9 @@ namespace anno {
                 *annoRect() = tmpRect;
                 annoRect()->print();
                 validateCpPos();
+                _anno->setModified(true);
+                QRectF r = QGraphicsRectItem::rect();
+                setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(relatedAnno()->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
             }
         }
 

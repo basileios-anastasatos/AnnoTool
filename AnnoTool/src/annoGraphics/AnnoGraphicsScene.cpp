@@ -9,18 +9,22 @@ namespace anno {
             QGraphicsScene(parent) {
             _image = NULL;
             _selShape = NULL;
+            _curMaxZ = 0;
         }
 
-        AnnoGraphicsScene::AnnoGraphicsScene(const QRectF &sceneRect,
-                                             QObject *parent) :
+        AnnoGraphicsScene::AnnoGraphicsScene(const QRectF &sceneRect, QObject *parent) :
             QGraphicsScene(sceneRect, parent) {
             _image = NULL;
+            _selShape = NULL;
+            _curMaxZ = 0;
         }
 
-        AnnoGraphicsScene::AnnoGraphicsScene(qreal x, qreal y, qreal width,
-                                             qreal height, QObject *parent) :
+        AnnoGraphicsScene::AnnoGraphicsScene(qreal x, qreal y, qreal width, qreal height,
+                                             QObject *parent) :
             QGraphicsScene(x, y, width, height, parent) {
             _image = NULL;
+            _selShape = NULL;
+            _curMaxZ = 0;
         }
 
         AnnoGraphicsScene::~AnnoGraphicsScene() {
@@ -83,7 +87,39 @@ namespace anno {
             if (s != NULL) {
                 GlobalLogger::instance()->logDebug(QString("AGS: selecting shape %1.").arg(annoId));
                 s->graphicsItem()->setSelected(true);
+                _selShape = s;
             }
+        }
+
+        void AnnoGraphicsScene::bringToFront(const QUuid &annoId) {
+            AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
+            if (s != NULL) {
+                GlobalLogger::instance()->logDebug(QString("AGS: bringing shape %1 to Zorder top. [z=%2]").arg(annoId).arg(_curMaxZ + 1));
+                s->graphicsItem()->setZValue(++_curMaxZ);
+            }
+        }
+
+        void AnnoGraphicsScene::bringSelShapeToFront() {
+            if (_selShape != NULL) {
+                GlobalLogger::instance()->logDebug(QString("AGS: bringing selected shape %1 to Zorder top. [z=%2]").arg(_selShape->relatedAnno()->annoIdAsString()).arg(_curMaxZ + 1));
+                _selShape->graphicsItem()->setZValue(++_curMaxZ);
+                update();
+            }
+        }
+
+        void AnnoGraphicsScene::setShapeVisible(const QUuid &annoId, bool visible) {
+            AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
+            if (s != NULL) {
+                s->graphicsItem()->setVisible(visible);
+            }
+        }
+
+        bool AnnoGraphicsScene::isShapeVisible(const QUuid &annoId) const {
+            AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
+            if (s != NULL) {
+                return s->graphicsItem()->isVisible();
+            }
+            return false;
         }
 
         bool AnnoGraphicsScene::isEmpty() const {

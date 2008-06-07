@@ -2,17 +2,14 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 #include <QTextStream>
-#include "XmlHelper.h"
+
+#include "importGlobals.h"
 
 //namespace AnnoTool
 namespace anno {
     //namespace DataTypes
     namespace dt {
         using ::anno::helper::XmlHelper;
-
-        AnnoFileData::AnnoFileData(const QString &path) {
-            _sourceFile = path;
-        }
 
         AnnoFileData::~AnnoFileData() {
             if (!_annoList.isEmpty()) {
@@ -23,61 +20,137 @@ namespace anno {
             }
         }
 
-        AnnoImageInfo *AnnoFileData::imageInfo() {
-            return &_imageInfo;
+        void AnnoFileData::onAnnoInfoNotify(bool prevState, bool curState) {
+            if (curState) {
+                setModified(true);
+            }
         }
 
-        AnnoInfo *AnnoFileData::annoInfo() {
-            return &_annoInfo;
+        void AnnoFileData::onAnnoImageInfoNotify(bool prevState, bool curState) {
+            if (curState) {
+                setModified(true);
+            }
         }
 
-        QList<Annotation *> *AnnoFileData::annoList() {
-            return &_annoList;
-        }
-
-        QString AnnoFileData::filePath() const {
-            return _sourceFile;
-        }
-
-        void AnnoFileData::setFilePath(const QString &path) {
-            _sourceFile = path;
-        }
-
-        bool AnnoFileData::containsAnnotation(const QUuid &uuid) const {
-            QListIterator<Annotation *> i(_annoList);
-            while (i.hasNext()) {
-                if (i.next()->annoId() == uuid) {
-                    return true;
+        void AnnoFileData::onAnnoModified(Annotation *anno) {
+            if (anno != NULL) {
+                if (_notifyAnno) {
+                    emit annoModified(this, anno);
+                }
+                if (anno->isModified()) {
+                    setModified(true);
                 }
             }
-            return false;
         }
 
-        Annotation *AnnoFileData::getAnnotation(const QUuid &uuid) {
-            QListIterator<Annotation *> i(_annoList);
-            while (i.hasNext()) {
-                Annotation *a = i.next();
-                if (a->annoId() == uuid) {
-                    return a;
+        void AnnoFileData::onAnnoModifyReset(Annotation *anno) {
+            if (anno != NULL) {
+                if (_notifyAnno) {
+                    emit annoModifyReset(this, anno);
                 }
             }
-            return NULL;
         }
 
-        QUuid AnnoFileData::imageUuid() const {
-            return _imageInfo.imageId();
+        void AnnoFileData::onAnnoModifyStateChanged(Annotation *anno, bool prevState,
+                bool curState) {
+            if (anno != NULL) {
+                if (_notifyOnChangeAnno) {
+                    emit annoModifyStateChanged(this, anno, prevState, curState);
+                }
+            }
         }
 
-        QString AnnoFileData::imageUuidAsString() const {
-            return XmlHelper::uuidAsString(_imageInfo.imageId());
+        void AnnoFileData::setModified(bool mod) {
+            bool tmp = _modified;
+            _modified = mod;
+
+            if (_notify) {
+                if (mod) {
+                    emit modified(this);
+                } else {
+                    emit modifyReset(this);
+                }
+            }
+            if (_notifyOnChange && _modified != tmp) {
+                emit modifyStateChanged(this, tmp, mod);
+            }
         }
 
-        QUuid AnnoFileData::complexUuid() const {
-            return _annoInfo.annoComplex();
+        void AnnoFileData::resetModifiedState(bool noNotify) {
+            bool tmpNotify = _notify;
+            bool tmpNotifyOnChange = _notifyOnChange;
+            bool tmpNotifyAnno = _notifyAnno;
+            bool tmpNotifyOnChangeAnno = _notifyOnChangeAnno;
+
+            if (noNotify) {
+                _notify = false;
+                _notifyOnChange = false;
+                _notifyAnno = false;
+                _notifyOnChangeAnno = false;
+            }
+
+            QMutableListIterator<Annotation *> it(_annoList);
+            while (it.hasNext()) {
+                it.next()->resetModifiedState(noNotify);
+            }
+            _imageInfo.setModified(false);
+            _annoInfo.setModified(false);
+            setModified(false);
+
+            if (noNotify) {
+                _notify = tmpNotify;
+                _notifyOnChange = tmpNotifyOnChange;
+                _notifyAnno = tmpNotifyAnno;
+                _notifyOnChangeAnno = tmpNotifyOnChangeAnno;
+            }
         }
 
-        QString AnnoFileData::complexUuidAsString() const {
-            return XmlHelper::uuidAsString(_annoInfo.annoComplex());
+        QList<const Annotation *> AnnoFileData::annoList() const {
+            QList<const Annotation *> lst;
+            QListIterator<Annotation *> i(_annoList);
+            while (i.hasNext()) {
+                lst.append(i.next());
+            }
+            return lst;
+        }
+
+        void AnnoFileData::addAnnotation(Annotation *anno) {
+            QUuid uuid = anno->annoId();
+            if (!_annoMap.contains(uuid)) {
+                anno->setParent(this);
+                anno->setNotify(true);
+                anno->setNotifyOnChange(_notifyOnChangeAnno);
+                anno->setNotifyAttr(false);
+                connect(anno, SIGNAL(modified(::anno::dt::Annotation *)), this, SLOT(onAnnoModified(::anno::dt::Annotation *)));
+                connect(anno, SIGNAL(modifyReset(::anno::dt::Annotation *)), this, SLOT(onAnnoModifyReset(::anno::dt::Annotation *)));
+                connect(anno, SIGNAL(modifyStateChanged(::anno::dt::Annotation *, bool, bool);), this, SLOT(onAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)));
+                _annoList.append(anno);
+                _annoMap.insert(uuid, anno);
+                setModified(true);
+            }
+        }
+
+        void AnnoFileData::removeAnnotation(int index) {
+            if (index >= 0 && index < _annoList.size()) {
+                Annotation *anno = _annoList.at(index);
+                _annoMap.remove(anno->annoId());
+                _annoList.removeAt(index);
+                delete anno;
+                setModified(true);
+            }
+        }
+
+        void AnnoFileData::removeAnnotation(const QUuid &uuid) {
+            Annotation *anno = _annoMap.value(uuid, NULL);
+            if (anno != NULL) {
+                int index = _annoList.indexOf(anno, 0);
+                if (index >= 0) {
+                    _annoMap.remove(uuid);
+                    _annoList.removeAt(index);
+                    delete anno;
+                    setModified(true);
+                }
+            }
         }
 
         void AnnoFileData::print() const {
@@ -123,11 +196,13 @@ namespace anno {
                 throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "imageInfo", reader.name().toString());
             }
             _imageInfo = AnnoImageInfo::fromXml(reader);
+            _imageInfo.setParentFile(this);
 
             if (!XmlHelper::skipToStartElement("annotationInfo", reader)) {
                 throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "annotationInfo", reader.name().toString());
             }
             _annoInfo = AnnoInfo::fromXml(reader);
+            _annoInfo.setParentFile(this);
 
             if (!XmlHelper::skipToStartElement("imageAnnotations", reader)) {
                 throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "imageAnnotations", reader.name().toString());
@@ -137,7 +212,7 @@ namespace anno {
             QString tagAnno("annotation");
             while (!reader.atEnd()) {
                 if (reader.isStartElement() && reader.name() == tagAnno) {
-                    _annoList.append(Annotation::fromXml(reader));
+                    addAnnotation(Annotation::fromXml(reader));
                 } else if (reader.isEndElement() && reader.name() == tagAnnoLst) {
                     reader.readNext();
                     break;
@@ -186,6 +261,7 @@ namespace anno {
 
         AnnoFileData *AnnoFileData::fromXml(QXmlStreamReader &reader) throw(XmlException *) {
             AnnoFileData *data = new AnnoFileData("unknown");
+            data->setAllNotifications(false);
             data->loadFromXml(reader);
             data->_sourceFile = data->imageInfo()->imageIdAsString();
             return data;

@@ -5,7 +5,6 @@
 #include "XmlHelper.h"
 
 namespace anno {
-
     namespace dt {
         using ::anno::helper::XmlHelper;
 
@@ -21,8 +20,8 @@ namespace anno {
 
         void AnnoRectangle::print() const {
             QTextStream out(stdout);
-            out << "[Rect, (" << x() << "," << y() << "), (" << width() << "," << height()
-                << ")]" << endl;
+            out << "[Rect, (" << x() << "," << y() << "), (" << width() << "," << height() << ")]"
+                << endl;
         }
 
         AnnoRectangle &AnnoRectangle::operator=(const QRectF &r) {

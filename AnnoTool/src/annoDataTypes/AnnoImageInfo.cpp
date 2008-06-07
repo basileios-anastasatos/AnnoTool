@@ -1,5 +1,5 @@
 #include "include/AnnoImageInfo.h"
-#include "XmlHelper.h"
+#include "AnnoFileData.h"
 
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -11,61 +11,20 @@ namespace anno {
     namespace dt {
         using ::anno::helper::XmlHelper;
 
-        AnnoImageInfo::AnnoImageInfo() {
-            _frame = NOFRAME;
-        }
-
-        AnnoImageInfo::~AnnoImageInfo() {
-        }
-
-        QFileInfo AnnoImageInfo::imagePath() const {
-            return _imagePath;
-        }
-
-        int AnnoImageInfo::frame() const {
-            return _frame;
-        }
-
-        QUuid AnnoImageInfo::imageId() const {
-            return _imageId;
-        }
-
-        QString AnnoImageInfo::imageIdAsString() const {
-            return XmlHelper::uuidAsString(_imageId);
-        }
-
-        QString AnnoImageInfo::imageSource() const {
-            return _imageSource;
-        }
-
-        QString AnnoImageInfo::comment() const {
-            return _comment;
-        }
-
-        void AnnoImageInfo::setImagePath(const QString &path) {
-            _imagePath = QFileInfo(path);
-        }
-
-        void AnnoImageInfo::setImagePath(const QFileInfo &path) {
-            _imagePath = path;
-        }
-
-        void AnnoImageInfo::setFrame(int frame) {
-            if(frame >= NOFRAME) {
-                _frame = frame;
+        void AnnoImageInfo::setModified(bool mod) {
+            bool prev = _modified;
+            _modified = mod;
+            if (_parFile != NULL) {
+                _parFile->onAnnoImageInfoNotify(prev, mod);
             }
         }
 
-        void AnnoImageInfo::setImageId(const QUuid &id) {
-            _imageId = id;
-        }
-
-        void AnnoImageInfo::setImageSource(const QString &source) {
-            _imageSource = source;
-        }
-
-        void AnnoImageInfo::setComment(const QString &comment) {
-            _comment = comment;
+        void AnnoImageInfo::setImagePath(const QString &path) {
+            QFileInfo tmp(path);
+            if (_imagePath != tmp) {
+                _imagePath = tmp;
+                setModified(true);
+            }
         }
 
         void AnnoImageInfo::print() const {
@@ -79,12 +38,11 @@ namespace anno {
             out << "--------------------------------------" << endl;
         }
 
-        void AnnoImageInfo::toXml(QXmlStreamWriter &writer) const
-        throw(XmlException *) {
+        void AnnoImageInfo::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {
             writer.writeStartElement("imageInfo");
 
             writer.writeStartElement("file");
-            if(_frame != NOFRAME) {
+            if (_frame != NOFRAME) {
                 writer.writeAttribute("frame", QString::number(_frame, 10));
             }
             writer.writeCharacters(_imagePath.filePath());
@@ -95,8 +53,7 @@ namespace anno {
             writer.writeEndElement();
         }
 
-        void AnnoImageInfo::loadFromXml(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        void AnnoImageInfo::loadFromXml(QXmlStreamReader &reader) throw(XmlException *) {
             QString tagInfo("imageInfo");
 
             if (!reader.isStartElement() || reader.name() != tagInfo) {
@@ -106,10 +63,10 @@ namespace anno {
                 throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "file", reader.name().toString());
             }
             QString strFrame = reader.attributes().value("frame").toString();
-            if(!strFrame.isEmpty()) {
+            if (!strFrame.isEmpty()) {
                 bool ok = false;
                 _frame = strFrame.toInt(&ok, 10);
-                if(!ok) {
+                if (!ok) {
                     throw XmlHelper::genExpFormatAttr(__FILE__, __LINE__, "frame", strFrame);
                 }
             }
@@ -133,8 +90,7 @@ namespace anno {
             reader.readNext();
         }
 
-        AnnoImageInfo AnnoImageInfo::fromXml(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        AnnoImageInfo AnnoImageInfo::fromXml(QXmlStreamReader &reader) throw(XmlException *) {
             AnnoImageInfo data;
             data.loadFromXml(reader);
             return data;

@@ -1,6 +1,5 @@
 #include "include/AnnoInfo.h"
-#include "XmlHelper.h"
-
+#include "AnnoFileData.h"
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QTextStream>
@@ -11,22 +10,12 @@ namespace anno {
     namespace dt {
         using ::anno::helper::XmlHelper;
 
-        AnnoInfo::AnnoInfo() {
-        }
-
-        AnnoInfo::AnnoInfo(const QUuid &uuid) :
-            _annoComplex(uuid) {
-        }
-
-        AnnoInfo::~AnnoInfo() {
-        }
-
-        void AnnoInfo::setComplexId(const QUuid &uuid) {
-            _annoComplex = uuid;
-        }
-
-        QUuid AnnoInfo::annoComplex() const {
-            return _annoComplex;
+        void AnnoInfo::setModified(bool mod) {
+            bool prev = _modified;
+            _modified = mod;
+            if (_parFile != NULL) {
+                _parFile->onAnnoInfoNotify(prev, mod);
+            }
         }
 
         void AnnoInfo::print() const {

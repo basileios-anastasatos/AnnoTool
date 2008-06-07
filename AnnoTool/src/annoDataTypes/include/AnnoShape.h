@@ -9,6 +9,7 @@ class QGraphicsItem;
 
 //namespace AnnoTool
 namespace anno {
+
     //namespace DataTypes
     namespace dt {
         using namespace ::anno::exc;
