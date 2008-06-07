@@ -23,7 +23,13 @@ QT += core \
     gui \
     xml \
     qt3support
-HEADERS += ./src/uiStuff/include/DlgImporter.h \
+HEADERS += ./src/annoGraphics/include/ToolSinglePoint.h \
+    ./src/uiStuff/include/DlgAbout.h \
+    ./src/annoDataTypes/include/AnnoSinglePoint.h \
+    ./src/annoGraphics/include/AnnoGraphicsSinglePoint.h \
+    ./src/uiStuff/include/DlgEditAttribute.h \
+    ./src/annoDataTypes/include/annoTypesForward.h \
+    ./src/uiStuff/include/DlgImporter.h \
     ./src/uiStuff/include/DlgExporter.h \
     ./src/uiStuff/helper/include/AnnoDataClassesModelAdapter.h \
     ./src/uiStuff/helper/include/AnnoDataModelAdapter.h \
@@ -94,7 +100,12 @@ HEADERS += ./src/uiStuff/include/DlgImporter.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h \
     ./src/uiStuff/include/annotoolmainwindow.h
-SOURCES += ./src/uiStuff/DlgImporter.cpp \
+SOURCES += ./src/annoGraphics/ToolSinglePoint.cpp \
+    ./src/uiStuff/DlgAbout.cpp \
+    ./src/annoDataTypes/AnnoSinglePoint.cpp \
+    ./src/annoGraphics/AnnoGraphicsSinglePoint.cpp \
+    ./src/uiStuff/DlgEditAttribute.cpp \
+    ./src/uiStuff/DlgImporter.cpp \
     ./src/uiStuff/DlgExporter.cpp \
     ./src/uiStuff/helper/AnnoDataClassesModelAdapter.cpp \
     ./src/uiStuff/helper/AnnoDataModelAdapter.cpp \
@@ -159,7 +170,9 @@ SOURCES += ./src/uiStuff/DlgImporter.cpp \
     ./src/annoExceptions/XmlFormatException.cpp \
     ./src/uiStuff/annotoolmainwindow.cpp \
     ./src/main.cpp
-FORMS += ./src/uiStuff/forms/DlgImporter.ui \
+FORMS += ./src/uiStuff/forms/DlgAbout.ui \
+    ./src/uiStuff/forms/DlgEditAttribute.ui \
+    ./src/uiStuff/forms/DlgImporter.ui \
     ./src/uiStuff/forms/DlgExporter.ui \
     ./src/uiStuff/forms/DlgNewProject.ui \
     ./src/uiStuff/forms/AnnoDataWidget.ui \
@@ -171,7 +184,8 @@ FORMS += ./src/uiStuff/forms/DlgImporter.ui \
     ./src/uiStuff/forms/DlgProjectDetails.ui \
     ./src/uiStuff/forms/zoomcontrol.ui \
     ./src/uiStuff/forms/annotoolmainwindow.ui
-RESOURCES += ./src/uiStuff/forms/icons.qrc
+RESOURCES += ./src/uiStuff/forms/others.qrc \
+    ./src/uiStuff/forms/icons.qrc
 win32 { 
     release { 
         DESTDIR = ./bin/win32/release
