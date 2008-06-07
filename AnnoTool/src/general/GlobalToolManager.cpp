@@ -90,6 +90,12 @@ namespace anno {
                     GlobalLogger::instance()->logDebug("Selected Tool GtRect");
                     break;
                 }
+            case GtSinglePoint: {
+                    clearTool();
+                    _curTool = new graphics::ToolSinglePoint(_curScene);
+                    GlobalLogger::instance()->logDebug("Selected Tool GtSinglePoint");
+                    break;
+                }
             default:
                 GlobalLogger::instance()->logWarning("Aborted tool selection due to unknown tool type.");
                 return;
@@ -103,7 +109,7 @@ namespace anno {
     }
 
     graphics::GraphicsTool *GlobalToolManager::curTool() {
-        if(_resetFlag) {
+        if (_resetFlag) {
             GlobalLogger::instance()->logDebug("Restoring current tool after reset.");
             selectTool(_curToolId);
         }

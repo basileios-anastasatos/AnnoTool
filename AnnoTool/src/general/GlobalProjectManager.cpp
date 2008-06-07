@@ -6,18 +6,6 @@
 namespace anno {
     GlobalProjectManager *GlobalProjectManager::_me = NULL;
 
-    GlobalProjectManager::GlobalProjectManager() {
-        _project = NULL;
-        _classList = NULL;
-        _fileList = NULL;
-        _curSelFile = -1;
-        _curSelAnno = -1;
-    }
-
-    GlobalProjectManager::~GlobalProjectManager() {
-        clear();
-    }
-
     void GlobalProjectManager::setupManager() {
         _me = new GlobalProjectManager();
     }
@@ -29,20 +17,38 @@ namespace anno {
         return _me;
     }
 
-    dt::AnnoProject *GlobalProjectManager::project() {
-        return _project;
+    void GlobalProjectManager::onAnnoFileModifyChange(AnnoFileData *annoFile,
+            bool prevState, bool curState) {
+        if (annoFile != NULL) {
+            int idx = -1;
+            if (curState && !_fileListMod->contains(annoFile)) {
+                _fileListMod->append(annoFile);
+            } else if (!curState && (idx = _fileListMod->indexOf(annoFile)) >= 0) {
+                _fileListMod->removeAt(idx);
+            }
+        }
     }
 
-    dt::AnnoAvClassList *GlobalProjectManager::classes() {
-        return _classList;
+    QList<const dt::AnnoFileData *> GlobalProjectManager::files() const {
+        QList<const dt::AnnoFileData *> tmp;
+        QListIterator<dt::AnnoFileData *> i(*_fileList);
+        while (i.hasNext()) {
+            tmp.append(i.next());
+        }
+        return tmp;
     }
 
-    QList<dt::AnnoFileData *> *GlobalProjectManager::files() {
-        return _fileList;
+    QList<const dt::AnnoFileData *> GlobalProjectManager::modFiles() const {
+        QList<const dt::AnnoFileData *> tmp;
+        QListIterator<dt::AnnoFileData *> i(*_fileListMod);
+        while (i.hasNext()) {
+            tmp.append(i.next());
+        }
+        return tmp;
     }
 
     bool GlobalProjectManager::isValid() const {
-        return (_project != NULL && !_project->uuid().isNull() && _classList != NULL && _fileList != NULL);
+        return (_project != NULL && !_project->uuid().isNull() && _classList != NULL && _fileList != NULL && _fileListMod != NULL);
     }
 
     void GlobalProjectManager::clear() {
@@ -64,6 +70,10 @@ namespace anno {
             delete _fileList;
             _fileList = NULL;
         }
+        if (_fileListMod != NULL) {
+            delete _fileListMod;
+            _fileListMod = NULL;
+        }
         _curSelFile = -1;
         _curSelAnno = -1;
     }
@@ -71,46 +81,36 @@ namespace anno {
     void GlobalProjectManager::newEmpty(const QString &projectPath, const QUuid &projectUuid)
     throw(IllegalStateException *) {
         if (isValid()) {
-            throw new IllegalStateException(__FILE__, __LINE__, "A project is already a current project.");
+            throw new IllegalStateException(__FILE__, __LINE__, "There is aleady a current project loaded.");
         }
 
         _project = new dt::AnnoProject(projectPath, projectUuid);
         _classList = new dt::AnnoAvClassList();
         _fileList = new QList<dt::AnnoFileData *>();
+        _fileListMod = new QList<dt::AnnoFileData *>();
         _curSelFile = -1;
         _curSelAnno = -1;
     }
 
-    void GlobalProjectManager::resetSelectedFile() {
-        _curSelFile = -1;
-    }
-
-    void GlobalProjectManager::resetSelectedAnno() {
-        _curSelAnno = -1;
-    }
-
-    void GlobalProjectManager::setSelectedFileRow(int index) {
-        if (index >= 0 && index < _fileList->size()) {
-            _curSelFile = index;
+    void GlobalProjectManager::addAnnoFile(dt::AnnoFileData *annoFile) {
+        if (annoFile != NULL && isValid()) {
+            if (!connect(annoFile, SIGNAL(modifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SLOT(onAnnoFileModifyChange(::anno::dt::AnnoFileData *, bool, bool)))) {
+                GlobalLogger::instance()->logError("CONNECT-ERROR: GlobalProjectManager::addAnnoFile");
+            }
+            _fileList->append(annoFile);
         }
-    }
-
-    void GlobalProjectManager::setSelectedAnnoRow(int index) {
-        if (index >= 0 && selectedFile() != NULL && index < selectedFile()->annoList()->size()) {
-            _curSelAnno = index;
-        }
-    }
-
-    int GlobalProjectManager::selectedFileRow() const {
-        return _curSelFile;
-    }
-
-    int GlobalProjectManager::selectedAnnoRow() const {
-        return _curSelAnno;
     }
 
     dt::AnnoFileData *GlobalProjectManager::selectedFile() {
-        if (_curSelFile >= 0 && _curSelFile < _fileList->size()) {
+        if (_fileList != NULL && _curSelFile >= 0 && _curSelFile < _fileList->size()) {
+            return _fileList->at(_curSelFile);
+        } else {
+            return NULL;
+        }
+    }
+
+    const dt::AnnoFileData *GlobalProjectManager::selectedFile() const {
+        if (_fileList != NULL && _curSelFile >= 0 && _curSelFile < _fileList->size()) {
             return _fileList->at(_curSelFile);
         } else {
             return NULL;
@@ -118,19 +118,137 @@ namespace anno {
     }
 
     dt::Annotation *GlobalProjectManager::selectedAnno() {
-        if (_curSelAnno >= 0 && selectedFile() != NULL && _curSelAnno < selectedFile()->annoList()->size()) {
-            return selectedFile()->annoList()->at(_curSelAnno);
+        if (_curSelAnno >= 0 && selectedFile() != NULL && _curSelAnno < selectedFile()->annoCount()) {
+            return selectedFile()->getAnnotation(_curSelAnno);
         } else {
             return NULL;
         }
     }
 
-    QUuid GlobalProjectManager::selectedAnnoUuid() {
-        if (selectedAnno() != NULL) {
-            return selectedAnno()->annoId();
+    const dt::Annotation *GlobalProjectManager::selectedAnno() const {
+        if (_curSelAnno >= 0 && selectedFile() != NULL && _curSelAnno < selectedFile()->annoCount()) {
+            return selectedFile()->getAnnotation(_curSelAnno);
         } else {
-            return QUuid();
+            return NULL;
         }
+    }
+
+    void GlobalProjectManager::setSelectedFileRow(int index) {
+        if (_fileList != NULL && index >= 0 && index < _fileList->size()) {
+            dt::AnnoFileData *file = _fileList->at(index);
+            if (file != NULL) {
+                resetSelectedFile();
+                bool connectOk = true;
+                connectOk &= connect(file, SIGNAL(modified(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModified(::anno::dt::AnnoFileData *)));
+                connectOk &= connect(file, SIGNAL(modifyReset(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModifyReset(::anno::dt::AnnoFileData *)));
+                connectOk &= connect(file, SIGNAL(modifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)));
+
+                if (!connectOk) {
+                    GlobalLogger::instance()->logError("CONNECT-ERROR: GlobalProjectManager::setSelectedFileRow(int)");
+                }
+
+                _curSelFile = index;
+                emit curAnnoFileSelChanged(index, file->imageUuid(), file);
+            }
+        }
+    }
+
+    void GlobalProjectManager::setSelectedAnnoRow(int index) {
+        if (index >= 0 && selectedFile() != NULL && index < selectedFile()->annoCount()) {
+            dt::Annotation *anno = selectedFile()->getAnnotation(index);
+            if (anno != NULL) {
+                resetSelectedAnno();
+                bool connectOk = true;
+                connectOk &= connect(anno, SIGNAL(modified(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModified(::anno::dt::Annotation *)));
+                connectOk &= connect(anno, SIGNAL(modifyReset(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModifyReset(::anno::dt::Annotation *)));
+                connectOk &= connect(anno, SIGNAL(modifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)));
+
+                if (!connectOk) {
+                    GlobalLogger::instance()->logError("CONNECT-ERROR: GlobalProjectManager::setSelectedAnnoRow(int)");
+                }
+
+                _curSelAnno = index;
+                emit curAnnoSelChanged(index, anno->annoId(), anno);
+            }
+        }
+    }
+
+    void GlobalProjectManager::setSelectedFileRow(const QUuid &uuid) {
+        if (_fileList != NULL) {
+            int index = -1;
+            int j = 0;
+            QListIterator<dt::AnnoFileData *> i(*_fileList);
+            while(i.hasNext()) {
+                dt::AnnoFileData *cur = i.next();
+                if(cur->imageUuid() == uuid) {
+                    index = j;
+                    break;
+                }
+                ++j;
+            }
+            setSelectedFileRow(index);
+        }
+    }
+    void GlobalProjectManager::setSelectedAnnoRow(const QUuid &uuid) {
+        dt::AnnoFileData *curFile = selectedFile();
+        if (curFile != NULL) {
+            int index = -1;
+            int j = 0;
+            QListIterator<dt::Annotation *> i = curFile->getAnnoIterator();
+            while(i.hasNext()) {
+                dt::Annotation *cur = i.next();
+                if(cur->annoId() == uuid) {
+                    index = j;
+                    break;
+                }
+                ++j;
+            }
+            GlobalLogger::instance()->logDebug(QString("Selected annotation by uuid [%1], has index [%2]").arg(uuid).arg(j));
+            setSelectedAnnoRow(index);
+        }
+    }
+
+    void GlobalProjectManager::resetSelectedFile() {
+        dt::AnnoFileData *file = selectedFile();
+        if (file != NULL) {
+            bool dconOk = true;
+            dconOk &= disconnect(file, SIGNAL(modified(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModified(::anno::dt::AnnoFileData *)));
+            dconOk &= disconnect(file, SIGNAL(modifyReset(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModifyReset(::anno::dt::AnnoFileData *)));
+            dconOk &= disconnect(file, SIGNAL(modifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)));
+
+            if (!dconOk) {
+                GlobalLogger::instance()->logError("DISCONNECT-ERROR: GlobalProjectManager::resetSelectedFile() - during file discon");
+            }
+
+            dconOk = true;
+            dt::Annotation *anno = selectedAnno();
+            if (anno != NULL) {
+                dconOk &= disconnect(anno, SIGNAL(modified(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModified(::anno::dt::Annotation *)));
+                dconOk &= disconnect(anno, SIGNAL(modifyReset(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModifyReset(::anno::dt::Annotation *)));
+                dconOk &= disconnect(anno, SIGNAL(modifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)));
+            }
+
+            if (!dconOk) {
+                GlobalLogger::instance()->logError("DISCONNECT-ERROR: GlobalProjectManager::resetSelectedFile() - during anno dcon");
+            }
+        }
+        _curSelFile = -1;
+        _curSelAnno = -1;
+    }
+
+    void GlobalProjectManager::resetSelectedAnno() {
+        dt::Annotation *anno = selectedAnno();
+        if (anno != NULL) {
+            bool dconOk = true;
+            dconOk &= disconnect(anno, SIGNAL(modified(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModified(::anno::dt::Annotation *)));
+            dconOk &= disconnect(anno, SIGNAL(modifyReset(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModifyReset(::anno::dt::Annotation *)));
+            dconOk &= disconnect(anno, SIGNAL(modifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)));
+
+            if (!dconOk) {
+                GlobalLogger::instance()->logError("DISCONNECT-ERROR: GlobalProjectManager::resetSelectedAnno()");
+            }
+        }
+        _curSelAnno = -1;
     }
 
     QFileInfo GlobalProjectManager::relToAbs(const QFileInfo &file) const
@@ -313,11 +431,22 @@ namespace anno {
         _project = dt::AnnoProject::fromFile(path);
         _classList = new dt::AnnoAvClassList();
         _fileList = new QList<dt::AnnoFileData *>();
+        _fileListMod = new QList<dt::AnnoFileData *>();
 
         if (loadSub) {
             //TODO change rel path handling such that rel paths start at project file dir.
             loadClassDefs();
             loadAnnoFiles();
+        }
+
+        QMutableListIterator<dt::AnnoFileData *> it(*_fileList);
+        while (it.hasNext()) {
+            dt::AnnoFileData *annoFile = it.next();
+            annoFile->setNotify(true);
+            annoFile->setNotifyOnChange(true);
+            annoFile->setNotifyAnno(true);
+            annoFile->setNotifyOnAnnoChange(true);
+            annoFile->resetModifiedState(true);
         }
     }
 

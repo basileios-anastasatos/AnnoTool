@@ -34,8 +34,7 @@ namespace anno {
 
         libAn::AnnotationList annoList;
         GlobalProjectManager *pm = GlobalProjectManager::instance();
-        QList<dt::AnnoFileData *> *files = pm->files();
-        QListIterator<dt::AnnoFileData *> iFile(*files);
+        QListIterator<dt::AnnoFileData *> iFile = pm->getFileIterator();
         while (iFile.hasNext()) {
             dt::AnnoFileData *curFile = iFile.next();
             libAn::Annotation anno;
@@ -44,7 +43,7 @@ namespace anno {
                 anno.setFrameNr(curFile->imageInfo()->frame());
             }
 
-            QListIterator<dt::Annotation *> iShape(*curFile->annoList());
+            QListIterator<dt::Annotation *> iShape = curFile->getAnnoIterator();
             while (iShape.hasNext()) {
                 dt::Annotation *curShape = iShape.next();
                 libAn::AnnoRect r = convRect(reinterpret_cast<dt::AnnoRectangle *>(curShape));

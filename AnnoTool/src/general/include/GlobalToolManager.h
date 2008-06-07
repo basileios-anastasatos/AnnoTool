@@ -12,7 +12,7 @@ namespace anno {
             // enum of selectable tools
         public:
             enum SelGraphicsTool {
-                GtNone, GtPointer, GtHand, GtRect
+                GtNone, GtPointer, GtHand, GtRect, GtSinglePoint
             };
 
             // Singleton members

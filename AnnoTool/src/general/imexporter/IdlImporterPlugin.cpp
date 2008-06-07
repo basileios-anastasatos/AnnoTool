@@ -50,7 +50,7 @@ namespace anno {
         if(!savePath.isAbsolute()) {
             savePath = pm->relToAbs(savePath);
         }
-        QList<dt::AnnoFileData *> *files = pm->files();
+        //QList<dt::AnnoFileData*>* files = pm->files();
 
         for(unsigned int i = 0; i < annoList.size(); ++i) {
             libAn::Annotation &curAnno = annoList[i];
@@ -70,10 +70,10 @@ namespace anno {
                 dt::Annotation *newAnno = new dt::Annotation();
                 newAnno->setAnnoId(QUuid::createUuid());
                 newAnno->setShape(convRect(curRect));
-                newAnno->attributes()->append(dt::AnnoAttribute("idlscore", QString(), QString::number(curRect.score(), 'f', 6)));
-                curFileData->annoList()->append(newAnno);
+                newAnno->addAttribute(dt::AnnoAttribute("idlscore", QString(), QString::number(curRect.score(), 'f', 6)));
+                curFileData->addAnnotation(newAnno);
             }
-            files->append(curFileData);
+            pm->addAnnoFile(curFileData);
         }
 
         return true;
