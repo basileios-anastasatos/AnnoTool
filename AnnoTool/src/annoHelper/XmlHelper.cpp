@@ -44,8 +44,8 @@ namespace anno {
             return found;
         }
 
-        void XmlHelper::skipToNextStartElement(bool skipCur,
-                                               QXmlStreamReader &reader) throw(XmlException *) {
+        void XmlHelper::skipToNextStartElement(bool skipCur, QXmlStreamReader &reader)
+        throw(XmlException *) {
             if (skipCur && !reader.atEnd()) {
                 reader.readNext();
             }
@@ -86,15 +86,19 @@ namespace anno {
             writer.writeAttribute("y", QString::number(y, 'f', 2));
         }
 
-        void XmlHelper::writeXmlSize(QXmlStreamWriter &writer, qreal width,
-                                     qreal height) {
+        void XmlHelper::writeXmlPoint(QXmlStreamWriter &writer, const QString &tag, qreal x, qreal y) {
+            writer.writeEmptyElement(tag);
+            writer.writeAttribute("x", QString::number(x, 'f', 2));
+            writer.writeAttribute("y", QString::number(y, 'f', 2));
+        }
+
+        void XmlHelper::writeXmlSize(QXmlStreamWriter &writer, qreal width, qreal height) {
             writer.writeEmptyElement("size");
             writer.writeAttribute("w", QString::number(width, 'f', 2));
             writer.writeAttribute("h", QString::number(height, 'f', 2));
         }
 
-        QPointF XmlHelper::readXmlPoint(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        QPointF XmlHelper::readXmlPoint(QXmlStreamReader &reader) throw(XmlException *) {
             QString strX = reader.attributes().value("x").toString();
             QString strY = reader.attributes().value("y").toString();
             if (strX.isEmpty() || strY.isEmpty()) {
@@ -111,8 +115,7 @@ namespace anno {
             return QPointF(x, y);
         }
 
-        QSizeF XmlHelper::readXmlSize(QXmlStreamReader &reader)
-        throw(XmlException *) {
+        QSizeF XmlHelper::readXmlSize(QXmlStreamReader &reader) throw(XmlException *) {
             QString strW = reader.attributes().value("w").toString();
             QString strH = reader.attributes().value("h").toString();
             if (strW.isEmpty() || strH.isEmpty()) {
@@ -129,8 +132,8 @@ namespace anno {
             return QSizeF(w, h);
         }
 
-        XmlFormatException *XmlHelper::genExpFormatExpected(const char *file,
-                int line, const QString &expected, const QString &actual) {
+        XmlFormatException *XmlHelper::genExpFormatExpected(const char *file, int line,
+                const QString &expected, const QString &actual) {
             QString msg("Invalid Xml format. Was expecting tag <%1> but got <%2>");
             msg = msg.arg(expected, actual);
             return new XmlFormatException(file, line, msg);
@@ -145,8 +148,7 @@ namespace anno {
 
         XmlException *XmlHelper::genExpStreamPos(const char *file, int line,
                 const QString &expected, const QString &actual) {
-            QString
-            msg("Illegal Xml stream position. Was expecting tag <%1> but got <%2>");
+            QString msg("Illegal Xml stream position. Was expecting tag <%1> but got <%2>");
             msg = msg.arg(expected, actual);
             return new XmlFormatException(file, line, msg);
         }

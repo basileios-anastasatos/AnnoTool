@@ -31,6 +31,7 @@ namespace anno {
 
             public:
                 static void writeXmlPoint(QXmlStreamWriter &writer, qreal x, qreal y);
+                static void writeXmlPoint(QXmlStreamWriter &writer, const QString &tag, qreal x, qreal y);
                 static void writeXmlSize(QXmlStreamWriter &writer, qreal width,
                                          qreal height);
                 static QPointF readXmlPoint(QXmlStreamReader &reader) throw(XmlException *);
