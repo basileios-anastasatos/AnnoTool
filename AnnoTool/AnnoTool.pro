@@ -21,9 +21,11 @@ INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/libAnnotationDeprecated/include
 QT += core \
     gui \
-    xml \
-    qt3support
-HEADERS += ./src/annoGraphics/include/ToolSinglePoint.h \
+    xml
+HEADERS += ./src/annoGraphics/include/ToolEllipse.h \
+    ./src/annoGraphics/include/AnnoGraphicsEllipse.h \
+    ./src/annoDataTypes/include/AnnoEllipse.h \
+    ./src/annoGraphics/include/ToolSinglePoint.h \
     ./src/uiStuff/include/DlgAbout.h \
     ./src/annoDataTypes/include/AnnoSinglePoint.h \
     ./src/annoGraphics/include/AnnoGraphicsSinglePoint.h \
@@ -100,7 +102,10 @@ HEADERS += ./src/annoGraphics/include/ToolSinglePoint.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h \
     ./src/uiStuff/include/annotoolmainwindow.h
-SOURCES += ./src/annoGraphics/ToolSinglePoint.cpp \
+SOURCES += ./src/annoGraphics/ToolEllipse.cpp \
+    ./src/annoGraphics/AnnoGraphicsEllipse.cpp \
+    ./src/annoDataTypes/AnnoEllipse.cpp \
+    ./src/annoGraphics/ToolSinglePoint.cpp \
     ./src/uiStuff/DlgAbout.cpp \
     ./src/annoDataTypes/AnnoSinglePoint.cpp \
     ./src/annoGraphics/AnnoGraphicsSinglePoint.cpp \
