@@ -56,7 +56,7 @@ void DlgEditAttribute::loadClassAttributes() {
 void DlgEditAttribute::loadRecentValues() {
     QSetIterator<QString> i(_acValues);
     while (i.hasNext()) {
-        ui.cbValue->insertItem(i.next());
+        ui.cbValue->addItem(i.next());
     }
 }
 
@@ -87,7 +87,7 @@ void DlgEditAttribute::setClassMode(bool useClass) {
     if (!useClass) {
         QSetIterator<QString> i(_acAttributes);
         while (i.hasNext()) {
-            ui.cbName->insertItem(i.next());
+            ui.cbName->addItem(i.next());
         }
         ui.cbName->lineEdit()->setText(QString());
     }
