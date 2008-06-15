@@ -17,8 +17,9 @@ namespace anno {
         return _me;
     }
 
-    void GlobalProjectManager::onAnnoFileModifyChange(AnnoFileData *annoFile,
+    void GlobalProjectManager::onAnnoFileModifyChange(::anno::dt::AnnoFileData *annoFile,
             bool prevState, bool curState) {
+        GlobalLogger::instance()->logDebug(QString("GlobalProjectManager::onAnnoFileModifyChange: state is %1, was %2").arg(curState).arg(prevState));
         if (annoFile != NULL) {
             int idx = -1;
             if (curState && !_fileListMod->contains(annoFile)) {
@@ -94,6 +95,7 @@ namespace anno {
 
     void GlobalProjectManager::addAnnoFile(dt::AnnoFileData *annoFile) {
         if (annoFile != NULL && isValid()) {
+            GlobalLogger::instance()->logDebug("Added anno file.");
             if (!connect(annoFile, SIGNAL(modifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SLOT(onAnnoFileModifyChange(::anno::dt::AnnoFileData *, bool, bool)))) {
                 GlobalLogger::instance()->logError("CONNECT-ERROR: GlobalProjectManager::addAnnoFile");
             }
@@ -139,9 +141,9 @@ namespace anno {
             if (file != NULL) {
                 resetSelectedFile();
                 bool connectOk = true;
-                connectOk &= connect(file, SIGNAL(modified(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModified(::anno::dt::AnnoFileData *)));
-                connectOk &= connect(file, SIGNAL(modifyReset(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModifyReset(::anno::dt::AnnoFileData *)));
-                connectOk &= connect(file, SIGNAL(modifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)));
+                connectOk = connectOk && connect(file, SIGNAL(modified(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModified(::anno::dt::AnnoFileData *)));
+                connectOk = connectOk && connect(file, SIGNAL(modifyReset(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModifyReset(::anno::dt::AnnoFileData *)));
+                connectOk = connectOk && connect(file, SIGNAL(modifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)));
 
                 if (!connectOk) {
                     GlobalLogger::instance()->logError("CONNECT-ERROR: GlobalProjectManager::setSelectedFileRow(int)");
@@ -159,9 +161,9 @@ namespace anno {
             if (anno != NULL) {
                 resetSelectedAnno();
                 bool connectOk = true;
-                connectOk &= connect(anno, SIGNAL(modified(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModified(::anno::dt::Annotation *)));
-                connectOk &= connect(anno, SIGNAL(modifyReset(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModifyReset(::anno::dt::Annotation *)));
-                connectOk &= connect(anno, SIGNAL(modifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)));
+                connectOk = connectOk && connect(anno, SIGNAL(modified(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModified(::anno::dt::Annotation *)));
+                connectOk = connectOk && connect(anno, SIGNAL(modifyReset(::anno::dt::Annotation *)), this, SIGNAL(curAnnoModifyReset(::anno::dt::Annotation *)));
+                connectOk = connectOk && connect(anno, SIGNAL(modifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)));
 
                 if (!connectOk) {
                     GlobalLogger::instance()->logError("CONNECT-ERROR: GlobalProjectManager::setSelectedAnnoRow(int)");
@@ -409,7 +411,7 @@ namespace anno {
                     //TODO think of handling symlinks here. further research must be done on this!
 
                     if (dt::AnnoFileData::probeFile(fi.absoluteFilePath(), _project->uuid())) {
-                        _fileList->append(dt::AnnoFileData::fromFile(fi.absoluteFilePath()));
+                        addAnnoFile(dt::AnnoFileData::fromFile(fi.absoluteFilePath()));
                     } else {
                         GlobalLogger::instance()->logDebug(QString("Won't load annotation data from [%1]. Wrong Annotation Complex ID").arg(fi.filePath()));
                     }
@@ -458,10 +460,16 @@ namespace anno {
 
         _project->writeToFile();
         if (saveSub) {
-            QListIterator<dt::AnnoFileData *> i(*_fileList);
+            QListIterator<dt::AnnoFileData *> i(*_fileListMod);
             while (i.hasNext()) {
-                i.next()->writeToFile();
+                dt::AnnoFileData *cur = i.next();
+                cur->writeToFile();
+                cur->resetModifiedState(false);
             }
+            if(_fileListMod->size() != 0) {
+                GlobalLogger::instance()->logWarning("Modified File List not empty despite of reset!");
+            }
+            _fileListMod->clear();
         }
     }
 

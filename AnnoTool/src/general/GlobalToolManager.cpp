@@ -96,6 +96,12 @@ namespace anno {
                     GlobalLogger::instance()->logDebug("Selected Tool GtSinglePoint");
                     break;
                 }
+            case GtEllipse: {
+                    clearTool();
+                    _curTool = new graphics::ToolEllipse(_curScene);
+                    GlobalLogger::instance()->logDebug("Selected Tool GtEllipse");
+                    break;
+                }
             default:
                 GlobalLogger::instance()->logWarning("Aborted tool selection due to unknown tool type.");
                 return;
