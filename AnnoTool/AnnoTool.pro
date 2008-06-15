@@ -22,7 +22,9 @@ INCLUDEPATH += ./src/annoDataTypes/include \
 QT += core \
     gui \
     xml
-HEADERS += ./src/annoGraphics/include/ToolEllipse.h \
+HEADERS += ./src/uiStuff/include/AnnoToolMainWindow.h \
+    ./src/uiStuff/include/ZoomControl.h \
+    ./src/annoGraphics/include/ToolEllipse.h \
     ./src/annoGraphics/include/AnnoGraphicsEllipse.h \
     ./src/annoDataTypes/include/AnnoEllipse.h \
     ./src/annoGraphics/include/ToolSinglePoint.h \
@@ -87,7 +89,6 @@ HEADERS += ./src/annoGraphics/include/ToolEllipse.h \
     ./src/annoHelper/logging/include/DummyLogger.h \
     ./src/annoHelper/logging/include/ConsoleLogger.h \
     ./src/annoHelper/logging/include/Logger.h \
-    ./src/uiStuff/include/zoomcontrol.h \
     ./src/annoExceptions/include/AllAnnoExceptions.h \
     ./src/annoGraphics/include/AnnoGraphicsControlPoint.h \
     ./src/annoGraphics/include/AnnoGraphicsPixmap.h \
@@ -100,9 +101,10 @@ HEADERS += ./src/annoGraphics/include/ToolEllipse.h \
     ./src/annoExceptions/include/NoSuchElementException.h \
     ./src/annoExceptions/include/OutOfRangeException.h \
     ./src/annoExceptions/include/XmlException.h \
-    ./src/annoExceptions/include/XmlFormatException.h \
-    ./src/uiStuff/include/annotoolmainwindow.h
-SOURCES += ./src/annoGraphics/ToolEllipse.cpp \
+    ./src/annoExceptions/include/XmlFormatException.h
+SOURCES += ./src/uiStuff/AnnoToolMainWindow.cpp \
+    ./src/uiStuff/ZoomControl.cpp \
+    ./src/annoGraphics/ToolEllipse.cpp \
     ./src/annoGraphics/AnnoGraphicsEllipse.cpp \
     ./src/annoDataTypes/AnnoEllipse.cpp \
     ./src/annoGraphics/ToolSinglePoint.cpp \
@@ -160,7 +162,6 @@ SOURCES += ./src/annoGraphics/ToolEllipse.cpp \
     ./src/annoHelper/logging/DummyLogger.cpp \
     ./src/annoHelper/logging/ConsoleLogger.cpp \
     ./src/annoHelper/logging/Logger.cpp \
-    ./src/uiStuff/zoomcontrol.cpp \
     ./src/annoGraphics/AnnoGraphicsControlPoint.cpp \
     ./src/annoGraphics/AnnoGraphicsPixmap.cpp \
     ./src/annoGraphics/AnnoGraphicsPolygon.cpp \
@@ -173,9 +174,10 @@ SOURCES += ./src/annoGraphics/ToolEllipse.cpp \
     ./src/annoExceptions/OutOfRangeException.cpp \
     ./src/annoExceptions/XmlException.cpp \
     ./src/annoExceptions/XmlFormatException.cpp \
-    ./src/uiStuff/annotoolmainwindow.cpp \
     ./src/main.cpp
-FORMS += ./src/uiStuff/forms/DlgAbout.ui \
+FORMS += ./src/uiStuff/forms/AnnoToolMainWindow.ui \
+    ./src/uiStuff/forms/ZoomControl.ui \
+    ./src/uiStuff/forms/DlgAbout.ui \
     ./src/uiStuff/forms/DlgEditAttribute.ui \
     ./src/uiStuff/forms/DlgImporter.ui \
     ./src/uiStuff/forms/DlgExporter.ui \
@@ -186,9 +188,7 @@ FORMS += ./src/uiStuff/forms/DlgAbout.ui \
     ./src/uiStuff/forms/DlgAddImage.ui \
     ./src/uiStuff/forms/AnnoFileListWidget.ui \
     ./src/uiStuff/forms/DlgFileChooser.ui \
-    ./src/uiStuff/forms/DlgProjectDetails.ui \
-    ./src/uiStuff/forms/zoomcontrol.ui \
-    ./src/uiStuff/forms/annotoolmainwindow.ui
+    ./src/uiStuff/forms/DlgProjectDetails.ui
 RESOURCES += ./src/uiStuff/forms/others.qrc \
     ./src/uiStuff/forms/icons.qrc
 win32 { 

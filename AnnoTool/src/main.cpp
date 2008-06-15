@@ -1,4 +1,4 @@
-#include "annotoolmainwindow.h"
+#include "AnnoToolMainWindow.h"
 
 #include <QtGui>
 #include <QApplication>
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
 
     AnnoToolMainWindow w;
     w.show();
-    a.connect(&a, SIGNAL(aboutToQuit()), &w, SLOT(on_appClose()));
+    a.connect(&a, SIGNAL(aboutToQuit()), &w, SLOT(onAppClose()));
     a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
     GlobalLogger::instance()->logDebug("entering QApplication loop");
     return a.exec();
