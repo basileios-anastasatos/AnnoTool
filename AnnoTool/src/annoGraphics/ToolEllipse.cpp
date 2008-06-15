@@ -9,7 +9,7 @@
 #include "AnnoGraphicsShape.h"
 #include "AnnoGraphicsShapeCreator.h"
 #include "importGlobals.h"
-#include "annotoolmainwindow.h"
+#include "AnnoToolMainWindow.h"
 
 
 namespace anno {
