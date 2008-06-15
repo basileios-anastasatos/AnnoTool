@@ -4,13 +4,19 @@
 #include "AnnoClassDefinition.h"
 #include "AnnoAvClassList.h"
 
+#include <QLineEdit>
+
 QSet<QString> DlgEditAttribute::_acAttributes;
+QSet<QString> DlgEditAttribute::_acValues;
 
 DlgEditAttribute::DlgEditAttribute(::anno::dt::Annotation *anno, QWidget *parent) :
     QDialog(parent), _anno(anno) {
+    setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
     ui.setupUi(this);
-    setWindowFlags(Qt::Tool);
+
     loadClassList();
+    loadRecentValues();
+    ui.cbValue->lineEdit()->setText(QString());
 }
 
 DlgEditAttribute::~DlgEditAttribute() {
@@ -47,11 +53,32 @@ void DlgEditAttribute::loadClassAttributes() {
     }
 }
 
-void DlgEditAttribute::accept() {
-    if(ui.cbName->isEditable()) {
-        _acAttributes.insert(ui.cbName->currentText());
+void DlgEditAttribute::loadRecentValues() {
+    QSetIterator<QString> i(_acValues);
+    while (i.hasNext()) {
+        ui.cbValue->insertItem(i.next());
     }
+}
+
+void DlgEditAttribute::accept() {
+    if (ui.cbName->isEditable()) {
+        QString curTxt = ui.cbName->currentText();
+        if(!curTxt.isEmpty()) {
+            _acAttributes.insert(curTxt);
+        }
+    }
+
+    QString curTxt = ui.cbValue->currentText();
+    if(!curTxt.isEmpty()) {
+        _acValues.insert(curTxt);
+    }
+
     QDialog::accept();
+}
+
+int DlgEditAttribute::exec() {
+    setFocus();
+    return QDialog::exec();
 }
 
 void DlgEditAttribute::setClassMode(bool useClass) {
@@ -62,6 +89,7 @@ void DlgEditAttribute::setClassMode(bool useClass) {
         while (i.hasNext()) {
             ui.cbName->insertItem(i.next());
         }
+        ui.cbName->lineEdit()->setText(QString());
     }
 }
 
@@ -121,11 +149,11 @@ QString DlgEditAttribute::getAttrName() const {
 }
 
 void DlgEditAttribute::setValue(const QString &value) {
-    ui.txtValue->setText(value);
+    ui.cbValue->lineEdit()->setText(value);
 }
 
 QString DlgEditAttribute::getValue() const {
-    return ui.txtValue->text();
+    return ui.cbValue->currentText();
 }
 
 

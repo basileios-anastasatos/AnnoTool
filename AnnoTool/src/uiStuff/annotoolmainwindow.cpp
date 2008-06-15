@@ -46,14 +46,14 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
 
     bool connectOk = true;
     connectOk &= connect(ui.annoFileListWidget, SIGNAL(annoFileSelectChanged(int, QUuid)), this, SLOT(annoFileSelectChanged(int, QUuid)));
-    connectOk &= connect(zoomCtrl, SIGNAL(zoomChanged(int)), this, SLOT(on_zoomSlider_valueChanged(int)));
+    connectOk &= connect(zoomCtrl, SIGNAL(zoomChanged(int)), this, SLOT(onZoomCtrl_zoomChanged(int)));
     _me = this;
 
     GlobalProjectManager *pm = GlobalProjectManager::instance();
-    connectOk &= connect(pm, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SLOT(onPM_fileListUpdate()));
-    connectOk &= connect(pm, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SLOT(onPM_annoListUpdate()));
-    connectOk &= connect(pm, SIGNAL(curAnnoFileSelChanged(int, QUuid, ::anno::dt::AnnoFileData *)), this, SLOT(onPM_annoFileSelectChanged(int, QUuid, ::anno::dt::AnnoFileData *)));
-    connectOk &= connect(pm, SIGNAL(curAnnoSelChanged(int, QUuid, ::anno::dt::Annotation *)), this, SLOT(onPM_annoSelectChanged(int, QUuid, ::anno::dt::Annotation *)));
+    connectOk = connectOk && connect(pm, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SLOT(onPM_fileListUpdate()));
+    connectOk = connectOk && connect(pm, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SLOT(onPM_annoListUpdate()));
+    connectOk = connectOk && connect(pm, SIGNAL(curAnnoFileSelChanged(int, QUuid, ::anno::dt::AnnoFileData *)), this, SLOT(onPM_annoFileSelectChanged(int, QUuid, ::anno::dt::AnnoFileData *)));
+    connectOk = connectOk && connect(pm, SIGNAL(curAnnoSelChanged(int, QUuid, ::anno::dt::Annotation *)), this, SLOT(onPM_annoSelectChanged(int, QUuid, ::anno::dt::Annotation *)));
 
     if(!connectOk) {
         GlobalLogger::instance()->logError("CONNECT-ERROR: AnnoToolMainWindow::AnnoToolMainWindow(QWidget)");
@@ -376,7 +376,7 @@ void AnnoToolMainWindow::on_actionSetImageLoader_triggered() {
     delete dlg;
 }
 
-void AnnoToolMainWindow::on_appClose() {
+void AnnoToolMainWindow::onAppClose() {
     GlobalLogger::instance()->logInfo("AnnoTool is shutting down");
     GlobalProjectManager::instance()->clear();
     //TODO reset singletons here!
@@ -393,7 +393,7 @@ void AnnoToolMainWindow::on_annoListWidget_annoSelectChanged(int row, QUuid anno
 //	ui.annoDataWidget->updateData();
 }
 
-void AnnoToolMainWindow::on_zoomSlider_valueChanged(int value) {
+void AnnoToolMainWindow::onZoomCtrl_zoomChanged(int value) {
     qreal f = value / 100.0;
     statusBar()->showMessage(tr("Scale: %1").arg(f), 1000);
     ui.graphicsView->resetMatrix();
@@ -501,7 +501,7 @@ void AnnoToolMainWindow::on_actionToolEllipse_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionToolEllipse_triggered");
     uncheckTools();
     ui.actionToolEllipse->setChecked(true);
-    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtNone);
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtEllipse);
 }
 
 void AnnoToolMainWindow::updateUI() {

@@ -1,6 +1,9 @@
 <ui version="4.0">
  <class>DlgEditAttributeClass</class>
  <widget class="QDialog" name="DlgEditAttributeClass">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,6 +26,9 @@
   </property>
   <property name="windowTitle">
    <string>Edit Annotation Attribute</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="margin">
@@ -112,7 +118,14 @@
         </widget>
        </item>
        <item row="1" column="2">
-        <widget class="QLineEdit" name="txtValue" />
+        <widget class="QComboBox" name="cbValue">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="insertPolicy">
+          <enum>QComboBox::InsertAlphabetically</enum>
+         </property>
+        </widget>
        </item>
        <item row="0" column="2">
         <widget class="QLabel" name="lbValue">
@@ -120,7 +133,7 @@
           <string>Value</string>
          </property>
          <property name="buddy">
-          <cstring>txtValue</cstring>
+          <cstring>cbValue</cstring>
          </property>
         </widget>
        </item>

@@ -1,6 +1,9 @@
 <ui version="4.0">
  <class>DlgAboutClass</class>
  <widget class="QDialog" name="DlgAboutClass">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -27,6 +30,9 @@
     <height>340</height>
    </size>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>About AnnoTool v2</string>
   </property>
@@ -34,11 +40,11 @@
    <iconset resource="icons.qrc">
    <normaloff>:/res/annoToolLogo_16</normaloff>:/res/annoToolLogo_16</iconset>
   </property>
-  <property name="autoFillBackground">
-   <bool>false</bool>
-  </property>
   <property name="styleSheet">
    <string notr="true">color: rgb(255, 255, 255);background-color: rgb(0, 0, 0);</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <widget class="QLabel" name="label">
    <property name="geometry">

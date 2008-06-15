@@ -12,10 +12,10 @@ AnnoListWidget::AnnoListWidget(QWidget *parent) :
     ui.trAnnoList->setModel(_model);
     ui.lbCount->setText(_strCount.arg(0));
 
-    connect(ui.trAnnoList->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(on_trAnnoList_currentRowChanged(
+    connect(ui.trAnnoList->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(onTrAnnoListCurrentRowChanged(
                 const QModelIndex &, const QModelIndex &)));
 
-    setStyleSheet("QTreeView::item:selected { border: 1px solid #000000; } QTreeView { selection-color: red; selection-color-background: blue; }");
+    //setStyleSheet("QTreeView::item:selected { border: 1px solid #000000; } QTreeView { selection-color: red; selection-color-background: blue; }");
 }
 
 AnnoListWidget::~AnnoListWidget() {
@@ -27,7 +27,7 @@ void AnnoListWidget::updateData() {
     update();
 }
 
-void AnnoListWidget::on_trAnnoList_currentRowChanged(const QModelIndex &cur,
+void AnnoListWidget::onTrAnnoListCurrentRowChanged(const QModelIndex &cur,
         const QModelIndex &prev) {
     if (GlobalProjectManager::instance()->isValid() && GlobalProjectManager::instance()->selectedFile() != NULL) {
         if (cur.isValid() && cur.row() < GlobalProjectManager::instance()->selectedFile()->annoCount()) {

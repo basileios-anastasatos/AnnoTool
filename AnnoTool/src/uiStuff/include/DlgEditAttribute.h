@@ -12,6 +12,7 @@ class DlgEditAttribute : public QDialog {
 
     private:
         static QSet<QString> _acAttributes;
+        static QSet<QString> _acValues;
 
     private:
         Ui::DlgEditAttributeClass ui;
@@ -20,6 +21,7 @@ class DlgEditAttribute : public QDialog {
     private:
         void loadClassList();
         void loadClassAttributes();
+        void loadRecentValues();
 
     private slots:
         void on_cbClass_currentIndexChanged(int index);
@@ -30,6 +32,7 @@ class DlgEditAttribute : public QDialog {
 
     public:
         virtual void accept();
+        int exec();
 
     public:
         void setClassMode(bool useClass = true);

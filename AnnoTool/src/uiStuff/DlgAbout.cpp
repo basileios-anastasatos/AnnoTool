@@ -3,8 +3,8 @@
 
 DlgAbout::DlgAbout(QWidget *parent) :
     QDialog(parent) {
+    setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
     ui.setupUi(this);
-    setWindowFlags(Qt::Tool);
 
 #ifdef QT_DEBUG
     setWindowTitle("About AnnoTool v2 [Debug Version]");

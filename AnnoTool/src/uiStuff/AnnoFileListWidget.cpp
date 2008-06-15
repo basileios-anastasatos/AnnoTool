@@ -14,7 +14,7 @@ AnnoFileListWidget::AnnoFileListWidget(QWidget *parent) :
     ui.lstFiles->setModel(_model);
     ui.lbCount->setText(_strCount.arg(0));
 
-    connect(ui.lstFiles->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(on_lstFiles_currentRowChanged(
+    connect(ui.lstFiles->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(onLstFilesCurrentRowChanged(
                 const QModelIndex &, const QModelIndex &)));
 
     //	if(ui.lstFiles->horizontalHeader() != NULL)
@@ -35,9 +35,9 @@ void AnnoFileListWidget::updateData() {
     update();
 }
 
-void AnnoFileListWidget::on_lstFiles_currentRowChanged(
+void AnnoFileListWidget::onLstFilesCurrentRowChanged(
     const QModelIndex &current, const QModelIndex &previous) {
-    GlobalLogger::instance()->logDebug("Native selection changed");
+    GlobalLogger::instance()->logDebug("AnnoFileListWidget::on_lstFiles_currentRowChanged");
     emit annoFileSelectChanged(current.row(), GlobalProjectManager::instance()->getAnnoFile(current.row())->imageUuid());
 }
 

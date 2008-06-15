@@ -15,13 +15,9 @@ AnnoDataWidget::AnnoDataWidget(QWidget *parent) :
     ui.btAttrRem->setDefaultAction(ui.actionRemoveAttribute);
     ui.btClassAdd->setDefaultAction(ui.actionAddClass);
     ui.btClassRem->setDefaultAction(ui.actionRemoveClass);
-
-    connect(ui.trAttributes->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(on_trAttributes_currentRowChanged(
-                const QModelIndex &, const QModelIndex &)));
 }
 
 AnnoDataWidget::~AnnoDataWidget() {
-
 }
 
 void AnnoDataWidget::on_actionAddAttribute_triggered() {

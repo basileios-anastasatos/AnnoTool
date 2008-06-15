@@ -1,19 +1,34 @@
-#include "include/zoomcontrol.h"
+#include "include/ZoomControl.h"
+#include <QLineEdit>
 
 ZoomControl::ZoomControl(QWidget *parent) :
     QWidget(parent) {
     ui.setupUi(this);
+    initZoomList();
 }
 
 ZoomControl::~ZoomControl() {
 }
 
-void ZoomControl::on_zoomSlider_valueChanged(int value) {
-    ui.editZoom->setText(QString("%1").arg(value));
-    emit 	zoomChanged(value);
+void ZoomControl::initZoomList() {
+    ui.cbZoom->addItem("10");
+    ui.cbZoom->addItem("25");
+    ui.cbZoom->addItem("50");
+    ui.cbZoom->addItem("75");
+    ui.cbZoom->addItem("100");
+    ui.cbZoom->addItem("150");
+    ui.cbZoom->addItem("200");
+    ui.cbZoom->addItem("300");
+    ui.cbZoom->addItem("400");
+    ui.cbZoom->addItem("500");
 }
 
-void ZoomControl::on_editZoom_textEdited(const QString &text) {
+void ZoomControl::on_zoomSlider_valueChanged(int value) {
+    ui.cbZoom->lineEdit()->setText(QString("%1").arg(value));
+    emit zoomChanged(value);
+}
+
+void ZoomControl::on_cbZoom_editTextChanged(const QString &text) {
     bool isOk = false;
     int value = text.toInt(&isOk, 10);
     if (isOk && value >= 10 && value <= 500) {

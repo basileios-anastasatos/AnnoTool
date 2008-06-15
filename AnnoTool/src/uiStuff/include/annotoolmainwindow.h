@@ -53,10 +53,11 @@ class AnnoToolMainWindow : public QMainWindow {
         void on_actionSetImageLoader_triggered();
         void annoFileSelectChanged(int row, QUuid image);
         void on_annoListWidget_annoSelectChanged(int row, QUuid anno);
-        void on_zoomSlider_valueChanged(int value);
         void on_actionFitImage_triggered();
         void on_actionZtoFront_triggered();
         void on_actionRemoveAnnotation_triggered();
+
+        void onZoomCtrl_zoomChanged(int value);
 
         void onPM_fileListUpdate();
         void onPM_annoListUpdate();
@@ -80,7 +81,7 @@ class AnnoToolMainWindow : public QMainWindow {
 
         // public slot interface
     public slots:
-        void on_appClose();
+        void onAppClose();
 
 };
 

@@ -46,16 +46,7 @@
    <property name="spacing">
     <number>1</number>
    </property>
-   <property name="leftMargin">
-    <number>1</number>
-   </property>
-   <property name="topMargin">
-    <number>1</number>
-   </property>
-   <property name="rightMargin">
-    <number>1</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>1</number>
    </property>
    <item>
@@ -63,16 +54,7 @@
      <property name="spacing">
       <number>1</number>
      </property>
-     <property name="leftMargin">
-      <number>2</number>
-     </property>
-     <property name="topMargin">
-      <number>2</number>
-     </property>
-     <property name="rightMargin">
-      <number>2</number>
-     </property>
-     <property name="bottomMargin">
+     <property name="margin">
       <number>2</number>
      </property>
      <item>
@@ -98,21 +80,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="editZoom">
+      <widget class="QComboBox" name="cbZoom">
        <property name="minimumSize">
         <size>
          <width>40</width>
          <height>0</height>
         </size>
        </property>
-       <property name="text">
-        <string>100</string>
+       <property name="editable">
+        <bool>true</bool>
        </property>
-       <property name="maxLength">
-        <number>3</number>
+       <property name="maxCount">
+        <number>20</number>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
+       <property name="insertPolicy">
+        <enum>QComboBox::NoInsert</enum>
        </property>
       </widget>
      </item>

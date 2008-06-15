@@ -10,9 +10,12 @@ class ZoomControl : public QWidget {
     private:
         Ui::ZoomControlClass ui;
 
+    private:
+        void initZoomList();
+
     private slots:
         void on_zoomSlider_valueChanged(int value);
-        void on_editZoom_textEdited(const QString &text);
+        void on_cbZoom_editTextChanged(const QString &text);
 
     public:
         ZoomControl(QWidget *parent = 0);

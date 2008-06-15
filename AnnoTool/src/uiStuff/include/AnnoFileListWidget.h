@@ -15,8 +15,8 @@ class AnnoFileListWidget : public QDockWidget {
         QString _strCount;
 
     private slots:
-        void on_lstFiles_currentRowChanged(const QModelIndex &current,
-                                           const QModelIndex &previous);
+        void onLstFilesCurrentRowChanged(const QModelIndex &current,
+                                         const QModelIndex &previous);
 
     public:
         AnnoFileListWidget(QWidget *parent = 0);
