@@ -121,12 +121,17 @@ namespace anno {
                 anno->setNotify(true);
                 anno->setNotifyOnChange(_notifyOnChangeAnno);
                 anno->setNotifyAttr(false);
-                connect(anno, SIGNAL(modified(::anno::dt::Annotation *)), this, SLOT(onAnnoModified(::anno::dt::Annotation *)));
-                connect(anno, SIGNAL(modifyReset(::anno::dt::Annotation *)), this, SLOT(onAnnoModifyReset(::anno::dt::Annotation *)));
-                connect(anno, SIGNAL(modifyStateChanged(::anno::dt::Annotation *, bool, bool);), this, SLOT(onAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)));
+                bool conOk = true;
+                conOk = conOk && connect(anno, SIGNAL(modified(::anno::dt::Annotation *)), this, SLOT(onAnnoModified(::anno::dt::Annotation *)));
+                conOk = conOk && connect(anno, SIGNAL(modifyReset(::anno::dt::Annotation *)), this, SLOT(onAnnoModifyReset(::anno::dt::Annotation *)));
+                conOk = conOk && connect(anno, SIGNAL(modifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SLOT(onAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)));
                 _annoList.append(anno);
                 _annoMap.insert(uuid, anno);
                 setModified(true);
+
+                if(!conOk) {
+                    GlobalLogger::instance()->logError("CONNECT-ERROR: AnnoFileData::addAnnotation");
+                }
             }
         }
 

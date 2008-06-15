@@ -88,6 +88,7 @@ namespace anno {
                 // private vars
             private:
                 QUuid _annoId;
+                double _score;
                 QString _comment;
                 QList<QString> _annoClasses;
                 QList<AnnoAttribute> _annoAttributes;
@@ -129,6 +130,9 @@ namespace anno {
                 QUuid annoId() const;
                 QString annoIdAsString() const;
                 void setAnnoId(const QUuid &uuid);
+                void setScore(double score);
+                double score() const;
+                bool hasScore() const;
                 QString comment() const;
                 void setComment(const QString &comment);
                 AnnoShape *shape();
@@ -257,6 +261,10 @@ namespace anno {
             return anno::helper::XmlHelper::uuidAsString(_annoId);
         }
 
+        inline double Annotation::score() const {
+            return _score;
+        }
+
         inline QString Annotation::comment() const {
             return _comment;
         }
@@ -277,6 +285,13 @@ namespace anno {
         inline void Annotation::setAnnoId(const QUuid &uuid) {
             if(_annoId != uuid) {
                 _annoId = uuid;
+                setModified(true);
+            }
+        }
+
+        inline void Annotation::setScore(double score) {
+            if(_score != score) {
+                _score = score;
                 setModified(true);
             }
         }

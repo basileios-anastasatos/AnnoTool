@@ -3,6 +3,7 @@
 #include <QXmlStreamWriter>
 #include <QTextStream>
 #include "importGlobals.h"
+#include <cmath>
 
 //namespace AnnoTool
 namespace anno {
@@ -87,6 +88,7 @@ namespace anno {
 
         Annotation::Annotation(QObject *parent) :
             QObject(parent), _modified(false) {
+            _score = NAN;
             _shape = NULL;
             setAllNotifications(false);
         }
@@ -135,6 +137,10 @@ namespace anno {
                 _notifyOnChange = tmpNotifyOnChange;
                 _notifyAttr = tmpNotifyAttr;
             }
+        }
+
+        bool Annotation::hasScore() const {
+            return !std::isnan(_score);
         }
 
         void Annotation::onAttrModified(AnnoAttribute *attr) {
