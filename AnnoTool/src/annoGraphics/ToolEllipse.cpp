@@ -1,117 +1,122 @@
-#include "include/ToolRect.h"
+#include "include/ToolEllipse.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QUuid>
 
 #include "AnnoGraphicsScene.h"
 #include "AnnoFileData.h"
 #include "Annotation.h"
-#include "AnnoRectangle.h"
+#include "AnnoEllipse.h"
 #include "AnnoGraphicsShape.h"
 #include "AnnoGraphicsShapeCreator.h"
 #include "importGlobals.h"
 #include "annotoolmainwindow.h"
 
+
 namespace anno {
     namespace graphics {
 
-        ToolRect::ToolRect(AnnoGraphicsScene *scene) :
+        ToolEllipse::ToolEllipse(AnnoGraphicsScene *scene) :
             GraphicsTool(scene), _curShape(NULL) {
         }
 
-        ToolRect::~ToolRect() {
+        ToolEllipse::~ToolEllipse() {
         }
 
-        bool ToolRect::handlesCp() const {
+        bool ToolEllipse::handlesCp() const {
             return false;
         }
 
-        bool ToolRect::handlesShape() const {
+        bool ToolEllipse::handlesShape() const {
             return false;
         }
 
-        bool ToolRect::handlesImage() const {
+        bool ToolEllipse::handlesImage() const {
             return true;
         }
 
-        void ToolRect::mousePressEvent(AnnoGraphicsControlPoint *cp,
-                                       QGraphicsSceneMouseEvent *event) {
+        void ToolEllipse::mousePressEvent(AnnoGraphicsControlPoint *cp,
+                                          QGraphicsSceneMouseEvent *event) {
             if (cp->parentShape() != NULL) {
-                GlobalLogger::instance()->logDebug("Tool-Rect: CP: mousePressEvent");
+                GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mousePressEvent");
                 //cp->parentShape()->exMousePressEvent(event);
                 //TODO This must be bug-fixed!
             }
         }
 
-        void ToolRect::mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
-                                         QGraphicsSceneMouseEvent *event) {
+        void ToolEllipse::mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
+                                            QGraphicsSceneMouseEvent *event) {
             if (cp->parentShape() != NULL) {
-                GlobalLogger::instance()->logDebug("Tool-Rect: CP: mouseReleaseEvent");
+                GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mouseReleaseEvent");
                 //				cp->parentShape()->exMouseReleaseEvent(event);
                 //TODO This must be bug-fixed!
             }
         }
 
-        void ToolRect::mouseMoveEvent(AnnoGraphicsControlPoint *cp,
-                                      QGraphicsSceneMouseEvent *event) {
+        void ToolEllipse::mouseMoveEvent(AnnoGraphicsControlPoint *cp,
+                                         QGraphicsSceneMouseEvent *event) {
             if (cp->parentShape() != NULL) {
-                GlobalLogger::instance()->logDebug("Tool-Rect: CP: mouseMoveEvent");
+                GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mouseMoveEvent");
                 //				cp->parentShape()->exMouseMoveEvent(event);
                 //TODO This must be bug-fixed!
             }
         }
 
-        void ToolRect::mousePressEvent(AnnoGraphicsShape *shape,
-                                       QGraphicsSceneMouseEvent *event) {
+        void ToolEllipse::mousePressEvent(AnnoGraphicsShape *shape,
+                                          QGraphicsSceneMouseEvent *event) {
             if (shape->parentImage() != NULL) {
                 shape->parentImage()->exMousePressEvent(event);
             }
         }
 
-        void ToolRect::mouseReleaseEvent(AnnoGraphicsShape *shape,
-                                         QGraphicsSceneMouseEvent *event) {
+        void ToolEllipse::mouseReleaseEvent(AnnoGraphicsShape *shape,
+                                            QGraphicsSceneMouseEvent *event) {
             if (shape->parentImage() != NULL) {
                 shape->parentImage()->exMouseReleaseEvent(event);
             }
         }
 
-        void ToolRect::mouseMoveEvent(AnnoGraphicsShape *shape,
-                                      QGraphicsSceneMouseEvent *event) {
+        void ToolEllipse::mouseMoveEvent(AnnoGraphicsShape *shape,
+                                         QGraphicsSceneMouseEvent *event) {
             if (shape->parentImage() != NULL) {
                 shape->parentImage()->exMouseMoveEvent(event);
             }
         }
 
-        void ToolRect::mousePressEvent(AnnoGraphicsPixmap *img,
-                                       QGraphicsSceneMouseEvent *event) {
+        void ToolEllipse::mousePressEvent(AnnoGraphicsPixmap *img,
+                                          QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("Tool-Ellipse: MousePress");
             event->accept();
             dt::AnnoFileData *annoFile = GlobalProjectManager::instance()->selectedFile();
-            dt::AnnoRectangle *arect = new dt::AnnoRectangle();
-            arect->setTopLeft(img->mapFromScene(event->scenePos()));
-            arect->setSize(QSizeF(0.0, 0.0));
+            dt::AnnoEllipse *ae = new dt::AnnoEllipse();
+            ae->setTopLeft(img->mapFromScene(event->scenePos()));
+            ae->setSize(QSizeF(0.0, 0.0));
             dt::Annotation *anno = new dt::Annotation();
             anno->setAnnoId(QUuid::createUuid());
-            anno->setShape(arect);
+            anno->setShape(ae);
             annoFile->addAnnotation(anno);
 
             AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
             if (s != NULL) {
+                GlobalLogger::instance()->logDebug("Tool-Ellipse: Adding GraphicsShape");
                 _scene->addAnnoShape(s);
                 _curShape = s;
                 _scene->clearSelection();
                 _curShape->graphicsItem()->setSelected(true);
                 //TODO selection fixen!
+            } else {
+                GlobalLogger::instance()->logError("Tool-Ellipse: invalid graphics shape");
             }
 
             AnnoToolMainWindow::updateUI();
         }
 
-        void ToolRect::mouseReleaseEvent(AnnoGraphicsPixmap *img,
-                                         QGraphicsSceneMouseEvent *event) {
+        void ToolEllipse::mouseReleaseEvent(AnnoGraphicsPixmap *img,
+                                            QGraphicsSceneMouseEvent *event) {
             _curShape->cpMouseReleaseEvent(2, event);
             _curShape = NULL;
         }
 
-        void ToolRect::mouseMoveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneMouseEvent *event) {
+        void ToolEllipse::mouseMoveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneMouseEvent *event) {
             if (_curShape != NULL) {
                 _curShape->cpMouseMoveEvent(2, event);
             }

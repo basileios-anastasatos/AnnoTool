@@ -1,17 +1,18 @@
-#ifndef ANNOGRAPHICSRECT_H_
-#define ANNOGRAPHICSRECT_H_
+#ifndef ANNOGRAPHICSELLIPSE_H_
+#define ANNOGRAPHICSELLIPSE_H_
 
-#include <QGraphicsRectItem>
+#include <QGraphicsItem>
 #include "AnnoGraphicsShape.h"
-#include "AnnoRectangle.h"
+#include "AnnoEllipse.h"
 
 namespace anno {
     namespace graphics {
 
-        class AnnoGraphicsRect : public QGraphicsRectItem, public AnnoGraphicsShape {
+        class AnnoGraphicsEllipse : public QGraphicsItem, public AnnoGraphicsShape {
             private:
                 void setupAppearance();
-                dt::AnnoRectangle *annoRect();
+                dt::AnnoEllipse *annoEllipse();
+                const dt::AnnoEllipse *annoEllipse() const;
                 QRectF mapRectToParent(const QRectF &r) const;
 
             protected:
@@ -20,19 +21,22 @@ namespace anno {
                 virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
             public:
-                AnnoGraphicsRect(dt::Annotation *anno, QGraphicsItem *parent = 0);
-                AnnoGraphicsRect(dt::Annotation *anno, const QRectF &rect,
-                                 QGraphicsItem *parent = 0);
-                AnnoGraphicsRect(dt::Annotation *anno, qreal x, qreal y, qreal width,
-                                 qreal height, QGraphicsItem *parent = 0);
-                virtual ~AnnoGraphicsRect();
+                AnnoGraphicsEllipse(dt::Annotation *anno, QGraphicsItem *parent = 0);
+                AnnoGraphicsEllipse(dt::Annotation *anno, const QRectF &rect,
+                                    QGraphicsItem *parent = 0);
+                virtual ~AnnoGraphicsEllipse();
 
+                // AnnoGraphicsShape Interface
             public:
                 virtual void initControlPoints();
                 void validateCpPos();
                 virtual QGraphicsItem *graphicsItem();
                 virtual void shapeMoveBy(qreal deltaX, qreal deltaY);
                 virtual void shapeSizeBy(qreal facX, qreal facY);
+
+                // Graphics Item Interface
+            public:
+                virtual QRectF boundingRect() const;
                 virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                                    QWidget *widget = 0);
 
@@ -51,6 +55,6 @@ namespace anno {
     }
 }
 
-#endif /*ANNOGRAPHICSRECT_H_*/
+#endif /*ANNOGRAPHICSELLIPSE_H_*/
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

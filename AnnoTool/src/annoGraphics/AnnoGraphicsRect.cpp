@@ -1,6 +1,5 @@
 #include "include/AnnoGraphicsRect.h"
 #include <QMap>
-#include <QGraphicsPixmapItem>
 #include <QRectF>
 #include <QPen>
 #include <QBrush>
@@ -8,7 +7,6 @@
 #include <QStyle>
 #include <QStyleOptionGraphicsItem>
 #include <QPainter>
-
 #include "importGlobals.h"
 
 namespace anno {
@@ -80,15 +78,14 @@ namespace anno {
             QRectF parRect = parentItem()->boundingRect();
             tmpRect.moveTo(tmpRect.topLeft() + delta);
 
-            if (tmpRect.top() >= 0 && tmpRect.left() >= 0 && tmpRect.bottom()
-                    <= parRect.height() && tmpRect.right() <= parRect.width()) {
+            if (parRect.contains(tmpRect)) {
                 prepareGeometryChange();
                 moveBy(deltaX, deltaY);
                 QRectF rect = mapRectToParent(QGraphicsRectItem::rect());
                 *annoRect() = rect;
                 _anno->setModified(true);
 
-                QRectF r = rect;
+                QRectF r = tmpRect;
                 setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(relatedAnno()->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
                 //annoRect()->print();
                 //GlobalLogger::instance()->logDebug(QString("Moved rect to (%1;%2))").arg(rect.topLeft().x()).arg(rect.topLeft().y()));
@@ -199,8 +196,7 @@ namespace anno {
             }
             QRectF tmpRect = mapRectToParent(rect);
             QRectF parRect = parentItem()->boundingRect();
-            if (tmpRect.top() >= 0 && tmpRect.left() >= 0 && tmpRect.bottom()
-                    <= parRect.height() && tmpRect.right() <= parRect.width()) {
+            if (parRect.contains(tmpRect)) {
                 prepareGeometryChange();
                 setRect(rect);
                 *annoRect() = tmpRect;

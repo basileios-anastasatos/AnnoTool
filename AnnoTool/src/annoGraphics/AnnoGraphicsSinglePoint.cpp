@@ -109,16 +109,37 @@ namespace anno {
                                             const QStyleOptionGraphicsItem *option, QWidget *widget) {
             //TODO nice painting
             QRectF brect = boundingRect();
-            QRectF ibrect(brect.x() + 5.5, brect.y() + 5.5, brect.width() - 11.0, brect.height() - 11.0);
+            QRectF
+            ibrect(brect.x() + 5.5, brect.y() + 5.5, brect.width() - 11.0, brect.height() - 11.0);
             QPointF np = *annoSinglePoint();
             GlobalLogger::instance()->logDebug(QString("AG_SPOINT: paint (%1,%2, %3,%4)").arg(brect.x()).arg(brect.y()).arg(brect.width()).arg(brect.height()));
             if (isSelected()) {
-                QPen pen(QColor(60, 60, 255, 255));
-                pen.setWidth(2);
-                QBrush brush(QColor(255, 255, 255, 255));
-                painter->setPen(pen);
-                painter->fillRect(boundingRect(), brush);
+                QPen penNone(QColor(0, 0, 0, 0));
+                penNone.setWidth(0);
 
+                QPen penInner(QColor(0, 0, 0, 255));
+                penInner.setWidth(1);
+
+                QPen penOuter(QColor(255, 255, 255, 255));
+                penOuter.setWidth(1);
+
+                QPen penNormal(QColor(30, 30, 255, 255));
+                penNormal.setWidth(2);
+
+                QPen penFat(QColor(255, 255, 0, 128));
+                penFat.setWidth(10);
+
+                QBrush brushNone(QColor(0, 0, 0, 255));
+                QBrush brushColor(QColor(255, 255, 0, 200));
+
+                painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                painter->setBrush(brushColor);
+                painter->setPen(penNormal);
+                painter->drawEllipse(brect);
+                painter->setPen(penInner);
+                painter->drawEllipse((int)np.x() - 1, (int)np.y() - 1, 2, 2);
+                painter->setPen(penOuter);
+                painter->drawEllipse((int)np.x() - 2, (int)np.y() - 2, 4, 4);
             } else {
                 QPen penNone(QColor(0, 0, 0, 0));
                 penNone.setWidth(0);
@@ -143,12 +164,12 @@ namespace anno {
                 painter->setPen(penNormal);
                 painter->drawEllipse(brect);
 
-//				painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-//				painter->setBrush(brushNone);
-//				painter->setPen(penNone);
-//				painter->drawEllipse(ibrect);
-//				painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-//
+                //				painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                //				painter->setBrush(brushNone);
+                //				painter->setPen(penNone);
+                //				painter->drawEllipse(ibrect);
+                //				painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+                //
 
 
                 painter->setPen(penInner);

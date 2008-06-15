@@ -6,6 +6,7 @@
 #include "ToolHand.h"
 #include "ToolRect.h"
 #include "ToolSinglePoint.h"
+#include "ToolEllipse.h"
 
 #endif /*ALLGRAPHICSTOOLS_H_*/
 
