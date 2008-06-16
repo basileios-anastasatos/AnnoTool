@@ -1,4 +1,4 @@
-#include "include/dlgnewproject.h"
+#include "include/DlgNewProject.h"
 #include <QFileDialog>
 #include <QMessageBox>
 
