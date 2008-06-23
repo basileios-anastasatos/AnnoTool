@@ -6,8 +6,8 @@
 #include "IdlImporterPlugin.h"
 #include "IdlExporterPlugin.h"
 
-
 int main(int argc, char *argv[]) {
+    GlobalLogger::instance()->setLogLevel((logging::LogLevel)GlobalConfig::instance()->getSettingInt("logging.loglevel"));
     GlobalLogger::instance()->logInfo("AnnoTool starting up");
     QApplication a(argc, argv);
 
