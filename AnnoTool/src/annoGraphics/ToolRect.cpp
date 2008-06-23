@@ -97,9 +97,7 @@ namespace anno {
             if (s != NULL) {
                 _scene->addAnnoShape(s);
                 _curShape = s;
-                _scene->clearSelection();
-                _curShape->graphicsItem()->setSelected(true);
-                //TODO selection fixen!
+                GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
             }
 
             AnnoToolMainWindow::updateUI();

@@ -19,6 +19,10 @@ namespace anno {
             return ASTypeEllipse;
         }
 
+        QString AnnoEllipse::shapeInfo() const {
+            return QString("Type: %1\ncx: %2\ncy: %3\nradius-x: %4\nradius-y: %5").arg("Ellipse").arg(centerX(), 0, 'f', 2).arg(centerY(), 0, 'f', 2).arg(radiusX(), 0, 'f', 2).arg(radiusY(), 0, 'f', 2);
+        }
+
         void AnnoEllipse::print() const {
             QTextStream out(stdout);
             out << "[Ellipse, (" << centerX() << "," << centerY() << "), (" << radiusX() << ","

@@ -14,33 +14,33 @@ namespace logging {
          * Debug level.
          * Logged event is just useful for debugging and further developer info.
          */
-        Debug,
+        Debug = 0,
 
         /**
          * Info level.
          * Logged event is just for information purpose, nothing serious happened.
          */
-        Info,
+        Info = 1,
 
         /**
          * Warning level.
          * Logged event gives a serious warning, something that should not be ignored happened.
          */
-        Warning,
+        Warning = 2,
 
         /**
          * Error level.
          * Logged event gives info about an error that occurred, something should be done. An
          * error could lead to a system/program crash (but hopefully it does not).
          */
-        Error,
+        Error = 3,
 
         /**
          * Fatal error level.
          * Logged event gives info about a fatal error, something must be done. A fatal error
          * leads almost always to a system/program crash.
          */
-        FatalError
+        FatalError = 4
     };
 
     /**

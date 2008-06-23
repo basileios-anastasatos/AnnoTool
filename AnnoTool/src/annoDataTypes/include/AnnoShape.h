@@ -27,6 +27,7 @@ namespace anno {
 
             public:
                 virtual AnnoShapeType shapeType() const = 0;
+                virtual QString shapeInfo() const = 0;
 
             public:
                 virtual void print() const = 0;

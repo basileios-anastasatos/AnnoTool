@@ -18,6 +18,10 @@ namespace anno {
             return ASTypeSinglePoint;
         }
 
+        QString AnnoSinglePoint::shapeInfo() const {
+            return QString("Type: %1\nx: %2\ny: %3").arg("SinglePoint").arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2);
+        }
+
         void AnnoSinglePoint::print() const {
             QTextStream out(stdout);
             out << "[Point, (" << x() << "," << y() << ")]" << endl;

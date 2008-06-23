@@ -32,7 +32,7 @@ namespace anno {
             }
         }
 
-        void AnnoFileData::onAnnoModified(Annotation *anno) {
+        void AnnoFileData::onAnnoModified(::anno::dt::Annotation *anno) {
             if (anno != NULL) {
                 if (_notifyAnno) {
                     emit annoModified(this, anno);
@@ -43,7 +43,7 @@ namespace anno {
             }
         }
 
-        void AnnoFileData::onAnnoModifyReset(Annotation *anno) {
+        void AnnoFileData::onAnnoModifyReset(::anno::dt::Annotation *anno) {
             if (anno != NULL) {
                 if (_notifyAnno) {
                     emit annoModifyReset(this, anno);
@@ -51,7 +51,7 @@ namespace anno {
             }
         }
 
-        void AnnoFileData::onAnnoModifyStateChanged(Annotation *anno, bool prevState,
+        void AnnoFileData::onAnnoModifyStateChanged(::anno::dt::Annotation *anno, bool prevState,
                 bool curState) {
             if (anno != NULL) {
                 if (_notifyOnChangeAnno) {

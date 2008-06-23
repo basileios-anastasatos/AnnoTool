@@ -36,6 +36,7 @@ namespace anno {
         void AnnoGraphicsSinglePoint::setupAppearance() {
             setFlag(QGraphicsItem::ItemIsSelectable);
             setVisible(true);
+            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
         }
 
         dt::AnnoSinglePoint *AnnoGraphicsSinglePoint::annoSinglePoint() {
@@ -92,6 +93,7 @@ namespace anno {
                     prepareGeometryChange();
                     *asp = tmpPoint;
                     _anno->setModified(true);
+                    setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
                 }
             }
         }

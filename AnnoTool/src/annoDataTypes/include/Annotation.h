@@ -4,9 +4,15 @@
 #include <QObject>
 #include <QUuid>
 #include <QList>
+#include <QSet>
+#include <cmath>
 #include "AllAnnoExceptions.h"
 #include "AnnoShape.h"
 #include "XmlHelper.h"
+
+#ifndef NATIVE_SCORE_ATTR
+#define NATIVE_SCORE_ATTR QString("__score")
+#endif
 
 class QXmlStreamWriter;
 class QXmlStreamReader;
@@ -89,6 +95,8 @@ namespace anno {
             private:
                 QUuid _annoId;
                 double _score;
+                QUuid _annoParent;
+                QSet<QUuid> _annoChildren;
                 QString _comment;
                 QList<QString> _annoClasses;
                 QList<AnnoAttribute> _annoAttributes;
@@ -97,8 +105,10 @@ namespace anno {
                 // internal XML stuff
             private:
                 void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
+                void annoHierarchyToXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 void annoClassesToXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 void annoAttributesToXml(QXmlStreamWriter &writer) const throw(XmlException *);
+                void loadAnnoHierarchyFromXml(QXmlStreamReader &reader) throw(XmlException *);
                 void loadAnnoClassesFromXml(QXmlStreamReader &reader) throw(XmlException *);
                 void loadAnnoAttributesFromXml(QXmlStreamReader &reader) throw(XmlException *);
 
@@ -133,6 +143,15 @@ namespace anno {
                 void setScore(double score);
                 double score() const;
                 bool hasScore() const;
+                bool hasAnnoParent() const;
+                bool hasAnnoChildren() const;
+                int annoChildCount() const;
+                QUuid annoParent() const;
+                bool containsAnnoChild(const QUuid &child) const;
+                QSet<QUuid> annoChildren() const;
+                void setAnnoParent(const QUuid &parent);
+                void addAnnoChild(const QUuid &child);
+                void removeAnnoChild(const QUuid &child);
                 QString comment() const;
                 void setComment(const QString &comment);
                 AnnoShape *shape();
@@ -163,9 +182,12 @@ namespace anno {
             signals:
                 void modified(::anno::dt::Annotation *anno);
                 void modifyReset(::anno::dt::Annotation *anno);
-                void modifyStateChanged(::anno::dt::Annotation *anno, bool prevState, bool curState);
-                void attributeModified(::anno::dt::Annotation *anno, ::anno::dt::AnnoAttribute *attr);
-                void attributeModifyReset(::anno::dt::Annotation *anno, ::anno::dt::AnnoAttribute *attr);
+                void modifyStateChanged(::anno::dt::Annotation *anno, bool prevState,
+                                        bool curState);
+                void attributeModified(::anno::dt::Annotation *anno,
+                                       ::anno::dt::AnnoAttribute *attr);
+                void attributeModifyReset(::anno::dt::Annotation *anno,
+                                          ::anno::dt::AnnoAttribute *attr);
 
         };
 
@@ -199,21 +221,21 @@ namespace anno {
         }
 
         inline void AnnoAttribute::setName(const QString &val) {
-            if(_name != val) {
+            if (_name != val) {
                 _name = val;
                 setModified(true);
             }
         }
 
         inline void AnnoAttribute::setClassName(const QString &val) {
-            if(_className != val) {
+            if (_className != val) {
                 _className = val;
                 setModified(true);
             }
         }
 
         inline void AnnoAttribute::setValue(const QString &val) {
-            if(_value != val) {
+            if (_value != val) {
                 _value = val;
                 setModified(true);
             }
@@ -265,6 +287,54 @@ namespace anno {
             return _score;
         }
 
+        inline bool Annotation::hasScore() const {
+            return !std::isnan(_score);
+        }
+
+        inline bool Annotation::hasAnnoParent() const {
+            return !_annoParent.isNull();
+        }
+
+        inline bool Annotation::hasAnnoChildren() const {
+            return !_annoChildren.isEmpty();
+        }
+
+        inline int Annotation::annoChildCount() const {
+            return _annoChildren.size();
+        }
+
+        inline QUuid Annotation::annoParent() const {
+            return _annoParent;
+        }
+
+        inline bool Annotation::containsAnnoChild(const QUuid &child) const {
+            return _annoChildren.contains(child);
+        }
+
+        inline QSet<QUuid> Annotation::annoChildren() const {
+            return _annoChildren;
+        }
+
+        inline void Annotation::setAnnoParent(const QUuid &parent) {
+            if (_annoParent != parent) {
+                _annoParent = parent;
+                setModified(true);
+            }
+        }
+
+        inline void Annotation::addAnnoChild(const QUuid &child) {
+            if(_annoChildren.contains(child)) {
+                _annoChildren.insert(child);
+                setModified(true);
+            }
+        }
+
+        inline void Annotation::removeAnnoChild(const QUuid &child) {
+            if(_annoChildren.remove(child)) {
+                setModified(true);
+            }
+        }
+
         inline QString Annotation::comment() const {
             return _comment;
         }
@@ -283,28 +353,29 @@ namespace anno {
         }
 
         inline void Annotation::setAnnoId(const QUuid &uuid) {
-            if(_annoId != uuid) {
+            if (_annoId != uuid) {
                 _annoId = uuid;
                 setModified(true);
             }
         }
 
         inline void Annotation::setScore(double score) {
-            if(_score != score) {
+            //TODO Think of suitable delta
+            if (_score - score != 0) {
                 _score = score;
                 setModified(true);
             }
         }
 
         inline void Annotation::setComment(const QString &comment) {
-            if(_comment != comment) {
+            if (_comment != comment) {
                 _comment = comment;
                 setModified(true);
             }
         }
 
         inline void Annotation::setShape(AnnoShape *shape) {
-            if(_shape != shape) {
+            if (_shape != shape) {
                 _shape = shape;
                 setModified(true);
             }

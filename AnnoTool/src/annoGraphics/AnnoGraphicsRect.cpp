@@ -14,27 +14,22 @@ namespace anno {
 
         AnnoGraphicsRect::AnnoGraphicsRect(dt::Annotation *anno, QGraphicsItem *parent) :
             QGraphicsRectItem(parent), AnnoGraphicsShape(anno) {
-            setupAppearance();
             QRectF r = QGraphicsRectItem::rect();
-            setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(anno->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
+            setupAppearance();
         }
 
         AnnoGraphicsRect::AnnoGraphicsRect(dt::Annotation *anno, const QRectF &rect,
                                            QGraphicsItem *parent) :
             QGraphicsRectItem(rect, parent), AnnoGraphicsShape(anno) {
-            setupAppearance();
             initControlPoints();
-            QRectF r = QGraphicsRectItem::rect();
-            setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(anno->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
+            setupAppearance();
         }
 
         AnnoGraphicsRect::AnnoGraphicsRect(dt::Annotation *anno, qreal x, qreal y,
                                            qreal width, qreal height, QGraphicsItem *parent) :
             QGraphicsRectItem(x, y, width, height, parent), AnnoGraphicsShape(anno) {
-            setupAppearance();
             initControlPoints();
-            QRectF r = QGraphicsRectItem::rect();
-            setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(anno->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
+            setupAppearance();
         }
 
         AnnoGraphicsRect::~AnnoGraphicsRect() {
@@ -84,11 +79,7 @@ namespace anno {
                 QRectF rect = mapRectToParent(QGraphicsRectItem::rect());
                 *annoRect() = rect;
                 _anno->setModified(true);
-
-                QRectF r = tmpRect;
-                setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(relatedAnno()->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
-                //annoRect()->print();
-                //GlobalLogger::instance()->logDebug(QString("Moved rect to (%1;%2))").arg(rect.topLeft().x()).arg(rect.topLeft().y()));
+                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
             }
         }
 
@@ -142,6 +133,7 @@ namespace anno {
             setBrush(QBrush(QColor(255, 255, 60, 45)));
             setFlag(QGraphicsItem::ItemIsSelectable);
             setVisible(true);
+            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
         }
 
         dt::AnnoRectangle *AnnoGraphicsRect::annoRect() {
@@ -162,6 +154,8 @@ namespace anno {
             setRect(rect);
             *annoRect() = mapRectToParent(rect);
             validateCpPos();
+            _anno->setModified(true);
+            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
         }
 
         void AnnoGraphicsRect::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
@@ -203,8 +197,7 @@ namespace anno {
                 annoRect()->print();
                 validateCpPos();
                 _anno->setModified(true);
-                QRectF r = QGraphicsRectItem::rect();
-                setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(relatedAnno()->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
+                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
             }
         }
 

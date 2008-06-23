@@ -100,9 +100,7 @@ namespace anno {
                 GlobalLogger::instance()->logDebug("Tool-Ellipse: Adding GraphicsShape");
                 _scene->addAnnoShape(s);
                 _curShape = s;
-                _scene->clearSelection();
-                _curShape->graphicsItem()->setSelected(true);
-                //TODO selection fixen!
+                GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
             } else {
                 GlobalLogger::instance()->logError("Tool-Ellipse: invalid graphics shape");
             }

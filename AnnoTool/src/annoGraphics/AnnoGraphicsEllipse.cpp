@@ -31,6 +31,7 @@ namespace anno {
             initControlPoints();
             setFlag(QGraphicsItem::ItemIsSelectable);
             setVisible(true);
+            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
         }
 
         dt::AnnoEllipse *AnnoGraphicsEllipse::annoEllipse() {
@@ -85,6 +86,8 @@ namespace anno {
             prepareGeometryChange();
             *annoEllipse() = mapRectToParent(rect);
             validateCpPos();
+            _anno->setModified(true);
+            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
         }
 
         void AnnoGraphicsEllipse::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
@@ -124,6 +127,7 @@ namespace anno {
                 *annoEllipse() = tmpRect;
                 validateCpPos();
                 _anno->setModified(true);
+                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
             }
         }
 
@@ -165,10 +169,9 @@ namespace anno {
             if (parRect.contains(tmpRect)) {
                 prepareGeometryChange();
                 *ae = tmpRect;
-                _anno->setModified(true);
                 validateCpPos();
-
-                //setToolTip(QString("%1\n(%2, %3) (%4, %5)").arg(relatedAnno()->annoIdAsString()).arg(r.x()).arg(r.y()).arg(r.width()).arg(r.height()));
+                _anno->setModified(true);
+                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
             }
         }
 
@@ -183,7 +186,7 @@ namespace anno {
                 GlobalLogger::instance()->logError(QString("Shape-Type: %1").arg(_anno->shape()->shapeType()));
 
             }
-            QRectF b(ae->x() - 1, ae->y() - 1, ae->width() + 2, ae->height() + 2);
+            QRectF b(ae->x() - 2, ae->y() - 2, ae->width() + 4, ae->height() + 4);
             return b;
         }
 

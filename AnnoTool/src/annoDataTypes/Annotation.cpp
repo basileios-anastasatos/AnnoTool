@@ -3,7 +3,7 @@
 #include <QXmlStreamWriter>
 #include <QTextStream>
 #include "importGlobals.h"
-#include <cmath>
+
 
 //namespace AnnoTool
 namespace anno {
@@ -87,9 +87,7 @@ namespace anno {
         }
 
         Annotation::Annotation(QObject *parent) :
-            QObject(parent), _modified(false) {
-            _score = NAN;
-            _shape = NULL;
+            QObject(parent), _modified(false), _score(NAN), _shape(NULL) {
             setAllNotifications(false);
         }
 
@@ -137,10 +135,6 @@ namespace anno {
                 _notifyOnChange = tmpNotifyOnChange;
                 _notifyAttr = tmpNotifyAttr;
             }
-        }
-
-        bool Annotation::hasScore() const {
-            return !std::isnan(_score);
         }
 
         void Annotation::onAttrModified(AnnoAttribute *attr) {
@@ -193,7 +187,7 @@ namespace anno {
         }
 
         void Annotation::addAttribute(AnnoAttribute attr) {
-            if(!_annoAttributes.contains(attr)) {
+            if(attr.name() != NATIVE_SCORE_ATTR && !_annoAttributes.contains(attr)) {
                 attr.setParentAnno(this);
                 _annoAttributes.append(attr);
                 setModified(true);
@@ -244,6 +238,25 @@ namespace anno {
             }
         }
 
+        void Annotation::annoHierarchyToXml(QXmlStreamWriter &writer) const throw(XmlException *) {
+            writer.writeStartElement("hierarchy");
+            if(hasAnnoParent()) {
+                writer.writeEmptyElement("parent");
+                writer.writeAttribute("uuid", XmlHelper::uuidAsString(_annoParent));
+            }
+
+            if(hasAnnoChildren()) {
+                writer.writeStartElement("children");
+                QSetIterator<QUuid> i(_annoChildren);
+                while (i.hasNext()) {
+                    writer.writeEmptyElement("child");
+                    writer.writeAttribute("uuid", XmlHelper::uuidAsString(i.next()));
+                }
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        }
+
         void Annotation::annoClassesToXml(QXmlStreamWriter &writer) const
         throw(XmlException *) {
             writer.writeStartElement("annoClass");
@@ -258,6 +271,11 @@ namespace anno {
         void Annotation::annoAttributesToXml(QXmlStreamWriter &writer) const
         throw(XmlException *) {
             writer.writeStartElement("attributeValues");
+            if(hasScore()) {
+                AnnoAttribute sattr(NATIVE_SCORE_ATTR, QString(), QString::number(_score, 'f', 8));
+                sattr.toXml(writer);
+            }
+
             QListIterator<AnnoAttribute> i(_annoAttributes);
             while (i.hasNext()) {
                 i.next().toXml(writer);
@@ -283,6 +301,32 @@ namespace anno {
                 writer.writeEndElement();
             }
             writer.writeEndElement();
+        }
+
+        void Annotation::loadAnnoHierarchyFromXml(QXmlStreamReader &reader) throw(XmlException *) {
+            QString tagHier("hierarchy");
+            QString tagParent("parent");
+            QString tagChildren("children");
+            QString tagChild("child");
+            QString attrId("uuid");
+
+            if (!reader.isStartElement() || reader.name() != tagHier) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, tagHier, reader.name().toString());
+            }
+
+            while (!reader.atEnd()) {
+                if (reader.isStartElement() && reader.name() == tagParent) {
+                    QString parent = reader.attributes().value(attrId).toString();
+                    _annoParent = QUuid(parent);
+                } else if (reader.isStartElement() && reader.name() == tagChild) {
+                    QString id = reader.attributes().value(attrId).toString();
+                    _annoChildren.insert(QUuid(id));
+                } else if (reader.isEndElement() && reader.name() == tagHier) {
+                    reader.readNext();
+                    break;
+                }
+                reader.readNext();
+            }
         }
 
         void Annotation::loadAnnoClassesFromXml(QXmlStreamReader &reader)
@@ -318,7 +362,17 @@ namespace anno {
 
             while (!reader.atEnd()) {
                 if (reader.isStartElement() && reader.name() == tagAttr) {
-                    addAttribute(AnnoAttribute::fromXml(reader));
+                    AnnoAttribute attr = AnnoAttribute::fromXml(reader);
+                    if(attr.className().isEmpty() && attr.name() == NATIVE_SCORE_ATTR) {
+                        bool ok = false;
+                        double score = attr.value().toDouble(&ok);
+                        if (!ok) {
+                            throw new XmlException(__FILE__, __LINE__, "Could not parse native score data.");
+                        }
+                        setScore(score);
+                    } else {
+                        addAttribute(attr);
+                    }
                 } else if (reader.isEndElement() && reader.name() == tagList) {
                     reader.readNext();
                     break;
@@ -336,6 +390,11 @@ namespace anno {
             _annoId = QUuid(reader.attributes().value("uuid").toString());
 
             XmlHelper::skipToNextStartElement(true, reader);
+            if (reader.isStartElement() && reader.name() == "hierarchy") {
+                loadAnnoHierarchyFromXml(reader);
+                XmlHelper::skipToNextStartElement(false, reader);
+            }
+
             if (reader.isStartElement() && reader.name() == "comment") {
                 _comment = reader.readElementText();
                 XmlHelper::skipToNextStartElement(true, reader);
