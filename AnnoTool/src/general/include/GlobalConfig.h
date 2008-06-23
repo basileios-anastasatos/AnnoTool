@@ -5,6 +5,8 @@
 #include <QPen>
 #include <QBrush>
 #include <QColor>
+#include <QFileInfo>
+#include <QMap>
 
 //namespace AnnoTool
 namespace anno {
@@ -41,6 +43,12 @@ namespace anno {
             //				QFileInfo _defaultAnnoClassDir;
             //				QFileInfo _defaultSaveDir;
 
+        private:
+            QMap<QString, int> _settingsInt;
+            QMap<QString, double> _settingsDouble;
+            QMap<QString, QString> _settingsString;
+            QMap<QString, QFileInfo> _settingsFile;
+
         public:
             static const FileExtensions fileExt;
             static const ShapeColors shapeColors;
@@ -54,6 +62,12 @@ namespace anno {
 
         public:
             static const GlobalConfig *instance();
+
+        public:
+            int getSettingInt(const QString &s) const throw(NoSuchElementException *);
+            double getSettingDouble(const QString &s) const throw(NoSuchElementException *);
+            QString getSettingString(const QString &s) const throw(NoSuchElementException *);
+            QFileInfo getSettingFile(const QString &s) const throw(NoSuchElementException *);
     };
 
     inline FileExtensions::FileExtensions() {
