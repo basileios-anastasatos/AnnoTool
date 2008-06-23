@@ -1,5 +1,6 @@
 #include "include/AnnoDataWidget.h"
 #include "DlgEditAttribute.h"
+#include "Annotation.h"
 #include "importGlobals.h"
 
 AnnoDataWidget::AnnoDataWidget(QWidget *parent) :
@@ -25,13 +26,13 @@ void AnnoDataWidget::on_actionAddAttribute_triggered() {
     ::anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
     if (curAnno != NULL) {
         DlgEditAttribute *dlg = new DlgEditAttribute(curAnno, this);
-        if(dlg->exec() == QDialog::Accepted) {
+        if (dlg->exec() == QDialog::Accepted) {
             anno::dt::AnnoAttribute attr(curAnno);
             attr.setName(dlg->getAttrName());
             attr.setClassName(dlg->getClassName());
             attr.setValue(dlg->getValue());
             curAnno->addAttribute(attr);
-            updateData();
+            updateListData();
         }
         delete dlg;
     }
@@ -43,7 +44,7 @@ void AnnoDataWidget::on_actionRemoveAttribute_triggered() {
     QModelIndex index = ui.trAttributes->selectionModel()->currentIndex();
     if (curAnno != NULL) {
         curAnno->removeAttribute(index.row());
-        updateData();
+        updateListData();
     }
 }
 
@@ -65,7 +66,7 @@ void AnnoDataWidget::on_trAttributes_activated(const QModelIndex &index) {
             dlg->setAttrName(attr->name());
             dlg->setValue(attr->value());
             dlg->setEditMode(true);
-            if(dlg->exec() == QDialog::Accepted) {
+            if (dlg->exec() == QDialog::Accepted) {
                 attr->setValue(dlg->getValue());
             }
             delete dlg;
@@ -73,11 +74,30 @@ void AnnoDataWidget::on_trAttributes_activated(const QModelIndex &index) {
     }
 }
 
-void AnnoDataWidget::updateData() {
+void AnnoDataWidget::updateAllData() {
     _modelAttributes->update();
     _modelClasses->update();
-    //ui.lbCount->setText(_strCount.arg(_model->rowCount(QModelIndex())));
-    update();
+    ::anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
+    if (curAnno != NULL) {
+        ui.lbInfo->setText(curAnno->shape()->shapeInfo());
+    } else {
+        ui.lbInfo->setText("--");
+    }
+    //update();
+}
+
+void AnnoDataWidget::updateListData() {
+    _modelAttributes->update();
+    _modelClasses->update();
+}
+
+void AnnoDataWidget::updateShapeInfo() {
+    ::anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
+    if (curAnno != NULL) {
+        ui.lbInfo->setText(curAnno->shape()->shapeInfo());
+    } else {
+        ui.lbInfo->setText("--");
+    }
 }
 
 void AnnoDataWidget::setToolsEnabled(bool enabled) {
@@ -87,7 +107,5 @@ void AnnoDataWidget::setToolsEnabled(bool enabled) {
     ui.actionRemoveClass->setEnabled(enabled);
 }
 
-void AnnoDataWidget::annoSelectChanged(int row, QUuid anno) {
-}
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

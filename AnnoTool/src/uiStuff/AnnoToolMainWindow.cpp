@@ -50,6 +50,7 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     _me = this;
 
     GlobalProjectManager *pm = GlobalProjectManager::instance();
+    connectOk = connectOk && connect(pm, SIGNAL(curAnnoModified(::anno::dt::Annotation *)), ui.annoDataWidget, SLOT(updateShapeInfo()));
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SLOT(onPM_fileListUpdate()));
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SLOT(onPM_annoListUpdate()));
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoFileSelChanged(int, QUuid, ::anno::dt::AnnoFileData *)), this, SLOT(onPM_annoFileSelectChanged(int, QUuid, ::anno::dt::AnnoFileData *)));
@@ -441,7 +442,7 @@ void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::an
     GlobalLogger::instance()->logDebug("MW: onPM_annoFileSelectChanged");
 
     ui.annoListWidget->updateData();
-    ui.annoDataWidget->updateData();
+    ui.annoDataWidget->updateAllData();
 
     QFileInfo fileName = annoFile->imageInfo()->imagePath();
     int frame = annoFile->imageInfo()->frame();
@@ -466,7 +467,7 @@ void AnnoToolMainWindow::onPM_annoSelectChanged(int row, QUuid annoId,
         ::anno::dt::Annotation *anno) {
     GlobalLogger::instance()->logDebug(QString("Selected annotation [%1]").arg(row));
     _graphicsScene->selectShape(annoId);
-    ui.annoDataWidget->updateData();
+    ui.annoDataWidget->updateAllData();
 }
 
 void AnnoToolMainWindow::on_actionToolPointer_triggered() {

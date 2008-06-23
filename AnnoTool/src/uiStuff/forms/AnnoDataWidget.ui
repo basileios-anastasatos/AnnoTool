@@ -97,6 +97,25 @@
        </layout>
       </item>
       <item>
+       <widget class="QLabel" name="lbInfo">
+        <property name="styleSheet">
+         <string notr="true">color: rgb(40, 40, 40);</string>
+        </property>
+        <property name="text">
+         <string>Annotation Information</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="margin">
+         <number>2</number>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::NoTextInteraction</set>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QTreeView" name="trAttributes">
         <property name="rootIsDecorated">
          <bool>false</bool>

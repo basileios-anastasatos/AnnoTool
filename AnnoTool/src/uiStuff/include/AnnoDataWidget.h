@@ -28,13 +28,14 @@ class AnnoDataWidget : public QDockWidget {
         ~AnnoDataWidget();
 
     public:
-        void updateData();
         void clearData();
 
         void setToolsEnabled(bool enabled = true);
 
     public slots:
-        void annoSelectChanged(int row, QUuid anno);
+        void updateAllData();
+        void updateListData();
+        void updateShapeInfo();
 
 };
 
