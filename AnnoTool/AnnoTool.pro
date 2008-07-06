@@ -22,7 +22,9 @@ INCLUDEPATH += ./src/annoDataTypes/include \
 QT += core \
     gui \
     xml
-HEADERS += ./src/uiStuff/include/AnnoToolMainWindow.h \
+HEADERS += ./src/annoGraphics/include/ToolPolygon.h \
+    ./src/annoDataTypes/include/AnnoPolygon.h \
+    ./src/uiStuff/include/AnnoToolMainWindow.h \
     ./src/uiStuff/include/ZoomControl.h \
     ./src/annoGraphics/include/ToolEllipse.h \
     ./src/annoGraphics/include/AnnoGraphicsEllipse.h \
@@ -102,7 +104,9 @@ HEADERS += ./src/uiStuff/include/AnnoToolMainWindow.h \
     ./src/annoExceptions/include/OutOfRangeException.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h
-SOURCES += ./src/uiStuff/AnnoToolMainWindow.cpp \
+SOURCES += ./src/annoGraphics/ToolPolygon.cpp \
+    ./src/annoDataTypes/AnnoPolygon.cpp \
+    ./src/uiStuff/AnnoToolMainWindow.cpp \
     ./src/uiStuff/ZoomControl.cpp \
     ./src/annoGraphics/ToolEllipse.cpp \
     ./src/annoGraphics/AnnoGraphicsEllipse.cpp \
@@ -189,7 +193,8 @@ FORMS += ./src/uiStuff/forms/AnnoToolMainWindow.ui \
     ./src/uiStuff/forms/AnnoFileListWidget.ui \
     ./src/uiStuff/forms/DlgFileChooser.ui \
     ./src/uiStuff/forms/DlgProjectDetails.ui
-RESOURCES += ./src/uiStuff/forms/others.qrc \
+RESOURCES += ./src/uiStuff/forms/cursors.qrc \
+    ./src/uiStuff/forms/others.qrc \
     ./src/uiStuff/forms/icons.qrc
 win32 { 
     release { 
