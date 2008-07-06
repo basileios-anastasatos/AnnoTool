@@ -36,7 +36,7 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     ui.setupUi(this);
 
 #ifdef QT_DEBUG
-    setWindowTitle("AnnoTool v2 [Debug Version]");
+    setWindowTitle(QString("AnnoTool v2 [Debug Version - %1 %2]").arg(__DATE__).arg(__TIME__));
 #endif
 
     setCentralWidget(ui.graphicsView);
@@ -87,6 +87,7 @@ void AnnoToolMainWindow::newGraphicsScene(QImage *img) {
         _graphicsScene->setAnnoImage(*img);
     }
     ui.graphicsView->setScene(_graphicsScene);
+    GlobalToolManager::instance()->setView(ui.graphicsView);
     GlobalToolManager::instance()->setScene(_graphicsScene);
     fitGraphicsScene();
     setToolEnabled(true);
@@ -378,8 +379,15 @@ void AnnoToolMainWindow::on_actionSetImageLoader_triggered() {
 }
 
 void AnnoToolMainWindow::onAppClose() {
-    GlobalLogger::instance()->logInfo("AnnoTool is shutting down");
+    GlobalLogger::instance()->logInfo("AnnoTool is shutting down.");
     GlobalProjectManager::instance()->clear();
+    GlobalLogger::instance()->logInfo("Writing anno config file.");
+    try {
+        GlobalConfig::instance()->saveConfig();
+    } catch(AnnoException *e) {
+        GlobalLogger::instance()->logError(e->msg());
+        delete e;
+    }
     //TODO reset singletons here!
 }
 
@@ -444,6 +452,8 @@ void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::an
     ui.annoListWidget->updateData();
     ui.annoDataWidget->updateAllData();
 
+    //TODO handling für sel = -1 !!
+
     QFileInfo fileName = annoFile->imageInfo()->imagePath();
     int frame = annoFile->imageInfo()->frame();
     if (fileName.isRelative()) {
@@ -495,7 +505,7 @@ void AnnoToolMainWindow::on_actionToolPolygon_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionToolPolygon_triggered");
     uncheckTools();
     ui.actionToolPolygon->setChecked(true);
-    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtNone);
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtPolygon);
 }
 
 void AnnoToolMainWindow::on_actionToolEllipse_triggered() {

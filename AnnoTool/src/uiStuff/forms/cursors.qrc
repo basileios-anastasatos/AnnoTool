@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/res/cursors" >
+        <file alias="curEllipse" >res/cursors/cursorEllipse.png</file>
+        <file alias="curEllipse_active" >res/cursors/cursorEllipse_active.png</file>
+        <file alias="curPointer" >res/cursors/cursorPointer.png</file>
+        <file alias="curPointer_cp" >res/cursors/cursorPointer_cp.png</file>
+        <file alias="curPointer_cp_moving" >res/cursors/cursorPointer_cp_moving.png</file>
+        <file alias="curPointer_hilight" >res/cursors/cursorPointer_hilight.png</file>
+        <file alias="curPointer_moving" >res/cursors/cursorPointer_moving.png</file>
+        <file alias="curPoly" >res/cursors/cursorPoly.png</file>
+        <file alias="curPoly_active" >res/cursors/cursorPoly_active.png</file>
+        <file alias="curRect" >res/cursors/cursorRect.png</file>
+        <file alias="curRect_active" >res/cursors/cursorRect_active.png</file>
+        <file alias="curSPoint" >res/cursors/cursorSPoint.png</file>
+        <file alias="curSPoint_active" >res/cursors/cursorSPoint_active.png</file>
+    </qresource>
+</RCC>
