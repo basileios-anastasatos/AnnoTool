@@ -7,6 +7,7 @@
 #include <QStyle>
 #include <QStyleOptionGraphicsItem>
 #include <QPainter>
+#include <QGraphicsSceneHoverEvent>
 #include "importGlobals.h"
 
 namespace anno {
@@ -111,6 +112,30 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsRect::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: hoverEnterEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverEnterEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsRect::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: hoverLeaveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverLeaveEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsRect::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: hoverMoveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverMoveEvent(this, event);
+            }
+        }
+
         void AnnoGraphicsRect::paint(QPainter *painter,
                                      const QStyleOptionGraphicsItem *option, QWidget *widget) {
             GlobalLogger::instance()->logDebug("AG_RECT: paint.");
@@ -132,6 +157,7 @@ namespace anno {
             setPen(pen);
             setBrush(QBrush(QColor(255, 255, 60, 45)));
             setFlag(QGraphicsItem::ItemIsSelectable);
+            setAcceptsHoverEvents(true);
             setVisible(true);
             setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
         }

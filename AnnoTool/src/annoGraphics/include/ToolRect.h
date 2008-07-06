@@ -7,12 +7,14 @@ namespace anno {
     namespace graphics {
         class AnnoGraphicsShape;
 
-        class ToolRect : public anno::graphics::GraphicsTool {
+        class ToolRect : public GraphicsTool {
             private:
+                QCursor _cursorNormal;
+                QCursor _cursorActive;
                 AnnoGraphicsShape *_curShape;
 
             public:
-                ToolRect(AnnoGraphicsScene *scene);
+                ToolRect(QGraphicsView *view, AnnoGraphicsScene *scene);
                 virtual ~ToolRect();
 
                 // general tool information
@@ -43,6 +45,11 @@ namespace anno {
                                                QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneMouseEvent *event);
+
+                virtual void hoverEnterEvent(AnnoGraphicsPixmap *img,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(AnnoGraphicsPixmap *img,
+                                             QGraphicsSceneHoverEvent *event);
         };
 
     }

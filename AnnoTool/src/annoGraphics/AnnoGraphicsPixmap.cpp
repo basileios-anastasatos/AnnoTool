@@ -2,6 +2,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPen>
 #include <QBrush>
+#include <QGraphicsSceneHoverEvent>
 
 #include "importGlobals.h"
 
@@ -10,6 +11,7 @@ namespace anno {
 
         AnnoGraphicsPixmap::AnnoGraphicsPixmap(const QPixmap &pixmap, QGraphicsItem *parent) :
             QGraphicsPixmapItem(pixmap, parent) {
+            setAcceptsHoverEvents(true);
         }
 
         AnnoGraphicsPixmap::~AnnoGraphicsPixmap() {
@@ -36,6 +38,30 @@ namespace anno {
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseReleaseEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsPixmap::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: hoverEnterEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverEnterEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsPixmap::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: hoverLeaveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverLeaveEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsPixmap::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: hoverMoveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverMoveEvent(this, event);
             }
         }
 

@@ -14,8 +14,10 @@
 namespace anno {
     namespace graphics {
 
-        ToolRect::ToolRect(AnnoGraphicsScene *scene) :
-            GraphicsTool(scene), _curShape(NULL) {
+        ToolRect::ToolRect(QGraphicsView *view, AnnoGraphicsScene *scene) :
+            GraphicsTool(view, scene), _curShape(NULL) {
+            _cursorNormal = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curRect")), 0, 0);
+            _cursorActive = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curRect_active")), 0, 0);
         }
 
         ToolRect::~ToolRect() {
@@ -83,7 +85,11 @@ namespace anno {
 
         void ToolRect::mousePressEvent(AnnoGraphicsPixmap *img,
                                        QGraphicsSceneMouseEvent *event) {
-            event->accept();
+            if(_view != NULL) {
+                _prevCursors.push(_view->cursor());
+                _view->setCursor(_cursorActive);
+            }
+
             dt::AnnoFileData *annoFile = GlobalProjectManager::instance()->selectedFile();
             dt::AnnoRectangle *arect = new dt::AnnoRectangle();
             arect->setTopLeft(img->mapFromScene(event->scenePos()));
@@ -105,6 +111,9 @@ namespace anno {
 
         void ToolRect::mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                          QGraphicsSceneMouseEvent *event) {
+            if (_view != NULL) {
+                _view->setCursor(_prevCursors.pop());
+            }
             _curShape->cpMouseReleaseEvent(2, event);
             _curShape = NULL;
         }
@@ -112,6 +121,18 @@ namespace anno {
         void ToolRect::mouseMoveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneMouseEvent *event) {
             if (_curShape != NULL) {
                 _curShape->cpMouseMoveEvent(2, event);
+            }
+        }
+
+        void ToolRect::hoverEnterEvent(AnnoGraphicsPixmap *img, QGraphicsSceneHoverEvent *event) {
+            if (_view != NULL) {
+                _view->setCursor(_cursorNormal);
+            }
+        }
+
+        void ToolRect::hoverLeaveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneHoverEvent *event) {
+            if (_view != NULL) {
+                _view->setCursor(Qt::ArrowCursor);
             }
         }
 

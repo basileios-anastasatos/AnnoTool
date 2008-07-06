@@ -4,6 +4,7 @@
 #include <QGraphicsPixmapItem>
 
 class QGraphicsSceneMouseEvent;
+class QGraphicsSceneHoverEvent;
 class QPixmap;
 
 namespace anno {
@@ -15,6 +16,9 @@ namespace anno {
                 virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+                virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+                virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 
             public:
                 AnnoGraphicsPixmap(const QPixmap &pixmap, QGraphicsItem *parent = 0);

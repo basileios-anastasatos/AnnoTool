@@ -8,8 +8,12 @@ namespace anno {
         class AnnoGraphicsShape;
 
         class ToolSinglePoint : public anno::graphics::GraphicsTool {
+            private:
+                QCursor _cursorNormal;
+                QCursor _cursorActive;
+
             public:
-                ToolSinglePoint(AnnoGraphicsScene *scene);
+                ToolSinglePoint(QGraphicsView *view, AnnoGraphicsScene *scene);
                 virtual ~ToolSinglePoint();
 
                 // general tool information
@@ -36,10 +40,15 @@ namespace anno {
 
                 virtual void mousePressEvent(AnnoGraphicsPixmap *img,
                                              QGraphicsSceneMouseEvent *event);
-//				virtual void mouseReleaseEvent(AnnoGraphicsPixmap* img,
-//						QGraphicsSceneMouseEvent* event);
+                virtual void mouseReleaseEvent(AnnoGraphicsPixmap *img,
+                                               QGraphicsSceneMouseEvent *event);
 //				virtual void mouseMoveEvent(AnnoGraphicsPixmap* img,
 //						QGraphicsSceneMouseEvent* event);
+
+                virtual void hoverEnterEvent(AnnoGraphicsPixmap *img,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(AnnoGraphicsPixmap *img,
+                                             QGraphicsSceneHoverEvent *event);
         };
 
     }

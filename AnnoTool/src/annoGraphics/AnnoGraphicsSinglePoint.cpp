@@ -4,6 +4,7 @@
 #include <QPen>
 #include <QBrush>
 #include <QPainter>
+#include <QGraphicsSceneHoverEvent>
 
 namespace anno {
     namespace graphics {
@@ -35,6 +36,7 @@ namespace anno {
 
         void AnnoGraphicsSinglePoint::setupAppearance() {
             setFlag(QGraphicsItem::ItemIsSelectable);
+            setAcceptsHoverEvents(true);
             setVisible(true);
             setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
         }
@@ -74,6 +76,30 @@ namespace anno {
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseMoveEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsSinglePoint::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_SPOINT: hoverEnterEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverEnterEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsSinglePoint::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_SPOINT: hoverLeaveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverLeaveEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsSinglePoint::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_SPOINT: hoverMoveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverMoveEvent(this, event);
             }
         }
 

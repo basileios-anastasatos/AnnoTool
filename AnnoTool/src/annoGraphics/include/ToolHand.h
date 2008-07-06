@@ -8,7 +8,7 @@ namespace anno {
 
         class ToolHand : public anno::graphics::GraphicsTool {
             public:
-                ToolHand(AnnoGraphicsScene *scene);
+                ToolHand(QGraphicsView *view, AnnoGraphicsScene *scene);
                 virtual ~ToolHand();
 
                 // general tool information

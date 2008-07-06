@@ -5,6 +5,7 @@
 #include "ToolPointer.h"
 #include "ToolHand.h"
 #include "ToolRect.h"
+#include "ToolPolygon.h"
 #include "ToolSinglePoint.h"
 #include "ToolEllipse.h"
 

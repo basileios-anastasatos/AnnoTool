@@ -2,6 +2,7 @@
 #include "include/AnnoGraphicsShape.h"
 
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneHoverEvent>
 #include <QGraphicsScene>
 
 #include "importGlobals.h"
@@ -46,6 +47,30 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsControlPoint::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_CP: hoverEnterEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverEnterEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsControlPoint::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_CP: hoverLeaveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverLeaveEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsControlPoint::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_CP: hoverMoveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverMoveEvent(this, event);
+            }
+        }
+
         //		void AnnoGraphicsControlPoint::mousePressEvent(
         //				QGraphicsSceneMouseEvent* event)
         //		{
@@ -84,6 +109,7 @@ namespace anno {
 
         void AnnoGraphicsControlPoint::setupAppearance() {
             setVisible(true);
+            setAcceptsHoverEvents(true);
             QPen pen(QColor(160, 160, 160, 255));
             pen.setWidth(1);
             setPen(pen);

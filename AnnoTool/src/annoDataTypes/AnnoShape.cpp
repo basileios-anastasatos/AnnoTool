@@ -5,6 +5,7 @@
 #include "AnnoRectangle.h"
 #include "AnnoSinglePoint.h"
 #include "AnnoEllipse.h"
+#include "AnnoPolygon.h"
 
 //namespace AnnoTool
 namespace anno {
@@ -35,6 +36,9 @@ namespace anno {
                 shape->loadFromXml(reader);
             } else if (reader.isStartElement() && reader.name() == "ellipse") {
                 shape = new AnnoEllipse();
+                shape->loadFromXml(reader);
+            } else if (reader.isStartElement() && reader.name() == "polygon") {
+                shape = new AnnoPolygon();
                 shape->loadFromXml(reader);
             } else {
                 QString msg("Unsupported annotation shape: %1");

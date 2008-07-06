@@ -82,6 +82,11 @@ namespace anno {
             }
         }
 
+        int AnnoGraphicsShape::cpCount() const {
+            GlobalLogger::instance()->logDebug("AnnoGraphicsShape::cpCount()");
+            return _cp.size();
+        }
+
         void AnnoGraphicsShape::cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event) {
             //nothing to be done here!
         }

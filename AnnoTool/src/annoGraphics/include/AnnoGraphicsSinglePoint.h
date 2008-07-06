@@ -5,6 +5,8 @@
 #include "AnnoGraphicsShape.h"
 #include "AnnoSinglePoint.h"
 
+class QGraphicsSceneHoverEvent;
+
 namespace anno {
 
     namespace graphics {
@@ -19,6 +21,9 @@ namespace anno {
                 virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+                virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+                virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 
             public:
                 AnnoGraphicsSinglePoint(dt::Annotation *anno, QGraphicsItem *parent = 0);

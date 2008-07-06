@@ -1,7 +1,12 @@
 #ifndef GRAPHICSTOOL_H_
 #define GRAPHICSTOOL_H_
 
+#include <QStack>
+#include <QCursor>
+
+class QGraphicsView;
 class QGraphicsSceneMouseEvent;
+class QGraphicsSceneHoverEvent;
 
 namespace anno {
     namespace graphics {
@@ -13,11 +18,13 @@ namespace anno {
         class GraphicsTool {
                 // Members that are managed for child classes
             protected:
+                QGraphicsView *_view;
                 AnnoGraphicsScene *_scene;
+                QStack<QCursor> _prevCursors;
 
                 // constructors
             protected:
-                GraphicsTool(AnnoGraphicsScene *scene);
+                GraphicsTool(QGraphicsView *view, AnnoGraphicsScene *scene);
 
                 // destructor
             public:
@@ -51,6 +58,27 @@ namespace anno {
                                                QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneMouseEvent *event);
+
+                virtual void hoverEnterEvent(AnnoGraphicsControlPoint *cp,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(AnnoGraphicsControlPoint *cp,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverMoveEvent(AnnoGraphicsControlPoint *cp,
+                                            QGraphicsSceneHoverEvent *event);
+
+                virtual void hoverEnterEvent(AnnoGraphicsShape *shape,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(AnnoGraphicsShape *shape,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverMoveEvent(AnnoGraphicsShape *shape,
+                                            QGraphicsSceneHoverEvent *event);
+
+                virtual void hoverEnterEvent(AnnoGraphicsPixmap *img,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(AnnoGraphicsPixmap *img,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverMoveEvent(AnnoGraphicsPixmap *img,
+                                            QGraphicsSceneHoverEvent *event);
 
         };
 

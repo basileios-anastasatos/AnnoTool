@@ -1,23 +1,22 @@
-#ifndef TOOLPOINTER_H_
-#define TOOLPOINTER_H_
+#ifndef TOOLPOLYGON_H_
+#define TOOLPOLYGON_H_
 
 #include "GraphicsTool.h"
-#include <QCursor>
+#include "AnnoGraphicsPolygon.h"
 
 namespace anno {
     namespace graphics {
+        class AnnoGraphicsShape;
 
-        class ToolPointer : public anno::graphics::GraphicsTool {
+        class ToolPolygon : public GraphicsTool {
             private:
                 QCursor _cursorNormal;
-                QCursor _cursorHilight;
-                QCursor _cursorMoving;
-                QCursor _cursorCp;
-                QCursor _cursorCpMoving;
+                QCursor _cursorActive;
+                AnnoGraphicsPolygon *_curPolygon;
 
             public:
-                ToolPointer(QGraphicsView *view, AnnoGraphicsScene *scene);
-                virtual ~ToolPointer();
+                ToolPolygon(QGraphicsView *view, AnnoGraphicsScene *scene);
+                virtual ~ToolPolygon();
 
                 // general tool information
             public:
@@ -41,18 +40,12 @@ namespace anno {
                 virtual void mouseMoveEvent(AnnoGraphicsShape *shape,
                                             QGraphicsSceneMouseEvent *event);
 
-                virtual void mousePressEvent(AnnoGraphicsPixmap *shape,
+                virtual void mousePressEvent(AnnoGraphicsPixmap *img,
                                              QGraphicsSceneMouseEvent *event);
-
-                virtual void hoverEnterEvent(AnnoGraphicsControlPoint *cp,
-                                             QGraphicsSceneHoverEvent *event);
-                virtual void hoverLeaveEvent(AnnoGraphicsControlPoint *cp,
-                                             QGraphicsSceneHoverEvent *event);
-
-                virtual void hoverEnterEvent(AnnoGraphicsShape *shape,
-                                             QGraphicsSceneHoverEvent *event);
-                virtual void hoverLeaveEvent(AnnoGraphicsShape *shape,
-                                             QGraphicsSceneHoverEvent *event);
+                virtual void mouseReleaseEvent(AnnoGraphicsPixmap *img,
+                                               QGraphicsSceneMouseEvent *event);
+                virtual void mouseMoveEvent(AnnoGraphicsPixmap *img,
+                                            QGraphicsSceneMouseEvent *event);
 
                 virtual void hoverEnterEvent(AnnoGraphicsPixmap *img,
                                              QGraphicsSceneHoverEvent *event);
@@ -63,6 +56,6 @@ namespace anno {
     }
 }
 
-#endif /*TOOLPOINTER_H_*/
+#endif /*TOOLPOLYGON_H_*/
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

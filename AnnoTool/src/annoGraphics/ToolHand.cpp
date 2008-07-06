@@ -3,8 +3,8 @@
 namespace anno {
     namespace graphics {
 
-        ToolHand::ToolHand(AnnoGraphicsScene *scene) :
-            GraphicsTool(scene) {
+        ToolHand::ToolHand(QGraphicsView *view, AnnoGraphicsScene *scene) :
+            GraphicsTool(view, scene) {
         }
 
         ToolHand::~ToolHand() {

@@ -8,6 +8,7 @@
 #include <QPainter>
 #include "importGlobals.h"
 #include <QGraphicsPixmapItem>
+#include <QGraphicsSceneHoverEvent>
 
 namespace anno {
     namespace graphics {
@@ -31,6 +32,7 @@ namespace anno {
             initControlPoints();
             setFlag(QGraphicsItem::ItemIsSelectable);
             setVisible(true);
+            setAcceptsHoverEvents(true);
             setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
         }
 
@@ -155,6 +157,30 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsEllipse::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_ELLIPSE: hoverEnterEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverEnterEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsEllipse::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_ELLIPSE: hoverLeaveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverLeaveEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsEllipse::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_ELLIPSE: hoverMoveEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->hoverMoveEvent(this, event);
+            }
+        }
+
         QGraphicsItem *AnnoGraphicsEllipse::graphicsItem() {
             return this;
         }
@@ -230,7 +256,6 @@ namespace anno {
         }
 
     }
-
 }
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

@@ -5,6 +5,8 @@
 #include "AnnoGraphicsShape.h"
 #include "AnnoRectangle.h"
 
+class QGraphicsSceneHoverEvent;
+
 namespace anno {
     namespace graphics {
 
@@ -18,6 +20,9 @@ namespace anno {
                 virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+                virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+                virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 
             public:
                 AnnoGraphicsRect(dt::Annotation *anno, QGraphicsItem *parent = 0);

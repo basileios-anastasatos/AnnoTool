@@ -1,16 +1,16 @@
-#ifndef ANNORECTANGLE_H_
-#define ANNORECTANGLE_H_
+#ifndef ANNOPOLYGON_H_
+#define ANNOPOLYGON_H_
 
-#include <QRectF>
+#include <QPolygonF>
 #include "AnnoShape.h"
 
 namespace anno {
     namespace dt {
 
-        class AnnoRectangle : public QRectF, public AnnoShape {
+        class AnnoPolygon : public QPolygonF, public AnnoShape {
             public:
-                AnnoRectangle();
-                virtual ~AnnoRectangle();
+                AnnoPolygon();
+                virtual ~AnnoPolygon();
 
             public:
                 virtual AnnoShapeType shapeType() const;
@@ -20,8 +20,8 @@ namespace anno {
                 virtual void print() const;
 
             public:
-                AnnoRectangle &operator=(const QRectF &r);
-                AnnoRectangle &operator=(const AnnoRectangle &r);
+                AnnoPolygon &operator=(const QPolygonF &r);
+                AnnoPolygon &operator=(const AnnoPolygon &r);
 
             public:
                 virtual void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
@@ -31,6 +31,6 @@ namespace anno {
     }
 }
 
-#endif /*ANNORECTANGLE_H_*/
+#endif /*ANNOPOLYGON_H_*/
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

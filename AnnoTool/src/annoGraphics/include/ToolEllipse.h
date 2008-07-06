@@ -9,10 +9,12 @@ namespace anno {
 
         class ToolEllipse : public anno::graphics::GraphicsTool {
             private:
+                QCursor _cursorNormal;
+                QCursor _cursorActive;
                 AnnoGraphicsShape *_curShape;
 
             public:
-                ToolEllipse(AnnoGraphicsScene *scene);
+                ToolEllipse(QGraphicsView *view, AnnoGraphicsScene *scene);
                 virtual ~ToolEllipse();
 
                 // general tool information
@@ -43,6 +45,11 @@ namespace anno {
                                                QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneMouseEvent *event);
+
+                virtual void hoverEnterEvent(AnnoGraphicsPixmap *img,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(AnnoGraphicsPixmap *img,
+                                             QGraphicsSceneHoverEvent *event);
         };
 
     }

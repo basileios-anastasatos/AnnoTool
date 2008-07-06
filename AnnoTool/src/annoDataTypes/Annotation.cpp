@@ -289,6 +289,9 @@ namespace anno {
             if (!_comment.isEmpty()) {
                 writer.writeTextElement("comment", _comment);
             }
+            if(hasAnnoParent() || hasAnnoChildren()) {
+                annoHierarchyToXml(writer);
+            }
             if (!_annoClasses.isEmpty()) {
                 annoClassesToXml(writer);
             }

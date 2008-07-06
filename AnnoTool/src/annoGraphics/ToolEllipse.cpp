@@ -15,8 +15,10 @@
 namespace anno {
     namespace graphics {
 
-        ToolEllipse::ToolEllipse(AnnoGraphicsScene *scene) :
-            GraphicsTool(scene), _curShape(NULL) {
+        ToolEllipse::ToolEllipse(QGraphicsView *view, AnnoGraphicsScene *scene) :
+            GraphicsTool(view, scene), _curShape(NULL) {
+            _cursorNormal = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curEllipse")), 0, 0);
+            _cursorActive = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curEllipse_active")), 0, 0);;
         }
 
         ToolEllipse::~ToolEllipse() {
@@ -84,8 +86,12 @@ namespace anno {
 
         void ToolEllipse::mousePressEvent(AnnoGraphicsPixmap *img,
                                           QGraphicsSceneMouseEvent *event) {
+            if (_view != NULL) {
+                _prevCursors.push(_view->cursor());
+                _view->setCursor(_cursorActive);
+            }
+
             GlobalLogger::instance()->logDebug("Tool-Ellipse: MousePress");
-            event->accept();
             dt::AnnoFileData *annoFile = GlobalProjectManager::instance()->selectedFile();
             dt::AnnoEllipse *ae = new dt::AnnoEllipse();
             ae->setTopLeft(img->mapFromScene(event->scenePos()));
@@ -110,6 +116,9 @@ namespace anno {
 
         void ToolEllipse::mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneMouseEvent *event) {
+            if (_view != NULL) {
+                _view->setCursor(_prevCursors.pop());
+            }
             _curShape->cpMouseReleaseEvent(2, event);
             _curShape = NULL;
         }
@@ -117,6 +126,20 @@ namespace anno {
         void ToolEllipse::mouseMoveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneMouseEvent *event) {
             if (_curShape != NULL) {
                 _curShape->cpMouseMoveEvent(2, event);
+            }
+        }
+
+        void ToolEllipse::hoverEnterEvent(AnnoGraphicsPixmap *img,
+                                          QGraphicsSceneHoverEvent *event) {
+            if (_view != NULL) {
+                _view->setCursor(_cursorNormal);
+            }
+        }
+
+        void ToolEllipse::hoverLeaveEvent(AnnoGraphicsPixmap *img,
+                                          QGraphicsSceneHoverEvent *event) {
+            if (_view != NULL) {
+                _view->setCursor(Qt::ArrowCursor);
             }
         }
 

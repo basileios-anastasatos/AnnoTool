@@ -47,6 +47,7 @@ namespace anno {
                 virtual void moveControlPoint(int index, qreal x, qreal y);
                 virtual void moveControlPointTo(int index, qreal x, qreal y);
                 virtual void setControlPointsVisible(bool vis);
+                virtual int cpCount() const;
 
                 // Mouse interaction interface for CPs
             public:
