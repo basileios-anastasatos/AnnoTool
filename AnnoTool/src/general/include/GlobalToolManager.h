@@ -3,6 +3,8 @@
 
 #include "GraphicsTool.h"
 
+class QGraphicsView;
+
 namespace anno {
     namespace graphics {
         class AnnoGraphicsScene;
@@ -12,7 +14,7 @@ namespace anno {
             // enum of selectable tools
         public:
             enum SelGraphicsTool {
-                GtNone, GtPointer, GtHand, GtRect, GtSinglePoint, GtEllipse
+                GtNone, GtPointer, GtHand, GtRect, GtPolygon, GtSinglePoint, GtEllipse
             };
 
             // Singleton members
@@ -25,6 +27,7 @@ namespace anno {
             // other members
         private:
             bool _resetFlag;
+            QGraphicsView *_curView;
             graphics::AnnoGraphicsScene *_curScene;
             graphics::GraphicsTool *_curTool;
             SelGraphicsTool _curToolId;
@@ -71,6 +74,9 @@ namespace anno {
 
             // general interface
         public:
+            void setView(QGraphicsView *view);
+            QGraphicsView *curView();
+            bool hasView() const;
             void setScene(graphics::AnnoGraphicsScene *scene);
             graphics::AnnoGraphicsScene *curScene();
             bool hasScene() const;

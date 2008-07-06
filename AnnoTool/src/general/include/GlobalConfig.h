@@ -8,6 +8,12 @@
 #include <QFileInfo>
 #include <QMap>
 
+class QXmlStreamWriter;
+class QXmlStreamReader;
+
+#define ANNOTOOL_CONFIG_DIR ".annotoolv2"
+#define ANNOTOOL_CONFIG_FILENAME "annoSettings.xml"
+
 //namespace AnnoTool
 namespace anno {
     using namespace ::anno::exc;
@@ -18,8 +24,7 @@ namespace anno {
         QString annotations;
 
         inline FileExtensions();
-        inline FileExtensions(const QString &pr, const QString &cd,
-                              const QString &at);
+        inline FileExtensions(const QString &pr, const QString &cd, const QString &at);
         inline static QString asFilter(const QString &ext);
     };
 
@@ -40,15 +45,15 @@ namespace anno {
         private:
             static GlobalConfig *_me;
 
-            //				QFileInfo _defaultAnnoClassDir;
-            //				QFileInfo _defaultSaveDir;
-
+            // actual configuration settings
         private:
             QMap<QString, int> _settingsInt;
             QMap<QString, double> _settingsDouble;
             QMap<QString, QString> _settingsString;
             QMap<QString, QFileInfo> _settingsFile;
+            QMap<QString, ShapeColors> _settingsShapeColors;
 
+            // static settings that are not stored in file
         public:
             static const FileExtensions fileExt;
             static const ShapeColors shapeColors;
@@ -58,16 +63,42 @@ namespace anno {
             static void setupConfig();
 
         public:
-            virtual ~GlobalConfig();
+            ~GlobalConfig();
 
         public:
-            static const GlobalConfig *instance();
+            static GlobalConfig *instance();
 
+        private:
+            QDir configDir();
+            QFileInfo configFile();
+            void loadDefaults();
+            void clearConfig();
+            void insertXmlSetting(const QString &name, const QString &type, const QString &value);
+            void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
+            void loadSectionGeneral(QXmlStreamReader &reader) throw(XmlException *);
+            void loadSectionShapeCols(QXmlStreamReader &reader) throw(XmlException *);
+            void writeToXml(QXmlStreamWriter &writer) const throw(XmlException *);
+            void writeSectionGeneral(QXmlStreamWriter &writer) const throw(XmlException *);
+            void writeSectionShapeCols(QXmlStreamWriter &writer) const throw(XmlException *);
+
+            // public config query interface
         public:
-            int getSettingInt(const QString &s) const throw(NoSuchElementException *);
-            double getSettingDouble(const QString &s) const throw(NoSuchElementException *);
-            QString getSettingString(const QString &s) const throw(NoSuchElementException *);
-            QFileInfo getSettingFile(const QString &s) const throw(NoSuchElementException *);
+            int getInt(const QString &s) const throw(NoSuchElementException *);
+            double getDouble(const QString &s) const throw(NoSuchElementException *);
+            QString getString(const QString &s) const throw(NoSuchElementException *);
+            QFileInfo getFile(const QString &s) const throw(NoSuchElementException *);
+            const ShapeColors &getShapeColors(const QString &s) const
+            throw(NoSuchElementException *);
+            int getInt(const QString &s, int defaultValue) const;
+            double getDouble(const QString &s, double defaultValue) const;
+            QString getString(const QString &s, QString defaultValue) const;
+            QFileInfo getFile(const QString &s, QFileInfo defaultValue) const;
+            const ShapeColors &getShapeColors(const QString &s, const ShapeColors &defaultValue) const;
+
+            // Load & Save interface
+        public:
+            void loadConfig();
+            void saveConfig() throw(AnnoException *);
     };
 
     inline FileExtensions::FileExtensions() {
@@ -102,8 +133,8 @@ namespace anno {
         brushSelected.setColor(QColor(255, 255, 60, 42));
     }
 
-    inline ShapeColors::ShapeColors(const QPen &pN, const QPen &pS,
-                                    const QBrush &bN, const QBrush &bS, int wN, int wS) {
+    inline ShapeColors::ShapeColors(const QPen &pN, const QPen &pS, const QBrush &bN,
+                                    const QBrush &bS, int wN, int wS) {
         penNormal = pN;
         penSelected = pS;
         brushNormal = bN;

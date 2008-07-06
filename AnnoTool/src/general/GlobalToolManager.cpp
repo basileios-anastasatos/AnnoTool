@@ -11,6 +11,7 @@ namespace anno {
 
     GlobalToolManager::GlobalToolManager() {
         _resetFlag = false;
+        _curView = NULL;
         _curScene = NULL;
         _curTool = NULL;
         _curToolId = GtNone;
@@ -48,6 +49,18 @@ namespace anno {
         _curToolId = GtNone;
     }
 
+    void GlobalToolManager::setView(QGraphicsView *view) {
+        _curView = view;
+    }
+
+    QGraphicsView *GlobalToolManager::curView() {
+        return _curView;
+    }
+
+    bool GlobalToolManager::hasView() const {
+        return (_curView != NULL);
+    }
+
     void GlobalToolManager::setScene(graphics::AnnoGraphicsScene *scene) {
         _curScene = scene;
     }
@@ -61,6 +74,10 @@ namespace anno {
     }
 
     void GlobalToolManager::selectTool(GlobalToolManager::SelGraphicsTool tool) {
+        if (_curView == NULL) {
+            GlobalLogger::instance()->logWarning("Aborted tool selection due to missing view.");
+            return;
+        }
         if (_curScene == NULL) {
             GlobalLogger::instance()->logWarning("Aborted tool selection due to missing scene.");
             return;
@@ -74,31 +91,37 @@ namespace anno {
                 }
             case GtPointer: {
                     clearTool();
-                    _curTool = new graphics::ToolPointer(_curScene);
+                    _curTool = new graphics::ToolPointer(_curView, _curScene);
                     GlobalLogger::instance()->logDebug("Selected Tool GtPointer");
                     break;
                 }
             case GtHand: {
                     clearTool();
-                    _curTool = new graphics::ToolHand(_curScene);
+                    _curTool = new graphics::ToolHand(_curView, _curScene);
                     GlobalLogger::instance()->logDebug("Selected Tool GtHand");
                     break;
                 }
             case GtRect: {
                     clearTool();
-                    _curTool = new graphics::ToolRect(_curScene);
+                    _curTool = new graphics::ToolRect(_curView, _curScene);
                     GlobalLogger::instance()->logDebug("Selected Tool GtRect");
+                    break;
+                }
+            case GtPolygon: {
+                    clearTool();
+                    _curTool = new graphics::ToolPolygon(_curView, _curScene);
+                    GlobalLogger::instance()->logDebug("Selected Tool GtPolygon");
                     break;
                 }
             case GtSinglePoint: {
                     clearTool();
-                    _curTool = new graphics::ToolSinglePoint(_curScene);
+                    _curTool = new graphics::ToolSinglePoint(_curView, _curScene);
                     GlobalLogger::instance()->logDebug("Selected Tool GtSinglePoint");
                     break;
                 }
             case GtEllipse: {
                     clearTool();
-                    _curTool = new graphics::ToolEllipse(_curScene);
+                    _curTool = new graphics::ToolEllipse(_curView, _curScene);
                     GlobalLogger::instance()->logDebug("Selected Tool GtEllipse");
                     break;
                 }
@@ -131,6 +154,7 @@ namespace anno {
             delete _curTool;
         }
         _curTool = NULL;
+        _curView = NULL;
         _curScene = NULL;
         _resetFlag = true;
     }

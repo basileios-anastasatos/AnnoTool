@@ -152,6 +152,10 @@ namespace anno {
                 _curSelFile = index;
                 emit curAnnoFileSelChanged(index, file->imageUuid(), file);
             }
+        } else if(index == -1) {
+            resetSelectedFile();
+            _curSelFile = -1;
+            emit curAnnoFileSelChanged(-1, QUuid(), NULL);
         }
     }
 
@@ -172,6 +176,10 @@ namespace anno {
                 _curSelAnno = index;
                 emit curAnnoSelChanged(index, anno->annoId(), anno);
             }
+        } else if (index == -1) {
+            resetSelectedAnno();
+            _curSelAnno = -1;
+            emit curAnnoSelChanged(-1, QUuid(), NULL);
         }
     }
 

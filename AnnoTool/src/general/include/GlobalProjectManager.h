@@ -129,6 +129,9 @@ namespace anno {
             QUuid selectedFileUuid() const;
             QUuid selectedAnnoUuid() const;
 
+            bool isAnnoSelected(const QUuid &uuid) const;
+            bool isAnnoSelected(const dt::Annotation *anno) const;
+
         public:
             QFileInfo relToAbs(const QFileInfo &file) const throw(IllegalStateException *);
             QFileInfo relToAbs(const QDir &dir) const throw(IllegalStateException *);
@@ -255,6 +258,22 @@ namespace anno {
             return selectedAnno()->annoId();
         }
         return QUuid();
+    }
+
+    inline bool GlobalProjectManager::isAnnoSelected(const QUuid &uuid) const {
+        const dt::Annotation *sel = selectedAnno();
+        if(sel != NULL) {
+            return (sel->annoId() == uuid);
+        }
+        return false;
+    }
+
+    inline bool GlobalProjectManager::isAnnoSelected(const dt::Annotation *anno) const {
+        const dt::Annotation *sel = selectedAnno();
+        if (sel != NULL) {
+            return (sel->annoId() == anno->annoId());
+        }
+        return false;
     }
 
 //-----------------------------------------------------------
