@@ -15,23 +15,21 @@ namespace anno {
 
         AnnoGraphicsPolygon::AnnoGraphicsPolygon(dt::Annotation *anno, QGraphicsItem *parent) :
             QGraphicsPolygonItem(parent), AnnoGraphicsShape(anno), _drawClosed(true) {
-            dt::AnnoPolygon *poly = annoPolygon();
-            setPolygon(*poly);
             setupAppearance();
+            setPolygon(*annoPolygon());
+            initControlPoints();
         }
 
         AnnoGraphicsPolygon::~AnnoGraphicsPolygon() {
         }
 
         void AnnoGraphicsPolygon::setupAppearance() {
-            initControlPoints();
+            ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("polygon");
+            setPen(sc.penNormal);
+            setBrush(sc.brushNormal);
             setFlag(QGraphicsItem::ItemIsSelectable);
             setVisible(true);
             setAcceptsHoverEvents(true);
-            QPen pen(QColor(30, 30, 255, 255));
-            pen.setWidth(1);
-            setPen(pen);
-            setBrush(QBrush(QColor(255, 255, 60, 45)));
             setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
         }
 
@@ -163,6 +161,23 @@ namespace anno {
             }
         }
 
+        QVariant AnnoGraphicsPolygon::itemChange(GraphicsItemChange change,
+                const QVariant &value) {
+            if (change == QGraphicsItem::ItemSelectedChange) {
+                ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("polygon");
+                if (value.toBool()) {
+                    setControlPointsVisible(true);
+                    setPen(sc.penSelected);
+                    setBrush(sc.brushSelected);
+                } else {
+                    setControlPointsVisible(false);
+                    setPen(sc.penNormal);
+                    setBrush(sc.brushNormal);
+                }
+            }
+            return QGraphicsPolygonItem::itemChange(change, value);
+        }
+
         QGraphicsItem *AnnoGraphicsPolygon::graphicsItem() {
             return this;
         }
@@ -195,23 +210,14 @@ namespace anno {
 
         void AnnoGraphicsPolygon::paint(QPainter *painter,
                                         const QStyleOptionGraphicsItem *option, QWidget *widget) {
-            GlobalLogger::instance()->logDebug("AG_POLY: paint.");
-            if (isSelected()) {
-                setControlPointsVisible(true);
-                painter->setPen(GlobalConfig::shapeColors.penSelected);
-                painter->setBrush(GlobalConfig::shapeColors.brushSelected);
-            } else {
-                setControlPointsVisible(false);
-                painter->setPen(GlobalConfig::shapeColors.penNormal);
-                painter->setBrush(GlobalConfig::shapeColors.brushNormal);
-            }
+            painter->setPen(pen());
+            painter->setBrush(brush());
 
             if(_drawClosed) {
                 painter->drawPolygon(polygon());
             } else {
                 painter->drawPolyline(polygon());
             }
-            //QGraphicsPolygonItem::paint(painter, option, widget);
         }
 
         void AnnoGraphicsPolygon::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {

@@ -26,6 +26,7 @@ namespace anno {
                 virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+                virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
             public:
                 AnnoGraphicsPolygon(dt::Annotation *anno, QGraphicsItem *parent = 0);

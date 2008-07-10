@@ -14,22 +14,19 @@ namespace anno {
     namespace graphics {
 
         AnnoGraphicsEllipse::AnnoGraphicsEllipse(dt::Annotation *anno, QGraphicsItem *parent) :
-            QGraphicsItem(parent), AnnoGraphicsShape(anno) {
+            QGraphicsEllipseItem(parent), AnnoGraphicsShape(anno) {
             setupAppearance();
-        }
-
-        AnnoGraphicsEllipse::AnnoGraphicsEllipse(dt::Annotation *anno, const QRectF &rect,
-                QGraphicsItem *parent) :
-            QGraphicsItem(parent), AnnoGraphicsShape(anno) {
-            *annoEllipse() = rect;
-            setupAppearance();
+            setRect(*annoEllipse());
+            initControlPoints();
         }
 
         AnnoGraphicsEllipse::~AnnoGraphicsEllipse() {
         }
 
         void AnnoGraphicsEllipse::setupAppearance() {
-            initControlPoints();
+            ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("ellipse");
+            setPen(sc.penNormal);
+            setBrush(sc.brushNormal);
             setFlag(QGraphicsItem::ItemIsSelectable);
             setVisible(true);
             setAcceptsHoverEvents(true);
@@ -86,7 +83,8 @@ namespace anno {
             GlobalLogger::instance()->logDebug(QString("AG_ELLIPSE: cpMouseReleaseEvent on CP %1").arg(index));
             QRectF rect = annoEllipse()->normalized();
             prepareGeometryChange();
-            *annoEllipse() = mapRectToParent(rect);
+            *annoEllipse() = rect;//mapRectToParent(rect);
+            setRect(rect);
             validateCpPos();
             _anno->setModified(true);
             setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
@@ -127,6 +125,7 @@ namespace anno {
             if (parRect.contains(tmpRect)) {
                 prepareGeometryChange();
                 *annoEllipse() = tmpRect;
+                setRect(tmpRect);
                 validateCpPos();
                 _anno->setModified(true);
                 setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
@@ -181,6 +180,23 @@ namespace anno {
             }
         }
 
+        QVariant AnnoGraphicsEllipse::itemChange(GraphicsItemChange change,
+                const QVariant &value) {
+            if (change == QGraphicsItem::ItemSelectedChange) {
+                ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("ellipse");
+                if (value.toBool()) {
+                    setControlPointsVisible(true);
+                    setPen(sc.penSelected);
+                    setBrush(sc.brushSelected);
+                } else {
+                    setControlPointsVisible(false);
+                    setPen(sc.penNormal);
+                    setBrush(sc.brushNormal);
+                }
+            }
+            return QGraphicsEllipseItem::itemChange(change, value);
+        }
+
         QGraphicsItem *AnnoGraphicsEllipse::graphicsItem() {
             return this;
         }
@@ -195,6 +211,7 @@ namespace anno {
             if (parRect.contains(tmpRect)) {
                 prepareGeometryChange();
                 *ae = tmpRect;
+                setRect(tmpRect);
                 validateCpPos();
                 _anno->setModified(true);
                 setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
@@ -205,39 +222,11 @@ namespace anno {
             //TODO implement this!
         }
 
-        QRectF AnnoGraphicsEllipse::boundingRect() const {
-            const dt::AnnoEllipse *ae = annoEllipse();
-            if(ae == NULL) {
-                GlobalLogger::instance()->logError("AnnoGraphicsEllipse::boundingRect(): ellipse is NULL");
-                GlobalLogger::instance()->logError(QString("Shape-Type: %1").arg(_anno->shape()->shapeType()));
-
-            }
-            QRectF b(ae->x() - 2, ae->y() - 2, ae->width() + 4, ae->height() + 4);
-            return b;
-        }
-
         void AnnoGraphicsEllipse::paint(QPainter *painter,
                                         const QStyleOptionGraphicsItem *option, QWidget *widget) {
-            //TODO nice painting
-            QRectF el = *annoEllipse();
-            GlobalLogger::instance()->logDebug(QString("AG_ELLIPSE: paint (%1,%2, %3,%4)").arg(el.x()).arg(el.y()).arg(el.width()).arg(el.height()));
-            if (isSelected()) {
-                setControlPointsVisible(true);
-                QPen penNormal(QColor(30, 30, 255, 255));
-                penNormal.setWidth(2);
-                QBrush brushColor(QColor(255, 255, 0, 200));
-                painter->setBrush(brushColor);
-                painter->setPen(penNormal);
-                painter->drawEllipse(el);
-            } else {
-                setControlPointsVisible(false);
-                QPen penNormal(QColor(30, 30, 255, 255));
-                penNormal.setWidth(1);
-                QBrush brushColor(QColor(255, 255, 0, 128));
-                painter->setBrush(brushColor);
-                painter->setPen(penNormal);
-                painter->drawEllipse(el);
-            }
+            painter->setPen(pen());
+            painter->setBrush(brush());
+            painter->drawEllipse(rect());
         }
 
         void AnnoGraphicsEllipse::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {

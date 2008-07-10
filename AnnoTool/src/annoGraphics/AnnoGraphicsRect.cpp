@@ -15,22 +15,9 @@ namespace anno {
 
         AnnoGraphicsRect::AnnoGraphicsRect(dt::Annotation *anno, QGraphicsItem *parent) :
             QGraphicsRectItem(parent), AnnoGraphicsShape(anno) {
-            QRectF r = QGraphicsRectItem::rect();
             setupAppearance();
-        }
-
-        AnnoGraphicsRect::AnnoGraphicsRect(dt::Annotation *anno, const QRectF &rect,
-                                           QGraphicsItem *parent) :
-            QGraphicsRectItem(rect, parent), AnnoGraphicsShape(anno) {
+            setRect(*annoRect());
             initControlPoints();
-            setupAppearance();
-        }
-
-        AnnoGraphicsRect::AnnoGraphicsRect(dt::Annotation *anno, qreal x, qreal y,
-                                           qreal width, qreal height, QGraphicsItem *parent) :
-            QGraphicsRectItem(x, y, width, height, parent), AnnoGraphicsShape(anno) {
-            initControlPoints();
-            setupAppearance();
         }
 
         AnnoGraphicsRect::~AnnoGraphicsRect() {
@@ -53,7 +40,7 @@ namespace anno {
         }
 
         void AnnoGraphicsRect::validateCpPos() {
-            QRectF rect = QGraphicsRectItem::rect();
+            QRectF rect = *annoRect();
             QPointF p = rect.topLeft();
             moveControlPointTo(0, p.x(), p.y());
             p = rect.bottomLeft();
@@ -70,15 +57,15 @@ namespace anno {
 
         void AnnoGraphicsRect::shapeMoveBy(qreal deltaX, qreal deltaY) {
             QPointF delta(deltaX, deltaY);
-            QRectF tmpRect = mapRectToParent(rect());
+            QRectF tmpRect = mapRectToParent(*annoRect());
             QRectF parRect = parentItem()->boundingRect();
             tmpRect.moveTo(tmpRect.topLeft() + delta);
 
             if (parRect.contains(tmpRect)) {
                 prepareGeometryChange();
-                moveBy(deltaX, deltaY);
-                QRectF rect = mapRectToParent(QGraphicsRectItem::rect());
-                *annoRect() = rect;
+                *annoRect() = tmpRect;
+                setRect(tmpRect);
+                validateCpPos();
                 _anno->setModified(true);
                 setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
             }
@@ -136,26 +123,33 @@ namespace anno {
             }
         }
 
+        QVariant AnnoGraphicsRect::itemChange(GraphicsItemChange change, const QVariant &value) {
+            if(change == QGraphicsItem::ItemSelectedChange) {
+                ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("rectangle");
+                if(value.toBool()) {
+                    setControlPointsVisible(true);
+                    setPen(sc.penSelected);
+                    setBrush(sc.brushSelected);
+                } else {
+                    setControlPointsVisible(false);
+                    setPen(sc.penNormal);
+                    setBrush(sc.brushNormal);
+                }
+            }
+            return QGraphicsRectItem::itemChange(change, value);
+        }
+
         void AnnoGraphicsRect::paint(QPainter *painter,
                                      const QStyleOptionGraphicsItem *option, QWidget *widget) {
-            GlobalLogger::instance()->logDebug("AG_RECT: paint.");
-            if (isSelected()) {
-                setControlPointsVisible(true);
-                painter->setPen(GlobalConfig::shapeColors.penSelected);
-                painter->setBrush(GlobalConfig::shapeColors.brushSelected);
-            } else {
-                setControlPointsVisible(false);
-                painter->setPen(GlobalConfig::shapeColors.penNormal);
-                painter->setBrush(GlobalConfig::shapeColors.brushNormal);
-            }
+            painter->setPen(pen());
+            painter->setBrush(brush());
             painter->drawRect(rect());
         }
 
         void AnnoGraphicsRect::setupAppearance() {
-            QPen pen(QColor(30, 30, 255, 255));
-            pen.setWidth(1);
-            setPen(pen);
-            setBrush(QBrush(QColor(255, 255, 60, 45)));
+            ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("rectangle");
+            setPen(sc.penNormal);
+            setBrush(sc.brushNormal);
             setFlag(QGraphicsItem::ItemIsSelectable);
             setAcceptsHoverEvents(true);
             setVisible(true);
@@ -169,16 +163,22 @@ namespace anno {
             return NULL;
         }
 
+        const dt::AnnoRectangle *AnnoGraphicsRect::annoRect() const {
+            if (_anno != NULL && _anno->shape() != NULL && _anno->shape()->shapeType() == dt::ASTypeRectangle) {
+                return reinterpret_cast<dt::AnnoRectangle *>(_anno->shape());
+            }
+            return NULL;
+        }
+
         void AnnoGraphicsRect::cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug(QString("AG_RECT: cpMousePressEvent on CP %1").arg(index));
         }
 
         void AnnoGraphicsRect::cpMouseReleaseEvent(int index, QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug(QString("AG_RECT: cpMouseReleaseEvent on CP %1").arg(index));
-            QRectF rect = QGraphicsRectItem::rect().normalized();
             prepareGeometryChange();
-            setRect(rect);
-            *annoRect() = mapRectToParent(rect);
+            *annoRect() = annoRect()->normalized();
+            setRect(*annoRect());
             validateCpPos();
             _anno->setModified(true);
             setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
@@ -190,7 +190,7 @@ namespace anno {
             qreal deltaY = event->scenePos().y() - event->lastScenePos().y();
             QPointF delta(deltaX, deltaY);
 
-            QRectF rect = QGraphicsRectItem::rect();
+            QRectF rect = *annoRect();
             QPointF nPoint;
             switch (index) {
                 case 0:
@@ -218,9 +218,8 @@ namespace anno {
             QRectF parRect = parentItem()->boundingRect();
             if (parRect.contains(tmpRect)) {
                 prepareGeometryChange();
-                setRect(rect);
                 *annoRect() = tmpRect;
-                annoRect()->print();
+                setRect(tmpRect);
                 validateCpPos();
                 _anno->setModified(true);
                 setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));

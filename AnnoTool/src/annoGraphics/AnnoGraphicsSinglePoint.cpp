@@ -103,6 +103,12 @@ namespace anno {
             }
         }
 
+        QVariant AnnoGraphicsSinglePoint::itemChange(GraphicsItemChange change, const QVariant &value) {
+            if (change == QGraphicsItem::ItemSelectedChange) {
+            }
+            return QGraphicsItem::itemChange(change, value);
+        }
+
         QGraphicsItem *AnnoGraphicsSinglePoint::graphicsItem() {
             return this;
         }
@@ -135,12 +141,13 @@ namespace anno {
 
         void AnnoGraphicsSinglePoint::paint(QPainter *painter,
                                             const QStyleOptionGraphicsItem *option, QWidget *widget) {
-            //TODO nice painting
+            //TODO nice painting!!
             QRectF brect = boundingRect();
             QRectF
             ibrect(brect.x() + 5.5, brect.y() + 5.5, brect.width() - 11.0, brect.height() - 11.0);
             QPointF np = *annoSinglePoint();
             GlobalLogger::instance()->logDebug(QString("AG_SPOINT: paint (%1,%2, %3,%4)").arg(brect.x()).arg(brect.y()).arg(brect.width()).arg(brect.height()));
+            ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("singlePoint");
             if (isSelected()) {
                 QPen penNone(QColor(0, 0, 0, 0));
                 penNone.setWidth(0);

@@ -14,6 +14,7 @@ namespace anno {
             private:
                 void setupAppearance();
                 dt::AnnoRectangle *annoRect();
+                const dt::AnnoRectangle *annoRect() const;
                 QRectF mapRectToParent(const QRectF &r) const;
 
             protected:
@@ -23,13 +24,10 @@ namespace anno {
                 virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+                virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
             public:
                 AnnoGraphicsRect(dt::Annotation *anno, QGraphicsItem *parent = 0);
-                AnnoGraphicsRect(dt::Annotation *anno, const QRectF &rect,
-                                 QGraphicsItem *parent = 0);
-                AnnoGraphicsRect(dt::Annotation *anno, qreal x, qreal y, qreal width,
-                                 qreal height, QGraphicsItem *parent = 0);
                 virtual ~AnnoGraphicsRect();
 
             public:

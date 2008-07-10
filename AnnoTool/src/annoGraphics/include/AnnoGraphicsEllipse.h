@@ -1,7 +1,7 @@
 #ifndef ANNOGRAPHICSELLIPSE_H_
 #define ANNOGRAPHICSELLIPSE_H_
 
-#include <QGraphicsItem>
+#include <QGraphicsEllipseItem>
 #include "AnnoGraphicsShape.h"
 #include "AnnoEllipse.h"
 
@@ -10,7 +10,7 @@ class QGraphicsSceneHoverEvent;
 namespace anno {
     namespace graphics {
 
-        class AnnoGraphicsEllipse : public QGraphicsItem, public AnnoGraphicsShape {
+        class AnnoGraphicsEllipse : public QGraphicsEllipseItem, public AnnoGraphicsShape {
             private:
                 void setupAppearance();
                 dt::AnnoEllipse *annoEllipse();
@@ -24,11 +24,10 @@ namespace anno {
                 virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+                virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
             public:
                 AnnoGraphicsEllipse(dt::Annotation *anno, QGraphicsItem *parent = 0);
-                AnnoGraphicsEllipse(dt::Annotation *anno, const QRectF &rect,
-                                    QGraphicsItem *parent = 0);
                 virtual ~AnnoGraphicsEllipse();
 
                 // AnnoGraphicsShape Interface
@@ -41,7 +40,6 @@ namespace anno {
 
                 // Graphics Item Interface
             public:
-                virtual QRectF boundingRect() const;
                 virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                                    QWidget *widget = 0);
 

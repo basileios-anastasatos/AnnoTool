@@ -16,7 +16,8 @@ namespace anno {
             _parentShape = parent;
             _index = index;
 
-            setRect(0, 0, 10, 10);
+            int size = GlobalConfig::instance()->getInt("graphics.cpSize");
+            setRect(0, 0, size, size);
             setupAppearance();
         }
 

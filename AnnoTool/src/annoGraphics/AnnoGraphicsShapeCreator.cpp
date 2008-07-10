@@ -14,13 +14,7 @@ namespace anno {
             if (anno != NULL && anno->shape() != NULL) {
                 switch (anno->shape()->shapeType()) {
                     case dt::ASTypeRectangle: {
-                            dt::AnnoRectangle *ar = reinterpret_cast<dt::AnnoRectangle *>(anno->shape());
-                            QRectF *rect = static_cast<QRectF *>(ar);
-                            QRectF tmpRect = *rect;
-                            //						tmpRect.moveTo(0.0, 0.0);
-                            AnnoGraphicsRect *tmp = new AnnoGraphicsRect(anno, tmpRect);
-                            //						tmp->setPos(rect->topLeft());
-                            shape = tmp;
+                            shape = new AnnoGraphicsRect(anno);
                             break;
                         }
                     case dt::ASTypeSinglePoint: {
