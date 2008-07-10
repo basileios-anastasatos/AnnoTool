@@ -7,20 +7,20 @@ namespace anno {
 
         OutOfRangeException::OutOfRangeException(const char *file, int line) :
             AnnoException(file, line) {
-
         }
         OutOfRangeException::OutOfRangeException(const char *file, int line,
                 const QString &msg, AnnoException *cause) :
             AnnoException(file, line, msg, cause) {
-
         }
         OutOfRangeException::OutOfRangeException(const char *file, int line,
                 const char *msg, AnnoException *cause) :
             AnnoException(file, line, msg, cause) {
-
         }
 
         OutOfRangeException::~OutOfRangeException() {
+            if (_cause != 0) {
+                delete _cause;
+            }
         }
 
         const char *const OutOfRangeException::name() const {

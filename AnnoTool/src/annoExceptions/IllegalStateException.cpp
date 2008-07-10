@@ -1,7 +1,6 @@
 #include "include/IllegalStateException.h"
 
 namespace anno {
-
     namespace exc {
 
         IllegalStateException::IllegalStateException(const char *file, int line) :
@@ -19,6 +18,9 @@ namespace anno {
         }
 
         IllegalStateException::~IllegalStateException() {
+            if (_cause != 0) {
+                delete _cause;
+            }
         }
 
         const char *const IllegalStateException::name() const {
@@ -26,7 +28,6 @@ namespace anno {
         }
 
     }
-
 }
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

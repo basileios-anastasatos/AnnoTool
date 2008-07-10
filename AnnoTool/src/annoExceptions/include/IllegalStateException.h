@@ -4,7 +4,6 @@
 #include "AnnoException.h"
 
 namespace anno {
-
     namespace exc {
 
         class IllegalStateException : public anno::exc::AnnoException {
@@ -21,7 +20,6 @@ namespace anno {
         };
 
     }
-
 }
 
 #endif /*ILLEGALSTATEEXCEPTION_H_*/

@@ -20,6 +20,9 @@ namespace anno {
         }
 
         XmlFormatException::~XmlFormatException() {
+            if (_cause != 0) {
+                delete _cause;
+            }
         }
 
         const char *const XmlFormatException::name() const {

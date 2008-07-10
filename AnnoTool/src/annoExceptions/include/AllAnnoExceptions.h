@@ -9,6 +9,7 @@
 #include "XmlException.h"
 #include "XmlFormatException.h"
 #include "IllegalStateException.h"
+#include "FormatException.h"
 
 #endif /*ALLANNOEXCEPTIONS_H_*/
 

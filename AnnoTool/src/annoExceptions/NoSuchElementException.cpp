@@ -20,6 +20,9 @@ namespace anno {
         }
 
         NoSuchElementException::~NoSuchElementException() {
+            if (_cause != 0) {
+                delete _cause;
+            }
         }
 
         const char *const NoSuchElementException::name() const {

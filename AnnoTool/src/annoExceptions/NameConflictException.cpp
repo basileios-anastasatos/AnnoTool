@@ -20,6 +20,9 @@ namespace anno {
         }
 
         NameConflictException::~NameConflictException() {
+            if (_cause != 0) {
+                delete _cause;
+            }
         }
 
         const char *const NameConflictException::name() const {

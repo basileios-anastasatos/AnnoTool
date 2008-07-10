@@ -20,6 +20,9 @@ namespace anno {
         }
 
         IOException::~IOException() {
+            if (_cause != 0) {
+                delete _cause;
+            }
         }
 
         const char *const IOException::name() const {
