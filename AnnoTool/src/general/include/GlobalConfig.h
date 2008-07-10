@@ -23,22 +23,30 @@ namespace anno {
         QString classDefs;
         QString annotations;
 
-        inline FileExtensions();
-        inline FileExtensions(const QString &pr, const QString &cd, const QString &at);
-        inline static QString asFilter(const QString &ext);
+        FileExtensions();
+        FileExtensions(const QString &pr, const QString &cd, const QString &at);
+        static QString asFilter(const QString &ext);
     };
 
-    struct ShapeColors {
-        QPen penNormal;
-        QPen penSelected;
-        QBrush brushNormal;
-        QBrush brushSelected;
-        int widthNormal;
-        int widthSelected;
+    class ShapeConfig {
+            // public members
+        public:
+            QPen penNormal;
+            QPen penSelected;
+            QBrush brushNormal;
+            QBrush brushSelected;
 
-        inline ShapeColors();
-        inline ShapeColors(const QPen &pN, const QPen &pS, const QBrush &bN,
-                           const QBrush &bS, int wN, int wS);
+            // Constructors
+        public:
+            ShapeConfig();
+            ShapeConfig(const QPen &pN, const QPen &pS, const QBrush &bN, const QBrush &bS);
+            ShapeConfig(const QPen &pN, int widthN, const QPen &pS, int widthS, const QBrush &bN, const QBrush &bS);
+
+            // Xml Interface
+        public:
+            void toXml(QXmlStreamWriter &writer) const;
+            void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
+            static ShapeConfig fromXml(QXmlStreamReader &reader) throw(XmlException *);
     };
 
     class GlobalConfig {
@@ -51,49 +59,46 @@ namespace anno {
             QMap<QString, double> _settingsDouble;
             QMap<QString, QString> _settingsString;
             QMap<QString, QFileInfo> _settingsFile;
-            QMap<QString, ShapeColors> _settingsShapeColors;
+            QMap<QString, ShapeConfig> _settingsShapeConfig;
 
             // static settings that are not stored in file
         public:
             static const FileExtensions fileExt;
-            static const ShapeColors shapeColors;
 
         private:
             GlobalConfig();
             static void setupConfig();
 
         public:
-            ~GlobalConfig();
-
-        public:
             static GlobalConfig *instance();
 
+            // internal loading/saving stuff
         private:
             QDir configDir();
             QFileInfo configFile();
             void loadDefaults();
             void clearConfig();
-            void insertXmlSetting(const QString &name, const QString &type, const QString &value);
+            void insertXmlSetting(const QString &name, const QString &type, const QString &value) throw(FormatException *);
             void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
             void loadSectionGeneral(QXmlStreamReader &reader) throw(XmlException *);
-            void loadSectionShapeCols(QXmlStreamReader &reader) throw(XmlException *);
+            void loadSectionShapeConfig(QXmlStreamReader &reader) throw(XmlException *);
             void writeToXml(QXmlStreamWriter &writer) const throw(XmlException *);
             void writeSectionGeneral(QXmlStreamWriter &writer) const throw(XmlException *);
-            void writeSectionShapeCols(QXmlStreamWriter &writer) const throw(XmlException *);
+            void writeSectionShapeConfig(QXmlStreamWriter &writer) const throw(XmlException *);
 
             // public config query interface
         public:
-            int getInt(const QString &s) const throw(NoSuchElementException *);
-            double getDouble(const QString &s) const throw(NoSuchElementException *);
-            QString getString(const QString &s) const throw(NoSuchElementException *);
-            QFileInfo getFile(const QString &s) const throw(NoSuchElementException *);
-            const ShapeColors &getShapeColors(const QString &s) const
+            int getInt(QString s) const throw(NoSuchElementException *);
+            double getDouble(QString s) const throw(NoSuchElementException *);
+            QString getString(QString s) const throw(NoSuchElementException *);
+            QFileInfo getFile(QString s) const throw(NoSuchElementException *);
+            ShapeConfig getShapeConfig(QString s) const
             throw(NoSuchElementException *);
-            int getInt(const QString &s, int defaultValue) const;
-            double getDouble(const QString &s, double defaultValue) const;
-            QString getString(const QString &s, QString defaultValue) const;
-            QFileInfo getFile(const QString &s, QFileInfo defaultValue) const;
-            const ShapeColors &getShapeColors(const QString &s, const ShapeColors &defaultValue) const;
+            int getInt(QString s, int defaultValue) const;
+            double getDouble(QString s, double defaultValue) const;
+            QString getString(QString s, QString defaultValue) const;
+            QFileInfo getFile(QString s, QFileInfo defaultValue) const;
+            ShapeConfig getShapeConfig(QString s, ShapeConfig defaultValue) const;
 
             // Load & Save interface
         public:
@@ -101,7 +106,10 @@ namespace anno {
             void saveConfig() throw(AnnoException *);
     };
 
-    inline FileExtensions::FileExtensions() {
+    // inlining: FileExtensions
+    //-----------------------------------------------------------
+    inline FileExtensions::FileExtensions() :
+        projects("atp"), classDefs("atc"), annotations("ata") {
     }
 
     inline FileExtensions::FileExtensions(const QString &pr, const QString &cd,
@@ -110,38 +118,45 @@ namespace anno {
     }
 
     inline QString FileExtensions::asFilter(const QString &ext) {
-        Q_ASSERT(!ext.isEmpty());
-
-        QString filter("*.");
-        return filter.append(ext);
+        return QString("*.%1").arg(ext);
     }
+    //-----------------------------------------------------------
 
-    inline ShapeColors::ShapeColors() {
-        penNormal = QPen(Qt::SolidLine);
-        penSelected = QPen(Qt::SolidLine);
-        brushNormal = QBrush(Qt::SolidPattern);
-        brushSelected = QBrush(Qt::SolidPattern);
-        widthNormal = 1;
-        widthSelected = 2;
-
-        penNormal.setColor(QColor(30, 30, 255, 200));
-        penNormal.setWidth(widthNormal);
-        penSelected.setColor(QColor(60, 60, 255, 255));
-        penSelected.setWidth(widthSelected);
-
+    // inlining: ShapeConfig
+    //-----------------------------------------------------------
+    inline ShapeConfig::ShapeConfig() :
+        penNormal(Qt::SolidLine), penSelected(Qt::SolidLine), brushNormal(Qt::SolidPattern),
+        brushSelected(Qt::SolidPattern) {
+        penNormal.setColor(QColor(0, 0, 200, 255));
+        penNormal.setWidth(1);
+        penSelected.setColor(QColor(0, 0, 255, 255));
+        penSelected.setWidth(2);
         brushNormal.setColor(QColor(255, 255, 255, 0));
-        brushSelected.setColor(QColor(255, 255, 60, 42));
+        brushSelected.setColor(QColor(255, 255, 255, 50));
     }
 
-    inline ShapeColors::ShapeColors(const QPen &pN, const QPen &pS, const QBrush &bN,
-                                    const QBrush &bS, int wN, int wS) {
-        penNormal = pN;
-        penSelected = pS;
-        brushNormal = bN;
-        brushSelected = bS;
-        widthNormal = wN;
-        widthSelected = wS;
+    inline ShapeConfig::ShapeConfig(const QPen &pN, const QPen &pS, const QBrush &bN,
+                                    const QBrush &bS) :
+        penNormal(pN), penSelected(pS), brushNormal(bN), brushSelected(bS) {
     }
+
+    inline ShapeConfig::ShapeConfig(const QPen &pN, int widthN, const QPen &pS, int widthS,
+                                    const QBrush &bN, const QBrush &bS) :
+        penNormal(pN), penSelected(pS), brushNormal(bN), brushSelected(bS) {
+        penNormal.setWidth(widthN);
+        penSelected.setWidth(widthS);
+    }
+    //-----------------------------------------------------------
+
+    // inlining: GlobalConfig
+    //-----------------------------------------------------------
+    inline GlobalConfig::GlobalConfig() {
+    }
+
+    inline void GlobalConfig::setupConfig() {
+        _me = new GlobalConfig();
+    }
+    //-----------------------------------------------------------
 
 }
 //end namespace anno

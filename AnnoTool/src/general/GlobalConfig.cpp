@@ -1,5 +1,4 @@
 #include "include/GlobalConfig.h"
-
 #include <QDir>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
@@ -14,16 +13,131 @@ namespace anno {
 
     GlobalConfig *GlobalConfig::_me = NULL;
     const FileExtensions GlobalConfig::fileExt("atp", "atc", "ata");
-    const ShapeColors GlobalConfig::shapeColors;
 
-    GlobalConfig::GlobalConfig() {
+    void ShapeConfig::toXml(QXmlStreamWriter &writer) const {
+        writer.writeStartElement("shapeConfig");
+
+        writer.writeStartElement("pen");
+        writer.writeAttribute("name", "normal");
+        writer.writeTextElement("style", QString::number((int)penNormal.style(), 10));
+        writer.writeTextElement("width", QString::number(penNormal.width(), 10));
+        writer.writeTextElement("color", XmlHelper::colorAsArgbString(penNormal.color()));
+        writer.writeEndElement();
+
+        writer.writeStartElement("pen");
+        writer.writeAttribute("name", "selected");
+        writer.writeTextElement("style", QString::number((int)penSelected.style(), 10));
+        writer.writeTextElement("width", QString::number(penSelected.width(), 10));
+        writer.writeTextElement("color", XmlHelper::colorAsArgbString(penSelected.color()));
+        writer.writeEndElement();
+
+        writer.writeStartElement("brush");
+        writer.writeAttribute("name", "normal");
+        writer.writeTextElement("style", QString::number((int)brushNormal.style(), 10));
+        writer.writeTextElement("color", XmlHelper::colorAsArgbString(brushNormal.color()));
+        writer.writeEndElement();
+
+        writer.writeStartElement("brush");
+        writer.writeAttribute("name", "selected");
+        writer.writeTextElement("style", QString::number((int)brushSelected.style(), 10));
+        writer.writeTextElement("color", XmlHelper::colorAsArgbString(brushSelected.color()));
+        writer.writeEndElement();
+
+        writer.writeEndElement();
     }
 
-    GlobalConfig::~GlobalConfig() {
+    void ShapeConfig::loadFromXml(QXmlStreamReader &reader) throw(XmlException *) {
+        QString tagShape("shapeConfig");
+        QString tagPen("pen");
+        QString tagBrush("brush");
+
+        if (!reader.isStartElement() || reader.name() != tagShape) {
+            throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, tagShape, reader.name().toString());
+        }
+
+        while (!reader.atEnd()) {
+            if (reader.isStartElement() && reader.name() == tagPen) {
+                QString name = reader.attributes().value("name").toString();
+                QString style;
+                QString width;
+                QString color;
+
+                if (!XmlHelper::skipToStartElement("style", reader)) {
+                    throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "style", reader.name().toString());
+                }
+                style = reader.readElementText();
+
+                if (!XmlHelper::skipToStartElement("width", reader)) {
+                    throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "width", reader.name().toString());
+                }
+                width = reader.readElementText();
+
+                if (!XmlHelper::skipToStartElement("color", reader)) {
+                    throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "color", reader.name().toString());
+                }
+                color = reader.readElementText();
+
+                bool ok1 = false;
+                bool ok2 = false;
+                int acStyle = style.toInt(&ok1, 10);
+                int acWidth = width.toInt(&ok2, 10);
+                QColor acColor = XmlHelper::argbStringToColor(color);
+
+                if (!ok1 || !ok2 || !acColor.isValid()) {
+                    throw new XmlFormatException(__FILE__, __LINE__, "Could not parse pen information.");
+                }
+                QPen acPen((Qt::PenStyle)acStyle);
+                acPen.setWidth(acWidth);
+                acPen.setColor(acColor);
+
+                if (name == "normal") {
+                    penNormal = acPen;
+                } else if (name == "selected") {
+                    penSelected = acPen;
+                }
+            } else if (reader.isStartElement() && reader.name() == tagBrush) {
+                QString name = reader.attributes().value("name").toString();
+                QString style;
+                QString color;
+
+                if (!XmlHelper::skipToStartElement("style", reader)) {
+                    throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "style", reader.name().toString());
+                }
+                style = reader.readElementText();
+
+                if (!XmlHelper::skipToStartElement("color", reader)) {
+                    throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "color", reader.name().toString());
+                }
+                color = reader.readElementText();
+
+                bool ok = false;
+                int acStyle = style.toInt(&ok, 10);
+                QColor acColor = XmlHelper::argbStringToColor(color);
+
+                if (!ok || !acColor.isValid()) {
+                    throw new XmlFormatException(__FILE__, __LINE__, "Could not parse brush information.");
+                }
+                QBrush acBrush((Qt::BrushStyle)acStyle);
+                acBrush.setColor(acColor);
+
+                if (name == "normal") {
+                    brushNormal = acBrush;
+                } else if (name == "selected") {
+                    brushSelected = acBrush;
+                }
+            } else if (reader.isEndElement() && reader.name() == tagShape) {
+                reader.readNext();
+                break;
+            } else {
+                reader.readNext();
+            }
+        }
     }
 
-    void GlobalConfig::setupConfig() {
-        _me = new GlobalConfig();
+    ShapeConfig ShapeConfig::fromXml(QXmlStreamReader &reader) throw(XmlException *) {
+        ShapeConfig tmp;
+        tmp.loadFromXml(reader);
+        return tmp;
     }
 
     GlobalConfig *GlobalConfig::instance() {
@@ -31,38 +145,6 @@ namespace anno {
             setupConfig();
         }
         return _me;
-    }
-
-    int GlobalConfig::getInt(const QString &s) const throw(NoSuchElementException *) {
-        if (_settingsInt.contains(s)) {
-            return _settingsInt[s];
-        } else {
-            throw new NoSuchElementException(__FILE__, __LINE__, s);
-        }
-    }
-
-    double GlobalConfig::getDouble(const QString &s) const throw(NoSuchElementException *) {
-        if (_settingsDouble.contains(s)) {
-            return _settingsDouble[s];
-        } else {
-            throw new NoSuchElementException(__FILE__, __LINE__, s);
-        }
-    }
-
-    QString GlobalConfig::getString(const QString &s) const throw(NoSuchElementException *) {
-        if (_settingsString.contains(s)) {
-            return _settingsString[s];
-        } else {
-            throw new NoSuchElementException(__FILE__, __LINE__, s);
-        }
-    }
-
-    QFileInfo GlobalConfig::getFile(const QString &s) const throw(NoSuchElementException *) {
-        if (_settingsFile.contains(s)) {
-            return _settingsFile[s];
-        } else {
-            throw new NoSuchElementException(__FILE__, __LINE__, s);
-        }
     }
 
     QDir GlobalConfig::configDir() {
@@ -77,6 +159,19 @@ namespace anno {
 
     void GlobalConfig::loadDefaults() {
         _settingsInt.insert("logging.loglevel", (int)logging::Debug);
+        _settingsInt.insert("graphics.cpSize", 10);
+
+        ShapeConfig defaultShapeConfig;
+        defaultShapeConfig.penNormal.setWidth(1);
+        defaultShapeConfig.penSelected.setWidth(2);
+        defaultShapeConfig.penNormal.setColor(QColor(0, 255, 255, 255));
+        defaultShapeConfig.penSelected.setColor(QColor(0, 255, 255, 255));
+        defaultShapeConfig.brushNormal.setColor(QColor(255, 255, 255, 0));
+        defaultShapeConfig.brushSelected.setColor(QColor(255, 255, 255, 30));
+        _settingsShapeConfig.insert("singlePoint", defaultShapeConfig);
+        _settingsShapeConfig.insert("rectangle", defaultShapeConfig);
+        _settingsShapeConfig.insert("ellipse", defaultShapeConfig);
+        _settingsShapeConfig.insert("polygon", defaultShapeConfig);
 
     }
 
@@ -85,20 +180,41 @@ namespace anno {
         _settingsDouble.clear();
         _settingsString.clear();
         _settingsFile.clear();
-        _settingsShapeColors.clear();
+        _settingsShapeConfig.clear();
     }
 
-    void GlobalConfig::insertXmlSetting(const QString &name, const QString &type, const QString &value) {
-        if(type == "int") {
+    void GlobalConfig::insertXmlSetting(const QString &name, const QString &type,
+                                        const QString &value) throw(FormatException *) {
+        if (type == "int") {
             int acVal;
             bool ok = false;
             acVal = value.toInt(&ok, 10);
-            if(!ok) {
-                //TODO error here!
+            if (!ok) {
+                throw new FormatException(__FILE__, __LINE__,
+                                          QString("Invalid XML-Setting format of [%1] with type [%2] and value [%3].").arg(name).arg(type).arg(value));
             }
             _settingsInt.insert(name, acVal);
-        } else if(type == "double") {
-
+        } else if (type == "double") {
+            double acVal;
+            bool ok = false;
+            acVal = value.toDouble(&ok);
+            if (!ok) {
+                throw new FormatException(__FILE__, __LINE__,
+                                          QString("Invalid XML-Setting format of [%1] with type [%2] and value [%3].").arg(name).arg(type).arg(value));
+            }
+            _settingsDouble.insert(name, acVal);
+        } else if (type == "string") {
+            _settingsString.insert(name, value);
+        } else if (type == "path") {
+            QFileInfo acFile(value);
+            if (!acFile.isFile() && !acFile.isDir() && !acFile.isSymLink()) {
+                throw new FormatException(__FILE__, __LINE__,
+                                          QString("Invalid XML-Setting format of [%1] with type [%2] and value [%3].").arg(name).arg(type).arg(value));
+            }
+            _settingsFile.insert(name, acFile);
+        } else {
+            throw new FormatException(__FILE__, __LINE__,
+                                      QString("Invalid XML-Setting-Type, name was [%1] with type [%2] and value [%3].").arg(name).arg(type).arg(value));
         }
     }
 
@@ -164,7 +280,7 @@ namespace anno {
             writeToXml(writer);
         } catch(XmlException *e) {
             GlobalLogger::instance()->logError("Could not complete XML writing. Config file is corrupted.");
-            throw new AnnoException(__FILE__, __LINE__, "", e);
+            throw new AnnoException(__FILE__, __LINE__, "Error while writing config to file.", e);
         }
         writer.writeEndDocument();
         file.flush();
@@ -186,7 +302,7 @@ namespace anno {
                 if (id == secGeneral) {
                     loadSectionGeneral(reader);
                 } else if (id == secShapeColors) {
-                    loadSectionShapeCols(reader);
+                    loadSectionShapeConfig(reader);
                 }
             } else if (reader.isEndElement() && reader.name() == tagSetting) {
                 reader.readNext();
@@ -208,7 +324,11 @@ namespace anno {
                 if (name.isEmpty() || type.isEmpty() || value.isEmpty()) {
                     throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML setting format.");
                 }
-                insertXmlSetting(name, type, value);
+                try {
+                    insertXmlSetting(name, type, value);
+                } catch(FormatException *e) {
+                    throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML setting format.", e);
+                }
             } else if (reader.isEndElement() && reader.name() == tagSection) {
                 reader.readNext();
                 break;
@@ -217,26 +337,49 @@ namespace anno {
         }
     }
 
-    void GlobalConfig::loadSectionShapeCols(QXmlStreamReader &reader) throw(XmlException *) {
+    void GlobalConfig::loadSectionShapeConfig(QXmlStreamReader &reader) throw(XmlException *) {
         QString tagSection("section");
-        QString secShapeColors("shapeColors");
+        QString tagInfo("shapeInfo");
+        while (!reader.atEnd()) {
+            if (reader.isStartElement() && reader.name() == tagInfo) {
+                QString name = reader.attributes().value("name").toString();
+                if (name.isEmpty()) {
+                    throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML setting format.");
+                }
+                if (!XmlHelper::skipToStartElement("shapeConfig", reader)) {
+                    throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "shapeConfig", reader.name().toString());
+                }
 
+                ShapeConfig sc;
+                try {
+                    sc.loadFromXml(reader);
+                } catch(XmlException *e) {
+                    throw new XmlException(__FILE__, __LINE__, "Could not load XML shape config.", e);
+                }
+                _settingsShapeConfig.insert(name, sc);
+            } else if (reader.isEndElement() && reader.name() == tagSection) {
+                reader.readNext();
+                break;
+            }
+            reader.readNext();
+        }
     }
 
     void GlobalConfig::writeToXml(QXmlStreamWriter &writer) const throw(XmlException *) {
         writer.writeStartElement("annoSettings");
         writer.writeAttribute("version", "0.2");
         writeSectionGeneral(writer);
-        writeSectionShapeCols(writer);
+        writeSectionShapeConfig(writer);
         writer.writeEndElement();
     }
 
-    void GlobalConfig::writeSectionGeneral(QXmlStreamWriter &writer) const throw(XmlException *) {
+    void GlobalConfig::writeSectionGeneral(QXmlStreamWriter &writer) const
+    throw(XmlException *) {
         writer.writeStartElement("section");
         writer.writeAttribute("id", "general");
 
         QMapIterator<QString, int> iInt(_settingsInt);
-        while(iInt.hasNext()) {
+        while (iInt.hasNext()) {
             iInt.next();
             writer.writeEmptyElement("set");
             writer.writeAttribute("name", iInt.key());
@@ -274,10 +417,102 @@ namespace anno {
         writer.writeEndElement();
     }
 
-    void GlobalConfig::writeSectionShapeCols(QXmlStreamWriter &writer) const throw(XmlException *) {
+    void GlobalConfig::writeSectionShapeConfig(QXmlStreamWriter &writer) const
+    throw(XmlException *) {
         writer.writeStartElement("section");
         writer.writeAttribute("id", "shapeColors");
+
+        QMapIterator<QString, ShapeConfig> iShape(_settingsShapeConfig);
+        while (iShape.hasNext()) {
+            iShape.next();
+            writer.writeStartElement("shapeInfo");
+            writer.writeAttribute("name", iShape.key());
+            iShape.value().toXml(writer);
+            writer.writeEndElement();
+        }
+
         writer.writeEndElement();
+    }
+
+    int GlobalConfig::getInt(QString s) const throw(NoSuchElementException *) {
+        if (_settingsInt.contains(s)) {
+            return _settingsInt[s];
+        } else {
+            throw new NoSuchElementException(__FILE__, __LINE__, s);
+        }
+    }
+
+    double GlobalConfig::getDouble(QString s) const throw(NoSuchElementException *) {
+        if (_settingsDouble.contains(s)) {
+            return _settingsDouble[s];
+        } else {
+            throw new NoSuchElementException(__FILE__, __LINE__, s);
+        }
+    }
+
+    QString GlobalConfig::getString(QString s) const throw(NoSuchElementException *) {
+        if (_settingsString.contains(s)) {
+            return _settingsString[s];
+        } else {
+            throw new NoSuchElementException(__FILE__, __LINE__, s);
+        }
+    }
+
+    QFileInfo GlobalConfig::getFile(QString s) const throw(NoSuchElementException *) {
+        if (_settingsFile.contains(s)) {
+            return _settingsFile[s];
+        } else {
+            throw new NoSuchElementException(__FILE__, __LINE__, s);
+        }
+    }
+
+    ShapeConfig GlobalConfig::getShapeConfig(QString s) const
+    throw(NoSuchElementException *) {
+        if (_settingsShapeConfig.contains(s)) {
+            return _settingsShapeConfig[s];
+        } else {
+            throw new NoSuchElementException(__FILE__, __LINE__, s);
+        }
+    }
+
+    int GlobalConfig::getInt(QString s, int defaultValue) const {
+        if (_settingsInt.contains(s)) {
+            return _settingsInt[s];
+        } else {
+            return defaultValue;
+        }
+    }
+
+    double GlobalConfig::getDouble(QString s, double defaultValue) const {
+        if (_settingsDouble.contains(s)) {
+            return _settingsDouble[s];
+        } else {
+            return defaultValue;
+        }
+    }
+
+    QString GlobalConfig::getString(QString s, QString defaultValue) const {
+        if (_settingsString.contains(s)) {
+            return _settingsString[s];
+        } else {
+            return defaultValue;
+        }
+    }
+
+    QFileInfo GlobalConfig::getFile(QString s, QFileInfo defaultValue) const {
+        if (_settingsFile.contains(s)) {
+            return _settingsFile[s];
+        } else {
+            return defaultValue;
+        }
+    }
+
+    ShapeConfig GlobalConfig::getShapeConfig(QString s, ShapeConfig defaultValue) const {
+        if (_settingsShapeConfig.contains(s)) {
+            return _settingsShapeConfig[s];
+        } else {
+            return defaultValue;
+        }
     }
 
 } //end namespace anno
