@@ -3,6 +3,9 @@
 #include <QXmlStreamWriter>
 #include <QPointF>
 #include <QSizeF>
+#include <QColor>
+
+#include "importGlobals.h"
 
 //namespace AnnoTool
 namespace anno {
@@ -158,6 +161,25 @@ namespace anno {
             str.remove(0, 1);
             str.remove(str.length() - 1, 1);
             return str;
+        }
+
+        QString XmlHelper::colorAsArgbString(const QColor &color) {
+            int a, r, g, b;
+            color.getRgb(&r, &g, &b, &a);
+            QChar fill('0');
+            return QString("%1%2%3%4").arg(a, 2, 16, fill).arg(r, 2, 16, fill).arg(g, 2, 16, fill).arg(b, 2, 16, fill);
+        }
+
+        QColor XmlHelper::argbStringToColor(const QString &str) {
+            bool ok = false;
+            unsigned int argb = str.toUInt(&ok, 16);
+            QColor color(argb);
+            color.setAlpha(qAlpha(argb));
+            if(ok) {
+                return color;
+            } else {
+                return QColor();
+            }
         }
 
     } //end namespace helper

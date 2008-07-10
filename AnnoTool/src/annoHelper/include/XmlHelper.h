@@ -9,6 +9,7 @@ class QXmlStreamReader;
 class QXmlStreamWriter;
 class QPointF;
 class QSizeF;
+class QColor;
 
 //namespace AnnoTool
 namespace anno {
@@ -47,6 +48,8 @@ namespace anno {
 
             public:
                 static QString uuidAsString(const QUuid &uuid);
+                static QString colorAsArgbString(const QColor &color);
+                static QColor argbStringToColor(const QString &str);
         };
 
     } //end namespace helper
