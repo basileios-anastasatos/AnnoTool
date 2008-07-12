@@ -1,5 +1,4 @@
 #include "include/ToolEllipse.h"
-#include <QGraphicsSceneMouseEvent>
 #include <QUuid>
 
 #include "AnnoGraphicsScene.h"

@@ -24,6 +24,8 @@ namespace anno {
                 virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+                virtual void keyPressEvent(QKeyEvent *event);
+                virtual void keyReleaseEvent(QKeyEvent *event);
                 virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
             public:
@@ -42,6 +44,7 @@ namespace anno {
                 virtual QGraphicsItem *graphicsItem();
                 virtual void shapeMoveBy(qreal deltaX, qreal deltaY);
                 virtual void shapeSizeBy(qreal facX, qreal facY);
+                virtual dt::AnnoShapeType shapeType() const;
 
                 // Graphics Item Interface
             public:

@@ -72,6 +72,22 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsControlPoint::keyPressEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_CP: keyPressEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyPressEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsControlPoint::keyReleaseEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_CP: keyReleaseEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyReleaseEvent(this, event);
+            }
+        }
+
         //		void AnnoGraphicsControlPoint::mousePressEvent(
         //				QGraphicsSceneMouseEvent* event)
         //		{

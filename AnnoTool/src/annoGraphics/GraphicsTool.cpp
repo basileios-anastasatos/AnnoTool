@@ -1,8 +1,6 @@
 #include "include/GraphicsTool.h"
 #include "AllAnnoGraphics.h"
 #include <QGraphicsView>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsSceneHoverEvent>
 
 namespace anno {
     namespace graphics {
@@ -102,6 +100,30 @@ namespace anno {
 
         void GraphicsTool::hoverMoveEvent(AnnoGraphicsPixmap *img,
                                           QGraphicsSceneHoverEvent *event) {
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::keyPressEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event) {
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::keyReleaseEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event) {
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::keyPressEvent(AnnoGraphicsShape *shape, QKeyEvent *event) {
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::keyReleaseEvent(AnnoGraphicsShape *shape, QKeyEvent *event) {
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::keyPressEvent(AnnoGraphicsPixmap *img, QKeyEvent *event) {
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::keyReleaseEvent(AnnoGraphicsPixmap *img, QKeyEvent *event) {
             // Do nothing as default!
         }
 

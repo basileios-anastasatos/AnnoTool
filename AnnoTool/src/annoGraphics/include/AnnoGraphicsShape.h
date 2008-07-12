@@ -37,6 +37,7 @@ namespace anno {
                 virtual QGraphicsItem *graphicsItem() = 0;
                 virtual void shapeMoveBy(qreal deltaX, qreal deltaY) = 0;
                 virtual void shapeSizeBy(qreal facX, qreal facY) = 0;
+                virtual dt::AnnoShapeType shapeType() const = 0;
 
                 // general CP interface
             public:

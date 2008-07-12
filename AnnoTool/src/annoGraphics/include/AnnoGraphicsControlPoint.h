@@ -22,6 +22,8 @@ namespace anno {
                 virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+                virtual void keyPressEvent(QKeyEvent *event);
+                virtual void keyReleaseEvent(QKeyEvent *event);
 
             public:
                 AnnoGraphicsControlPoint(AnnoGraphicsShape *parent, int index);

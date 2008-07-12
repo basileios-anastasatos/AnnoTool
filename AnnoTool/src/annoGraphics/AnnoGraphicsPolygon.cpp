@@ -28,9 +28,10 @@ namespace anno {
             setPen(sc.penNormal);
             setBrush(sc.brushNormal);
             setFlag(QGraphicsItem::ItemIsSelectable);
+            setFlag(QGraphicsItem::ItemIsFocusable);
             setVisible(true);
             setAcceptsHoverEvents(true);
-            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+            setToolTip(_anno->annoInfo());
         }
 
         dt::AnnoPolygon *AnnoGraphicsPolygon::annoPolygon() {
@@ -78,6 +79,61 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsPolygon::insertPolygonPoint(const QPointF &p) {
+            dt::AnnoPolygon *poly = annoPolygon();
+            if (poly != NULL && !p.isNull()) {
+                int insertIndex = -1;
+                int size = poly->size();
+
+                for(int i = 1; i <= size; ++i) {
+                    int idxFirst = i - 1;
+                    int idxLast = i % size;
+                    QPointF first = poly->at(idxFirst);
+                    QPointF last = poly->at(idxLast);
+                    QLineF mainLine(first, last);
+                    QLineF norm = mainLine.normalVector().unitVector();
+                    norm.setLength(4.0);
+                    QLineF firstLine(mainLine);
+                    QLineF secondLine(mainLine);
+                    firstLine.translate(norm.dx(), norm.dy());
+                    secondLine.translate(-norm.dx(), -norm.dy());
+
+                    QPainterPath path;
+                    path.moveTo(firstLine.p1());
+                    path.lineTo(firstLine.p2());
+                    path.lineTo(secondLine.p2());
+                    path.lineTo(secondLine.p1());
+                    path.closeSubpath();
+
+                    if(path.contains(p)) {
+                        insertIndex = idxLast;
+                        break;
+                    }
+                }
+
+                if(insertIndex >= 0) {
+                    prepareGeometryChange();
+                    poly->insert(insertIndex, p);
+                    insertControlPoint(insertIndex, new AnnoGraphicsControlPoint(this, insertIndex));
+                    setPolygon(*poly);
+                    validateCpIndices();
+                    validateCpPos();
+                }
+            } else {
+                GlobalLogger::instance()->logError("AnnoGraphicsPolygon::insertPolygonPoint: poly == NULL");
+            }
+        }
+
+        void AnnoGraphicsPolygon::removePolygonPoint(int index) {
+            dt::AnnoPolygon *poly = annoPolygon();
+            prepareGeometryChange();
+            poly->remove(index);
+            removeControlPoint(index);
+            setPolygon(*poly);
+            validateCpIndices();
+            validateCpPos();
+        }
+
         void AnnoGraphicsPolygon::setClosedDrawing(bool closed) {
             _drawClosed = closed;
         }
@@ -89,7 +145,7 @@ namespace anno {
         void AnnoGraphicsPolygon::cpMouseReleaseEvent(int index,
                 QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug(QString("AG_POLY: cpMouseReleaseEvent on CP %1").arg(index));
-            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+            setToolTip(_anno->annoInfo());
         }
 
         void AnnoGraphicsPolygon::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
@@ -109,7 +165,7 @@ namespace anno {
                 setPolygon(*poly);
                 validateCpPos();
                 _anno->setModified(true);
-                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+                setToolTip(_anno->annoInfo());
             }
         }
 
@@ -161,6 +217,22 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsPolygon::keyPressEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_POLY: keyPressEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyPressEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsPolygon::keyReleaseEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_POLY: keyReleaseEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyReleaseEvent(this, event);
+            }
+        }
+
         QVariant AnnoGraphicsPolygon::itemChange(GraphicsItemChange change,
                 const QVariant &value) {
             if (change == QGraphicsItem::ItemSelectedChange) {
@@ -200,12 +272,16 @@ namespace anno {
                 setPolygon(tmpPoly);
                 validateCpPos();
                 _anno->setModified(true);
-                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+                setToolTip(_anno->annoInfo());
             }
         }
 
         void AnnoGraphicsPolygon::shapeSizeBy(qreal facX, qreal facY) {
             //TODO implement this!
+        }
+
+        dt::AnnoShapeType AnnoGraphicsPolygon::shapeType() const {
+            return dt::ASTypePolygon;
         }
 
         void AnnoGraphicsPolygon::paint(QPainter *painter,
@@ -218,6 +294,25 @@ namespace anno {
             } else {
                 painter->drawPolyline(polygon());
             }
+
+//			if(!_paths.isEmpty())
+//			{
+//				GlobalLogger::instance()->logDebug(">>> Painting paths!");
+//				QPen ppen(Qt::SolidLine);
+//				ppen.setWidth(1);
+//				ppen.setColor(QColor(0, 240, 0, 255));
+//				QBrush pbrush(Qt::SolidPattern);
+//				pbrush.setColor(QColor(255, 255, 255, 0));
+//				painter->setPen(ppen);
+//				painter->setBrush(pbrush);
+//
+//				QListIterator<QPainterPath> i(_paths);
+//				while(i.hasNext())
+//				{
+//					QPainterPath p = i.next();
+//					painter->drawPath(p);
+//				}
+//			}
         }
 
         void AnnoGraphicsPolygon::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {

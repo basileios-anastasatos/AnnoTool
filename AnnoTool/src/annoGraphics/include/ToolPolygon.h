@@ -4,6 +4,8 @@
 #include "GraphicsTool.h"
 #include "AnnoGraphicsPolygon.h"
 
+#include "GlobalProjectManager.h"
+
 namespace anno {
     namespace graphics {
         class AnnoGraphicsShape;
@@ -13,6 +15,18 @@ namespace anno {
                 QCursor _cursorNormal;
                 QCursor _cursorActive;
                 AnnoGraphicsPolygon *_curPolygon;
+                bool _modify;
+
+            private:
+                bool isModifyEvent(QGraphicsSceneMouseEvent *event);
+                bool isModifyEvent(QGraphicsSceneHoverEvent *event);
+                bool isModifyResetEvent(QGraphicsSceneMouseEvent *event);
+                bool isModifyResetEvent(QGraphicsSceneHoverEvent *event);
+                bool isModifyActive(QGraphicsSceneMouseEvent *event);
+                bool isModifyActive(QGraphicsSceneHoverEvent *event);
+                bool isType(AnnoGraphicsShape *shape);
+                void resetModify();
+                void setModify(AnnoGraphicsShape *shape);
 
             public:
                 ToolPolygon(QGraphicsView *view, AnnoGraphicsScene *scene);
@@ -51,7 +65,61 @@ namespace anno {
                                              QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(AnnoGraphicsPixmap *img,
                                              QGraphicsSceneHoverEvent *event);
+
+                virtual void hoverEnterEvent(AnnoGraphicsShape *shape,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(AnnoGraphicsShape *shape,
+                                             QGraphicsSceneHoverEvent *event);
+
+                virtual void hoverEnterEvent(AnnoGraphicsControlPoint *cp,
+                                             QGraphicsSceneHoverEvent *event);
+                virtual void hoverLeaveEvent(AnnoGraphicsControlPoint *cp,
+                                             QGraphicsSceneHoverEvent *event);
+
         };
+
+        // inlining
+        // ---------------------------------------------------------
+        inline bool ToolPolygon::isModifyEvent(QGraphicsSceneMouseEvent *event) {
+            return ((event->modifiers() & Qt::ControlModifier) != 0);
+        }
+
+        inline bool ToolPolygon::isModifyEvent(QGraphicsSceneHoverEvent *event) {
+            return ((event->modifiers() & Qt::ControlModifier) != 0);
+        }
+
+        inline bool ToolPolygon::isModifyResetEvent(QGraphicsSceneMouseEvent *event) {
+            return (_modify && !isModifyEvent(event));
+        }
+
+        inline bool ToolPolygon::isModifyResetEvent(QGraphicsSceneHoverEvent *event) {
+            return (_modify && !isModifyEvent(event));
+        }
+
+        inline bool ToolPolygon::isModifyActive(QGraphicsSceneMouseEvent *event) {
+            return (_modify && isModifyEvent(event));
+        }
+
+        inline bool ToolPolygon::isModifyActive(QGraphicsSceneHoverEvent *event) {
+            return (_modify && isModifyEvent(event));
+        }
+
+        inline bool ToolPolygon::isType(AnnoGraphicsShape *shape) {
+            return (shape != NULL && shape->shapeType() == dt::ASTypePolygon);
+        }
+
+        inline void ToolPolygon::resetModify() {
+            _modify = false;
+            anno::GlobalProjectManager::instance()->setSelectedAnnoRow(-1);
+            _curPolygon = NULL;
+        }
+
+        inline void ToolPolygon::setModify(AnnoGraphicsShape *shape) {
+            anno::GlobalProjectManager::instance()->setSelectedAnnoRow(shape->relatedAnno()->annoId());
+            _curPolygon = (AnnoGraphicsPolygon *) shape;
+            _modify = true;
+        }
+        // ---------------------------------------------------------
 
     }
 }

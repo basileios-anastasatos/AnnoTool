@@ -3,10 +3,11 @@
 
 #include <QStack>
 #include <QCursor>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneHoverEvent>
+#include <QKeyEvent>
 
 class QGraphicsView;
-class QGraphicsSceneMouseEvent;
-class QGraphicsSceneHoverEvent;
 
 namespace anno {
     namespace graphics {
@@ -79,6 +80,15 @@ namespace anno {
                                              QGraphicsSceneHoverEvent *event);
                 virtual void hoverMoveEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneHoverEvent *event);
+
+                virtual void keyPressEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event);
+                virtual void keyReleaseEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event);
+
+                virtual void keyPressEvent(AnnoGraphicsShape *shape, QKeyEvent *event);
+                virtual void keyReleaseEvent(AnnoGraphicsShape *shape, QKeyEvent *event);
+
+                virtual void keyPressEvent(AnnoGraphicsPixmap *img, QKeyEvent *event);
+                virtual void keyReleaseEvent(AnnoGraphicsPixmap *img, QKeyEvent *event);
 
         };
 

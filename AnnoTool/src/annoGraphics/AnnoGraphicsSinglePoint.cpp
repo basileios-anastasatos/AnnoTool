@@ -38,7 +38,7 @@ namespace anno {
             setFlag(QGraphicsItem::ItemIsSelectable);
             setAcceptsHoverEvents(true);
             setVisible(true);
-            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+            setToolTip(_anno->annoInfo());
         }
 
         dt::AnnoSinglePoint *AnnoGraphicsSinglePoint::annoSinglePoint() {
@@ -103,6 +103,22 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsSinglePoint::keyPressEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_SPOINT: keyPressEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyPressEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsSinglePoint::keyReleaseEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_SPOINT: keyReleaseEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyReleaseEvent(this, event);
+            }
+        }
+
         QVariant AnnoGraphicsSinglePoint::itemChange(GraphicsItemChange change, const QVariant &value) {
             if (change == QGraphicsItem::ItemSelectedChange) {
             }
@@ -125,13 +141,17 @@ namespace anno {
                     prepareGeometryChange();
                     *asp = tmpPoint;
                     _anno->setModified(true);
-                    setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+                    setToolTip(_anno->annoInfo());
                 }
             }
         }
 
         void AnnoGraphicsSinglePoint::shapeSizeBy(qreal facX, qreal facY) {
             // Nothing to do here!
+        }
+
+        dt::AnnoShapeType AnnoGraphicsSinglePoint::shapeType() const {
+            return dt::ASTypeSinglePoint;
         }
 
         QRectF AnnoGraphicsSinglePoint::boundingRect() const {

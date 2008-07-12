@@ -67,12 +67,16 @@ namespace anno {
                 setRect(tmpRect);
                 validateCpPos();
                 _anno->setModified(true);
-                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+                setToolTip(_anno->annoInfo());
             }
         }
 
         void AnnoGraphicsRect::shapeSizeBy(qreal facX, qreal facY) {
             //TODO must be implemented!
+        }
+
+        dt::AnnoShapeType AnnoGraphicsRect::shapeType() const {
+            return dt::ASTypeRectangle;
         }
 
         void AnnoGraphicsRect::mousePressEvent(QGraphicsSceneMouseEvent *event) {
@@ -123,6 +127,22 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsRect::keyPressEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: keyPressEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyPressEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsRect::keyReleaseEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: keyReleaseEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyReleaseEvent(this, event);
+            }
+        }
+
         QVariant AnnoGraphicsRect::itemChange(GraphicsItemChange change, const QVariant &value) {
             if(change == QGraphicsItem::ItemSelectedChange) {
                 ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("rectangle");
@@ -153,7 +173,7 @@ namespace anno {
             setFlag(QGraphicsItem::ItemIsSelectable);
             setAcceptsHoverEvents(true);
             setVisible(true);
-            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+            setToolTip(_anno->annoInfo());
         }
 
         dt::AnnoRectangle *AnnoGraphicsRect::annoRect() {
@@ -181,7 +201,7 @@ namespace anno {
             setRect(*annoRect());
             validateCpPos();
             _anno->setModified(true);
-            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+            setToolTip(_anno->annoInfo());
         }
 
         void AnnoGraphicsRect::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
@@ -222,7 +242,7 @@ namespace anno {
                 setRect(tmpRect);
                 validateCpPos();
                 _anno->setModified(true);
-                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+                setToolTip(_anno->annoInfo());
             }
         }
 

@@ -19,6 +19,8 @@ namespace anno {
                 virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+                virtual void keyPressEvent(QKeyEvent *event);
+                virtual void keyReleaseEvent(QKeyEvent *event);
 
             public:
                 AnnoGraphicsPixmap(const QPixmap &pixmap, QGraphicsItem *parent = 0);

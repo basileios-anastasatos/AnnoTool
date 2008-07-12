@@ -30,7 +30,7 @@ namespace anno {
             setFlag(QGraphicsItem::ItemIsSelectable);
             setVisible(true);
             setAcceptsHoverEvents(true);
-            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+            setToolTip(_anno->annoInfo());
         }
 
         dt::AnnoEllipse *AnnoGraphicsEllipse::annoEllipse() {
@@ -87,7 +87,7 @@ namespace anno {
             setRect(rect);
             validateCpPos();
             _anno->setModified(true);
-            setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+            setToolTip(_anno->annoInfo());
         }
 
         void AnnoGraphicsEllipse::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
@@ -128,7 +128,7 @@ namespace anno {
                 setRect(tmpRect);
                 validateCpPos();
                 _anno->setModified(true);
-                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+                setToolTip(_anno->annoInfo());
             }
         }
 
@@ -180,6 +180,22 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsEllipse::keyPressEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_ELLIPSE: keyPressEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyPressEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsEllipse::keyReleaseEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_ELLIPSE: keyReleaseEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyReleaseEvent(this, event);
+            }
+        }
+
         QVariant AnnoGraphicsEllipse::itemChange(GraphicsItemChange change,
                 const QVariant &value) {
             if (change == QGraphicsItem::ItemSelectedChange) {
@@ -214,12 +230,16 @@ namespace anno {
                 setRect(tmpRect);
                 validateCpPos();
                 _anno->setModified(true);
-                setToolTip(QString("%1\n%2").arg(_anno->annoIdAsString()).arg(_anno->shape()->shapeInfo()));
+                setToolTip(_anno->annoInfo());
             }
         }
 
         void AnnoGraphicsEllipse::shapeSizeBy(qreal facX, qreal facY) {
             //TODO implement this!
+        }
+
+        dt::AnnoShapeType AnnoGraphicsEllipse::shapeType() const {
+            return dt::ASTypeEllipse;
         }
 
         void AnnoGraphicsEllipse::paint(QPainter *painter,

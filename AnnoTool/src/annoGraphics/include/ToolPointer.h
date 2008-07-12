@@ -41,7 +41,7 @@ namespace anno {
                 virtual void mouseMoveEvent(AnnoGraphicsShape *shape,
                                             QGraphicsSceneMouseEvent *event);
 
-                virtual void mousePressEvent(AnnoGraphicsPixmap *shape,
+                virtual void mousePressEvent(AnnoGraphicsPixmap *img,
                                              QGraphicsSceneMouseEvent *event);
 
                 virtual void hoverEnterEvent(AnnoGraphicsControlPoint *cp,

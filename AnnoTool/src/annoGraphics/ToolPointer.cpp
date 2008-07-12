@@ -1,6 +1,5 @@
 #include "include/ToolPointer.h"
 #include "AllAnnoGraphics.h"
-#include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView>
 
 #include "importGlobals.h"
@@ -84,7 +83,7 @@ namespace anno {
             }
         }
 
-        void ToolPointer::mousePressEvent(AnnoGraphicsPixmap *shape,
+        void ToolPointer::mousePressEvent(AnnoGraphicsPixmap *img,
                                           QGraphicsSceneMouseEvent *event) {
             GlobalProjectManager::instance()->setSelectedAnnoRow(-1);
         }

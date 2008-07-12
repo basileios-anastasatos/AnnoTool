@@ -1,5 +1,4 @@
 #include "include/ToolRect.h"
-#include <QGraphicsSceneMouseEvent>
 #include <QUuid>
 
 #include "AnnoGraphicsScene.h"

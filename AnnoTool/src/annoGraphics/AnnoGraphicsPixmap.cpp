@@ -65,6 +65,22 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsPixmap::keyPressEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: keyPressEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyPressEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsPixmap::keyReleaseEvent(QKeyEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: keyReleaseEvent");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->keyReleaseEvent(this, event);
+            }
+        }
+
         void AnnoGraphicsPixmap::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_PIXMAP: exMouseMoveEvent.");
             mouseMoveEvent(event);
