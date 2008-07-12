@@ -173,6 +173,7 @@ namespace anno {
                 // various methods
             public:
                 void print() const;
+                QString annoInfo() const;
 
                 // public XML interface
             public:

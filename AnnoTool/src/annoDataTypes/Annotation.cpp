@@ -179,6 +179,14 @@ namespace anno {
             out << "--------------------------------------" << endl;
         }
 
+        QString Annotation::annoInfo() const {
+            QString str("%1\nscore: %2\n%3");
+            str = str.arg(annoIdAsString());
+            str = str.arg(hasScore() ? QString::number(_score, 'f', 6) : QString("--"));
+            str = str.arg(_shape != NULL ? _shape->shapeInfo() : QString("no shape"));
+            return str;
+        }
+
         void Annotation::addClass(const QString &val) {
             if(!_annoClasses.contains(val)) {
                 _annoClasses.append(val);
