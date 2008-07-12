@@ -185,6 +185,7 @@ void AnnoToolMainWindow::setToolEnabled(bool enabled) {
 
     ui.actionZtoFront->setEnabled(enabled);
     ui.actionRemoveAnnotation->setEnabled(enabled);
+    ui.actionSaveCurrentImage->setEnabled(enabled);
 }
 
 void AnnoToolMainWindow::closeEvent(QCloseEvent *event) {
@@ -432,6 +433,26 @@ void AnnoToolMainWindow::on_actionRemoveAnnotation_triggered() {
             _graphicsScene->removeAnnoShape(curAnno->annoId());
             curFile->removeAnnotation(curAnno->annoId());
             //pm->setSelectedAnnoRow();
+        }
+    }
+}
+
+void AnnoToolMainWindow::on_actionSaveCurrentImage_triggered() {
+    if (_graphicsScene != NULL && !_graphicsScene->isEmpty()) {
+        QString filter("JPEG-Format (*.jpg);; PNG-Format (*.png)");
+        QString fileName = QFileDialog::getSaveFileName( this, tr("Save Current Image"), ".", filter);
+        if (!fileName.isEmpty()) {
+            QPixmap pm = _graphicsScene->annoPixmap()->pixmap();
+            QImage img = pm.toImage();
+            QPainter painter(&img);
+            painter.setRenderHint(QPainter::Antialiasing, true);
+            painter.setRenderHint(QPainter::TextAntialiasing, true);
+            painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+            _graphicsScene->render(&painter);
+
+            if(!img.save(fileName, NULL, 100)) {
+                QMessageBox::critical(this, "AnnoTool", tr("Cannot save image to %1.").arg(fileName));
+            }
         }
     }
 }

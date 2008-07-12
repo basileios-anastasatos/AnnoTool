@@ -94,7 +94,7 @@ void AnnoDataWidget::updateListData() {
 void AnnoDataWidget::updateShapeInfo() {
     ::anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
     if (curAnno != NULL) {
-        ui.lbInfo->setText(curAnno->shape()->shapeInfo());
+        ui.lbInfo->setText(curAnno->annoInfo());
     } else {
         ui.lbInfo->setText("--");
     }

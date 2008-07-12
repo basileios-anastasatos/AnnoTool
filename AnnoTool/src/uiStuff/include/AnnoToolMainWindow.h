@@ -56,6 +56,7 @@ class AnnoToolMainWindow : public QMainWindow {
         void on_actionFitImage_triggered();
         void on_actionZtoFront_triggered();
         void on_actionRemoveAnnotation_triggered();
+        void on_actionSaveCurrentImage_triggered();
 
         void onZoomCtrl_zoomChanged(int value);
 
