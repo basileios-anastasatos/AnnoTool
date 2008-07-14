@@ -7,6 +7,7 @@
 #include "GlobalProjectManager.h"
 #include "GlobalToolManager.h"
 #include "GlobalLogger.h"
+#include "GlobalInfo.h"
 
 using ::anno::GlobalConfig;
 using ::anno::GlobalImageLoader;

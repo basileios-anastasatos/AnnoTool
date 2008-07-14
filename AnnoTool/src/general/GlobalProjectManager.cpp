@@ -2,6 +2,7 @@
 #include "importGlobals.h"
 #include <QFileInfo>
 #include <QDir>
+#include <QThread>
 
 namespace anno {
     GlobalProjectManager *GlobalProjectManager::_me = NULL;
@@ -93,13 +94,21 @@ namespace anno {
         _curSelAnno = -1;
     }
 
-    void GlobalProjectManager::addAnnoFile(dt::AnnoFileData *annoFile) {
+    void GlobalProjectManager::addAnnoFile(dt::AnnoFileData *annoFile, bool newFile) {
         if (annoFile != NULL && isValid()) {
             GlobalLogger::instance()->logDebug("Added anno file.");
             if (!connect(annoFile, SIGNAL(modifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SLOT(onAnnoFileModifyChange(::anno::dt::AnnoFileData *, bool, bool)))) {
                 GlobalLogger::instance()->logError("CONNECT-ERROR: GlobalProjectManager::addAnnoFile");
             }
             _fileList->append(annoFile);
+            if(newFile) {
+                annoFile->setNotify(true);
+                annoFile->setNotifyOnChange(true);
+                annoFile->setNotifyAnno(true);
+                annoFile->setNotifyOnAnnoChange(true);
+                annoFile->resetModifiedState(true);
+                annoFile->setModified(true);
+            }
         }
     }
 
@@ -468,6 +477,10 @@ namespace anno {
 
         _project->writeToFile();
         if (saveSub) {
+            if(_fileListMod->isEmpty()) {
+                GlobalLogger::instance()->logWarning("Request to save data files, but list of modified data files is empty!");
+            }
+
             QListIterator<dt::AnnoFileData *> i(*_fileListMod);
             while (i.hasNext()) {
                 dt::AnnoFileData *cur = i.next();

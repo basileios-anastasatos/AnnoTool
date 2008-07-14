@@ -92,7 +92,7 @@ namespace anno {
             dt::AnnoFileData *getAnnoFile(int index);
             const dt::AnnoFileData *getAnnoFile(int index) const;
 
-            void addAnnoFile(dt::AnnoFileData *annoFile);
+            void addAnnoFile(dt::AnnoFileData *annoFile, bool newFile = false);
 
             //TODO implement remove anno file
             void removeAnnoFile(int index);
