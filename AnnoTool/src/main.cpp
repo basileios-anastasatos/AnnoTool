@@ -7,14 +7,22 @@
 #include "IdlExporterPlugin.h"
 
 int main(int argc, char *argv[]) {
+    GlobalLogger::instance()->logInfo(QString("%1 Version %2 is starting up, running on %3").arg(GlobalInfo::appName).arg(GlobalInfo::appVersionString()).arg(GlobalInfo::osName()));
+
     // Initialize Global Configuration
     // ------------------------------------------
     GlobalConfig::instance()->loadConfig();
+    GlobalLogger::instance()->setLogLevel((logging::LogLevel)GlobalConfig::instance()->getInt("logging.loglevel"));
     // ------------------------------------------
 
-    GlobalLogger::instance()->setLogLevel((logging::LogLevel)GlobalConfig::instance()->getInt("logging.loglevel"));
-    GlobalLogger::instance()->logInfo("AnnoTool starting up");
+    // Application Configuration
+    // ------------------------------------------
     QApplication a(argc, argv);
+    a.setApplicationName(GlobalInfo::appName);
+    a.setApplicationVersion(GlobalInfo::appVersionString());
+    a.setOrganizationName(GlobalInfo::orgName);
+    a.setOrganizationDomain(GlobalInfo::orgDomain);
+    // ------------------------------------------
 
     // Im- & Exporter Plugins
     //----------------------------------------------------------------
