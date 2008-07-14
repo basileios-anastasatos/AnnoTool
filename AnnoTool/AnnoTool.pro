@@ -22,7 +22,8 @@ INCLUDEPATH += ./src/annoDataTypes/include \
 QT += core \
     gui \
     xml
-HEADERS += ./src/annoExceptions/include/FormatException.h \
+HEADERS += ./src/general/include/GlobalInfo.h \
+    ./src/annoExceptions/include/FormatException.h \
     ./src/annoGraphics/include/ToolPolygon.h \
     ./src/annoDataTypes/include/AnnoPolygon.h \
     ./src/uiStuff/include/AnnoToolMainWindow.h \
@@ -105,7 +106,8 @@ HEADERS += ./src/annoExceptions/include/FormatException.h \
     ./src/annoExceptions/include/OutOfRangeException.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h
-SOURCES += ./src/annoExceptions/FormatException.cpp \
+SOURCES += ./src/general/GlobalInfo.cpp \
+    ./src/annoExceptions/FormatException.cpp \
     ./src/annoGraphics/ToolPolygon.cpp \
     ./src/annoDataTypes/AnnoPolygon.cpp \
     ./src/uiStuff/AnnoToolMainWindow.cpp \
