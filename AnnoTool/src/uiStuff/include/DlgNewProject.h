@@ -37,10 +37,76 @@ class DlgNewProject : public QDialog {
         QUuid projectUuid() const;
         void setProjectUuid(const QUuid &uuid);
 
+        bool makeDefaultPathRelative() const;
+        void setDefaultPathRelative(bool value);
+
     public slots:
         virtual void accept();
 
 };
+
+// inlining
+// ------------------------------------------------------------
+inline DlgNewProject::~DlgNewProject() {
+}
+
+inline QString DlgNewProject::projectPath() const {
+    return ui.editProjectPath->text();
+}
+
+inline QFileInfo DlgNewProject::projectPathAsFileInfo() const {
+    return QFileInfo(ui.editProjectPath->text());
+}
+
+inline void DlgNewProject::setProjectPath(const QString &path) {
+    ui.editProjectPath->setText(path);
+}
+
+inline void DlgNewProject::setProjectPath(const QFileInfo &path) {
+    ui.editProjectPath->setText(path.filePath());
+}
+
+inline QString DlgNewProject::defaultPath() const {
+    return ui.editDefaultPath->text();
+}
+
+inline QFileInfo DlgNewProject::defaultPathAsFileInfo() const {
+    return QFileInfo(ui.editDefaultPath->text());
+}
+
+inline void DlgNewProject::setDefaultPath(const QString &path) {
+    ui.editDefaultPath->setText(path);
+}
+
+inline void DlgNewProject::setDefaultPath(const QFileInfo &path) {
+    ui.editDefaultPath->setText(path.filePath());
+}
+
+inline QString DlgNewProject::projectName() const {
+    return ui.editName->text();
+}
+
+inline void DlgNewProject::setProjectName(const QString &name) {
+    ui.editName->setText(name);
+}
+
+inline QUuid DlgNewProject::projectUuid() const {
+    return QUuid(ui.editUuid->text());
+}
+
+inline void DlgNewProject::setProjectUuid(const QUuid &uuid) {
+    ui.editUuid->setText(uuid.toString());
+}
+
+inline bool DlgNewProject::makeDefaultPathRelative() const {
+    return ui.checkRelative->isChecked();
+}
+
+inline void DlgNewProject::setDefaultPathRelative(bool value) {
+    ui.checkRelative->setChecked(value);
+}
+// ------------------------------------------------------------
+
 
 #endif // DLGNEWPROJECT_H
 

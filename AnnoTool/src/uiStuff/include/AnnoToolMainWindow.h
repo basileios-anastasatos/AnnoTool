@@ -83,6 +83,7 @@ class AnnoToolMainWindow : public QMainWindow {
         // public slot interface
     public slots:
         void onAppClose();
+        void setDocumentName(const QString &name);
 
 };
 

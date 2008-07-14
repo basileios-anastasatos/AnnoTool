@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>150</width>
-    <height>25</height>
+    <width>160</width>
+    <height>26</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,13 +17,13 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>150</width>
+    <width>160</width>
     <height>25</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>150</width>
+    <width>160</width>
     <height>16777215</height>
    </size>
   </property>
@@ -50,7 +50,7 @@
     <number>1</number>
    </property>
    <item>
-    <layout class="QHBoxLayout">
+    <layout class="QHBoxLayout" name="layGeneral">
      <property name="spacing">
       <number>1</number>
      </property>

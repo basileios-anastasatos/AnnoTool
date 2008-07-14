@@ -35,9 +35,7 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     _graphicsScene = NULL;
     ui.setupUi(this);
 
-#ifdef QT_DEBUG
-    setWindowTitle(QString("AnnoTool v2 [Debug Version - %1 %2]").arg(__DATE__).arg(__TIME__));
-#endif
+    setDocumentName(QString());
 
     setCentralWidget(ui.graphicsView);
     zoomCtrl = new ZoomControl(ui.tbView);
@@ -150,6 +148,7 @@ bool AnnoToolMainWindow::checkProjectToClose() {
         } else {
             GlobalProjectManager::instance()->clear();
             configUIproject(false);
+            setDocumentName(QString());
             clearGraphicsScene();
             return true;
         }
@@ -204,12 +203,24 @@ void AnnoToolMainWindow::on_actionFileNew_triggered() {
         dlg->setProjectUuid(projectUuid);
         GlobalProjectManager *pm = GlobalProjectManager::instance();
         if (!pm->isValid() && dlg->exec() == QDialog::Accepted) {
-            QFileInfo projectPath = dlg->projectPathAsFileInfo();
-            pm->newEmpty(projectPath.filePath() + "/" + dlg->projectName() + "."
-                         + GlobalConfig::fileExt.projects, projectUuid);
+            QFileInfo pp = dlg->projectPathAsFileInfo();
+            QFileInfo dp = dlg->defaultPathAsFileInfo();
+
+            if(dlg->makeDefaultPathRelative()) {
+                QDir dir = pp.absoluteDir();
+                dp = QFileInfo(dir.relativeFilePath(dp.absoluteFilePath()));
+                if(dp.path().isEmpty()) {
+                    dp = QFileInfo(".");
+                }
+                GlobalLogger::instance()->logDebug(QString(">>> path: [%1]  dp-rel-path: [%2]").arg(dp.absoluteFilePath()).arg(dp.filePath()));
+            }
+            GlobalLogger::instance()->logDebug(QString(">>> dp-path: %1").arg(dp.filePath()));
+
+            pm->newEmpty(pp.filePath(), projectUuid);
             pm->project()->setProjectName(dlg->projectName());
-            pm->project()->addToSearchPath(dlg->defaultPath());
+            pm->project()->addToSearchPath(dp.filePath());
             configUIproject(true);
+            setDocumentName(dlg->projectName());
             updateAnnoWidgets();
         }
 
@@ -236,6 +247,7 @@ void AnnoToolMainWindow::on_actionFileOpen_triggered() {
                 pm->loadFromFile(fileName, true);
                 GlobalLogger::instance()->logInfo(QString("Loaded project '%1': %2 classes, %3 AnnotationFiles.").arg(pm->project()->projectName()).arg(pm->classCount()).arg(pm->fileCount()));
                 configUIproject(true);
+                setDocumentName(pm->project()->projectName());
                 updateAnnoWidgets();
             } catch(AnnoException *e) {
                 QMessageBox::critical(this, "AnnoTool Exception", e->getTrace());
@@ -261,6 +273,7 @@ void AnnoToolMainWindow::on_actionFileClose_triggered() {
         } else {
             GlobalProjectManager::instance()->clear();
             configUIproject(false);
+            setDocumentName(QString());
             clearGraphicsScene();
             updateAnnoWidgets();
         }
@@ -277,6 +290,8 @@ void AnnoToolMainWindow::on_actionFileSave_triggered() {
             GlobalLogger::instance()->logError(e->getTrace());
             delete e;
         }
+    } else {
+        GlobalLogger::instance()->logError("Cannot save data, project is invalid!");
     }
 }
 
@@ -364,7 +379,7 @@ void AnnoToolMainWindow::on_actionProjectAddImage_triggered() {
                 imgInfo->setImagePath(imgPath);
                 imgInfo->setFrame(img.second);
 
-                pm->addAnnoFile(fd);
+                pm->addAnnoFile(fd, true);
             }
             updateAnnoWidgets();
         }
@@ -390,6 +405,22 @@ void AnnoToolMainWindow::onAppClose() {
         delete e;
     }
     //TODO reset singletons here!
+}
+
+void AnnoToolMainWindow::setDocumentName(const QString &name) {
+#ifdef QT_DEBUG
+    if(name.isEmpty()) {
+        setWindowTitle(QString("%1   [Debug-Version: %2 - %3]").arg(GlobalInfo::appName).arg(GlobalInfo::appVersionString()).arg(GlobalInfo::compileDateTime()));
+    } else {
+        setWindowTitle(QString("%1  <%2>   [Debug-Version: %3 - %4]").arg(GlobalInfo::appName).arg(name).arg(GlobalInfo::appVersionString()).arg(GlobalInfo::compileDateTime()));
+    }
+#else
+    if(name.isEmpty()) {
+        setWindowTitle(GlobalInfo::appName);
+    } else {
+        setWindowTitle(QString("%1  <%2>").arg(GlobalInfo::appName).arg(name));
+    }
+#endif
 }
 
 void AnnoToolMainWindow::annoFileSelectChanged(int row, QUuid image) {

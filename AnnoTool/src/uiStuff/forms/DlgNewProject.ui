@@ -9,29 +9,47 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>151</height>
+    <height>165</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy vsizetype="Fixed" hsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
     <width>400</width>
-    <height>151</height>
+    <height>165</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>400</width>
-    <height>151</height>
+    <height>165</height>
    </size>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
   </property>
   <property name="windowTitle">
    <string>New Annotation Project</string>
   </property>
   <layout class="QGridLayout">
+   <property name="margin">
+    <number>5</number>
+   </property>
+   <property name="spacing">
+    <number>4</number>
+   </property>
    <item row="0" column="0">
-    <layout class="QVBoxLayout">
+    <layout class="QVBoxLayout" name="DialogGroup">
+     <property name="spacing">
+      <number>4</number>
+     </property>
      <item>
-      <layout class="QGridLayout">
+      <layout class="QGridLayout" name="InputsGroup">
        <property name="horizontalSpacing">
         <number>5</number>
        </property>
@@ -40,6 +58,9 @@
        </property>
        <item row="0" column="0">
         <widget class="QLabel" name="lbUuid">
+         <property name="contextMenuPolicy">
+          <enum>Qt::NoContextMenu</enum>
+         </property>
          <property name="text">
           <string>Project UUID</string>
          </property>
@@ -53,6 +74,15 @@
          <property name="enabled">
           <bool>false</bool>
          </property>
+         <property name="contextMenuPolicy">
+          <enum>Qt::NoContextMenu</enum>
+         </property>
+         <property name="toolTip">
+          <string>The project's unique ID</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt; &lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt; p, li { white-space: pre-wrap; } &lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;"&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-weight:600;"&gt;Unique Project ID&lt;/span&gt;&lt;/p&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;This is an (hopefully) unique ID (UUID = Universally Unique Identifier) which distinctly identifies this project. The ID is generated automatically and cannot be altered manually.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -60,6 +90,9 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="lbName">
+         <property name="contextMenuPolicy">
+          <enum>Qt::NoContextMenu</enum>
+         </property>
          <property name="text">
           <string>Project Name</string>
          </property>
@@ -69,10 +102,26 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="editName" />
+        <widget class="QLineEdit" name="editName">
+         <property name="contextMenuPolicy">
+          <enum>Qt::NoContextMenu</enum>
+         </property>
+         <property name="toolTip">
+          <string>Enter the project's name here.</string>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt; &lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt; p, li { white-space: pre-wrap; } &lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;"&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;"&gt;&lt;span style=" font-weight:600;"&gt;The Project Name&lt;/span&gt;&lt;/p&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;"&gt;This name is associated with the project. It should be reasonable and tell something about the project.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>255</number>
+         </property>
+        </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="lbProjectPath">
+         <property name="contextMenuPolicy">
+          <enum>Qt::NoContextMenu</enum>
+         </property>
          <property name="text">
           <string>Project Location</string>
          </property>
@@ -82,24 +131,33 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" name="ProjectPathGroup">
          <property name="spacing">
           <number>2</number>
          </property>
          <item>
           <widget class="QLineEdit" name="editProjectPath">
-           <property name="toolTip">
-            <string>Project folder where to store project file.</string>
+           <property name="contextMenuPolicy">
+            <enum>Qt::NoContextMenu</enum>
            </property>
-           <property name="statusTip">
-            <string>Project folder where to store project file.</string>
+           <property name="toolTip">
+            <string>Enter the project location (including filename) here.</string>
+           </property>
+           <property name="whatsThis">
+            <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt; &lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt; p, li { white-space: pre-wrap; } &lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;"&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-weight:600;"&gt;Project Location&lt;/span&gt;&lt;/p&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;The project location is the file path of the AnnoProject file. Note that all folders within this path must already exist.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="btSelProjectPath">
+           <property name="contextMenuPolicy">
+            <enum>Qt::NoContextMenu</enum>
+           </property>
            <property name="toolTip">
-            <string>Select Folder</string>
+            <string>Select AnnoProject File Location</string>
+           </property>
+           <property name="whatsThis">
+            <string>This button opens a new dialog which enables you to navigate through your file system and select the location of the AnnoProject file.</string>
            </property>
            <property name="text">
             <string>...</string>
@@ -110,6 +168,9 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="lbAnnoPath">
+         <property name="contextMenuPolicy">
+          <enum>Qt::NoContextMenu</enum>
+         </property>
          <property name="text">
           <string>Default Path</string>
          </property>
@@ -119,24 +180,33 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <layout class="QHBoxLayout">
+        <layout class="QHBoxLayout" name="DefaultPathGroup">
          <property name="spacing">
           <number>2</number>
          </property>
          <item>
           <widget class="QLineEdit" name="editDefaultPath">
-           <property name="toolTip">
-            <string>Project folder where to store project file.</string>
+           <property name="contextMenuPolicy">
+            <enum>Qt::NoContextMenu</enum>
            </property>
-           <property name="statusTip">
-            <string>Project folder where to store project file.</string>
+           <property name="toolTip">
+            <string>Enter the annotation files default location here.</string>
+           </property>
+           <property name="whatsThis">
+            <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt; &lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt; p, li { white-space: pre-wrap; } &lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;"&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-weight:600;"&gt;Default Path&lt;/span&gt;&lt;/p&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;The project's default path is the location where to store new annotation data files. Note that later on more data file locations can be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="btSelAnnoPath">
+           <property name="contextMenuPolicy">
+            <enum>Qt::NoContextMenu</enum>
+           </property>
            <property name="toolTip">
-            <string>Select Folder</string>
+            <string>Select Default Annotation Data File Location</string>
+           </property>
+           <property name="whatsThis">
+            <string>This button opens a new dialog which enables you to navigate through your file system and select the location of the Annotation Data File location.</string>
            </property>
            <property name="text">
             <string>...</string>
@@ -145,16 +215,29 @@
          </item>
         </layout>
        </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="checkRelative">
+         <property name="contextMenuPolicy">
+          <enum>Qt::NoContextMenu</enum>
+         </property>
+         <property name="whatsThis">
+          <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt; &lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt; p, li { white-space: pre-wrap; } &lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;"&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;span style=" font-weight:600;"&gt;Relative Default Path&lt;/span&gt;&lt;/p&gt; &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;Select here whether to make the selected default path relative or not. If this box is selected, the default path will be converted to a project file relative path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Make default path relative</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout">
+      <layout class="QHBoxLayout" name="ButtonGroup">
        <item>
-        <spacer>
+        <spacer name="LeftSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeHint">
+         <property name="sizeHint" stdset="0">
           <size>
            <width>40</width>
            <height>20</height>
@@ -164,8 +247,11 @@
        </item>
        <item>
         <widget class="QDialogButtonBox" name="buttonBox">
+         <property name="contextMenuPolicy">
+          <enum>Qt::NoContextMenu</enum>
+         </property>
          <property name="standardButtons">
-          <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+          <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
          </property>
         </widget>
        </item>
@@ -176,6 +262,15 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11" />
+ <tabstops>
+  <tabstop>editUuid</tabstop>
+  <tabstop>editName</tabstop>
+  <tabstop>editProjectPath</tabstop>
+  <tabstop>editDefaultPath</tabstop>
+  <tabstop>btSelProjectPath</tabstop>
+  <tabstop>btSelAnnoPath</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources />
  <connections>
   <connection>
