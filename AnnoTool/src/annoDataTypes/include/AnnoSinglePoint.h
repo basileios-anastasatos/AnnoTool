@@ -2,6 +2,7 @@
 #define ANNOSINGLEPOINT_H_
 
 #include <QPointF>
+#include <QRectF>
 #include "AnnoShape.h"
 
 namespace anno {
@@ -16,6 +17,7 @@ namespace anno {
             public:
                 virtual AnnoShapeType shapeType() const;
                 virtual QString shapeInfo() const;
+                virtual QRectF boundingRect() const;
 
             public:
                 virtual void print() const;

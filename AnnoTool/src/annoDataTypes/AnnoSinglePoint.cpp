@@ -22,6 +22,10 @@ namespace anno {
             return QString("Type: %1\nx: %2\ny: %3").arg("SinglePoint").arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2);
         }
 
+        QRectF AnnoSinglePoint::boundingRect() const {
+            return QRectF(QPointF::x() - 2.0, QPointF::y() - 2.0, 4.0, 4.0);
+        }
+
         void AnnoSinglePoint::print() const {
             QTextStream out(stdout);
             out << "[Point, (" << x() << "," << y() << ")]" << endl;

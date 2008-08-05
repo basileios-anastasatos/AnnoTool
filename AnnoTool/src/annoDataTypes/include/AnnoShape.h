@@ -2,6 +2,7 @@
 #define ANNOSHAPE_H_
 
 #include "AllAnnoExceptions.h"
+#include <QRectF>
 
 class QXmlStreamReader;
 class QXmlStreamWriter;
@@ -27,6 +28,7 @@ namespace anno {
             public:
                 virtual AnnoShapeType shapeType() const = 0;
                 virtual QString shapeInfo() const = 0;
+                virtual QRectF boundingRect() const = 0;
 
             public:
                 virtual void print() const = 0;

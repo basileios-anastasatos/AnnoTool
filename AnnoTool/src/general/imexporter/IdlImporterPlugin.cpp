@@ -6,12 +6,6 @@
 
 namespace anno {
 
-    IdlImporterPlugin::IdlImporterPlugin() {
-    }
-
-    IdlImporterPlugin::~IdlImporterPlugin() {
-    }
-
     QString IdlImporterPlugin::name() const {
         return QString("Default IDL Importer");
     }
@@ -21,7 +15,7 @@ namespace anno {
     }
 
     QString IdlImporterPlugin::description() const {
-        return QString();
+        return QString("Imports the old IDL immage annotation format.");
     }
 
     bool IdlImporterPlugin::singleFileImport() const {
@@ -70,10 +64,12 @@ namespace anno {
                 dt::Annotation *newAnno = new dt::Annotation();
                 newAnno->setAnnoId(QUuid::createUuid());
                 newAnno->setShape(convRect(curRect));
-                newAnno->addAttribute(dt::AnnoAttribute("idlscore", QString(), QString::number(curRect.score(), 'f', 6)));
+                if(curRect.score() != -1.0) {
+                    newAnno->setScore(curRect.score());
+                }
                 curFileData->addAnnotation(newAnno);
             }
-            pm->addAnnoFile(curFileData);
+            pm->addAnnoFile(curFileData, true);
         }
 
         return true;

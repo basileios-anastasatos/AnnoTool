@@ -110,6 +110,9 @@ namespace anno {
             void clear();
             void newEmpty(const QString &projectPath, const QUuid &projectUuid)
             throw(IllegalStateException *);
+            void setupAllSignals();
+            void setupSignals(int index);
+            void setupSignals(dt::AnnoFileData *annoFile);
 
             //selection access
         public:

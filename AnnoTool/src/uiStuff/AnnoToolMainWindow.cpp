@@ -163,6 +163,11 @@ void AnnoToolMainWindow::configUIproject(bool open) {
     ui.actionFileExport->setEnabled(open);
     ui.actionProjectDetails->setEnabled(open);
     ui.actionProjectAddImage->setEnabled(open);
+    ui.actionGroundtruthMode->setEnabled(open);
+
+    if(!open) {
+        ui.actionGroundtruthMode->setChecked(false);
+    }
 }
 
 void AnnoToolMainWindow::uncheckTools() {
@@ -300,9 +305,12 @@ void AnnoToolMainWindow::on_actionFileImport_triggered() {
     if (dlg->exec() == QDialog::Accepted) {
         anno::ImporterPlugin *p = dlg->getSelectedImporterPtr();
         if (p != NULL) {
+            GlobalLogger::instance()->logInfo(QString("Starting importer plugin [%1].").arg(p->name()));
             if (!p->exec(QFileInfo(GlobalProjectManager::instance()->projectDir(), QString()))) {
                 GlobalLogger::instance()->logError(QString("Importer plugin [%1] finished execution with an error.").arg(p->name()));
             } else {
+                GlobalLogger::instance()->logInfo(QString(
+                                                      "Importer plugin [%1] finished successfully.").arg(p->name()));
                 updateAnnoWidgets();
             }
         } else {
@@ -316,9 +324,11 @@ void AnnoToolMainWindow::on_actionFileExport_triggered() {
     if (dlg->exec() == QDialog::Accepted) {
         anno::ExporterPlugin *p = dlg->getSelectedExporterPtr();
         if (p != NULL) {
+            GlobalLogger::instance()->logInfo(QString("Starting exporter plugin [%1].").arg(p->name()));
             if (!p->exec(QFileInfo(GlobalProjectManager::instance()->projectDir(), QString()))) {
                 GlobalLogger::instance()->logError(QString("Exporter plugin [%1] finished execution with an error.").arg(p->name()));
             } else {
+                GlobalLogger::instance()->logInfo(QString("Exporter plugin [%1] finished successfully.").arg(p->name()));
                 updateAnnoWidgets();
             }
         } else {

@@ -94,6 +94,29 @@ namespace anno {
         _curSelAnno = -1;
     }
 
+    void GlobalProjectManager::setupAllSignals() {
+        QMutableListIterator<dt::AnnoFileData *> it(*_fileList);
+        while (it.hasNext()) {
+            dt::AnnoFileData *annoFile = it.next();
+            setupSignals(annoFile);
+        }
+    }
+
+    void GlobalProjectManager::setupSignals(int index) {
+        dt::AnnoFileData *annoFile  = getAnnoFile(index);
+        setupSignals(annoFile);
+    }
+
+    void GlobalProjectManager::setupSignals(dt::AnnoFileData *annoFile) {
+        if(annoFile != NULL) {
+            annoFile->setNotify(true);
+            annoFile->setNotifyOnChange(true);
+            annoFile->setNotifyAnno(true);
+            annoFile->setNotifyOnAnnoChange(true);
+            annoFile->resetModifiedState(true);
+        }
+    }
+
     void GlobalProjectManager::addAnnoFile(dt::AnnoFileData *annoFile, bool newFile) {
         if (annoFile != NULL && isValid()) {
             GlobalLogger::instance()->logDebug("Added anno file.");
@@ -102,11 +125,7 @@ namespace anno {
             }
             _fileList->append(annoFile);
             if(newFile) {
-                annoFile->setNotify(true);
-                annoFile->setNotifyOnChange(true);
-                annoFile->setNotifyAnno(true);
-                annoFile->setNotifyOnAnnoChange(true);
-                annoFile->resetModifiedState(true);
+                setupSignals(annoFile);
                 annoFile->setModified(true);
             }
         }
@@ -453,19 +472,9 @@ namespace anno {
         _fileListMod = new QList<dt::AnnoFileData *>();
 
         if (loadSub) {
-            //TODO change rel path handling such that rel paths start at project file dir.
             loadClassDefs();
             loadAnnoFiles();
-        }
-
-        QMutableListIterator<dt::AnnoFileData *> it(*_fileList);
-        while (it.hasNext()) {
-            dt::AnnoFileData *annoFile = it.next();
-            annoFile->setNotify(true);
-            annoFile->setNotifyOnChange(true);
-            annoFile->setNotifyAnno(true);
-            annoFile->setNotifyOnAnnoChange(true);
-            annoFile->resetModifiedState(true);
+            setupAllSignals();
         }
     }
 

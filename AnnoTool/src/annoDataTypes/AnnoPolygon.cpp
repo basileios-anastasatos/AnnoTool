@@ -22,6 +22,10 @@ namespace anno {
             return QString("Type: %1\n#-Points: %2").arg("Polygon").arg(size());
         }
 
+        QRectF AnnoPolygon::boundingRect() const {
+            return QPolygonF::boundingRect();
+        }
+
         void AnnoPolygon::print() const {
             QTextStream out(stdout);
             out << "[Poly, (" << size() << ")]" << endl;

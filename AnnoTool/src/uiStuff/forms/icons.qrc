@@ -16,6 +16,7 @@
         <file alias="shutdown" >res/shutdown.png</file>
         <file alias="delete" >res/tbDel_24.png</file>
         <file alias="fitImg" >res/tbFitImg.png</file>
+        <file alias="groundtruth" >res/tbGroundtruth.png</file>
         <file alias="new" >res/tbNew_24.png</file>
         <file alias="tool_point" >res/tbPoint_24.png</file>
         <file alias="toFront" >res/tbToFront_24.png</file>

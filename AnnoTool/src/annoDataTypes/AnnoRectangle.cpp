@@ -22,6 +22,10 @@ namespace anno {
             return QString("Type: %1\nx: %2\ny: %3\nwidth: %4\nheight: %5").arg("Rectangle").arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2).arg(width(), 0, 'f', 2).arg(height(), 0, 'f', 2);
         }
 
+        QRectF AnnoRectangle::boundingRect() const {
+            return *((QRectF *)this);
+        }
+
         void AnnoRectangle::print() const {
             QTextStream out(stdout);
             out << "[Rect, (" << x() << "," << y() << "), (" << width() << "," << height() << ")]"

@@ -22,7 +22,8 @@ INCLUDEPATH += ./src/annoDataTypes/include \
 QT += core \
     gui \
     xml
-HEADERS += ./src/general/include/GlobalInfo.h \
+HEADERS += ./src/uiStuff/include/DlgIdlExporter.h \
+    ./src/general/include/GlobalInfo.h \
     ./src/annoExceptions/include/FormatException.h \
     ./src/annoGraphics/include/ToolPolygon.h \
     ./src/annoDataTypes/include/AnnoPolygon.h \
@@ -106,7 +107,8 @@ HEADERS += ./src/general/include/GlobalInfo.h \
     ./src/annoExceptions/include/OutOfRangeException.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h
-SOURCES += ./src/general/GlobalInfo.cpp \
+SOURCES += ./src/uiStuff/DlgIdlExporter.cpp \
+    ./src/general/GlobalInfo.cpp \
     ./src/annoExceptions/FormatException.cpp \
     ./src/annoGraphics/ToolPolygon.cpp \
     ./src/annoDataTypes/AnnoPolygon.cpp \
@@ -183,7 +185,8 @@ SOURCES += ./src/general/GlobalInfo.cpp \
     ./src/annoExceptions/XmlException.cpp \
     ./src/annoExceptions/XmlFormatException.cpp \
     ./src/main.cpp
-FORMS += ./src/uiStuff/forms/AnnoToolMainWindow.ui \
+FORMS += ./src/uiStuff/forms/DlgIdlExporter.ui \
+    ./src/uiStuff/forms/AnnoToolMainWindow.ui \
     ./src/uiStuff/forms/ZoomControl.ui \
     ./src/uiStuff/forms/DlgAbout.ui \
     ./src/uiStuff/forms/DlgEditAttribute.ui \

@@ -12,8 +12,11 @@ namespace anno {
             dt::AnnoRectangle *convRect(libAn::AnnoRect &rect);
 
         public:
-            IdlImporterPlugin();
-            virtual ~IdlImporterPlugin();
+            IdlImporterPlugin() {
+            }
+
+            virtual ~IdlImporterPlugin() {
+            }
 
         public:
             virtual QString name() const;

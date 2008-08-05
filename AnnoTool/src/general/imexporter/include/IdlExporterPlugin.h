@@ -2,14 +2,27 @@
 #define IDLEXPORTERPLUGIN_H_
 
 #include "ExporterPlugin.h"
-#include "AnnoRectangle.h"
+#include "Annotation.h"
 #include "libAn_AnnoRect.h"
+
+#include <QDir>
 
 namespace anno {
 
     class IdlExporterPlugin : public anno::ExporterPlugin {
         private:
-            libAn::AnnoRect convRect(dt::AnnoRectangle *rect);
+            bool _rectangle;
+            bool _ellipse;
+            bool _polygon;
+            bool _singlePoint;
+            bool _relativPaths;
+
+            QDir _idlDir;
+
+        private:
+            libAn::AnnoRect convRect(dt::Annotation *anno);
+            bool isExportShape(dt::Annotation *anno);
+            QString processImagePath(const QFileInfo &imgPath) const;
 
         public:
             IdlExporterPlugin();
