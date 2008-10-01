@@ -16,6 +16,10 @@ class AnnoListWidget : public QDockWidget {
 
     private slots:
         void onTrAnnoListCurrentRowChanged(const QModelIndex &cur, const QModelIndex &prev);
+        void on_actionLockTree_triggered();
+        void on_actionDeleteAnnotation_triggered();
+        void on_actionDeleteAnnotationDeep_triggered();
+        void onModel_dropEventFinished();
 
     public:
         AnnoListWidget(QWidget *parent = 0);
@@ -26,7 +30,7 @@ class AnnoListWidget : public QDockWidget {
         void clearData();
 
     signals:
-        void annoSelectChanged(int row, QUuid anno);
+        void annoSelectChanged(const QModelIndex &index, QUuid anno);
 
 };
 

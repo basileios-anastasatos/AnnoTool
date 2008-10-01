@@ -1,5 +1,6 @@
 #include "include/AnnoDataWidget.h"
 #include "DlgEditAttribute.h"
+#include "DlgEditClass.h"
 #include "Annotation.h"
 #include "importGlobals.h"
 
@@ -50,10 +51,32 @@ void AnnoDataWidget::on_actionRemoveAttribute_triggered() {
 
 void AnnoDataWidget::on_actionAddClass_triggered() {
     GlobalLogger::instance()->logDebug("AnnoDataWidget: add class");
+    ::anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
+    if (curAnno != NULL) {
+        DlgEditClass *dlg = new DlgEditClass(this);
+        dlg->initClassList();
+        if (dlg->exec() == QDialog::Accepted) {
+            QString className = dlg->getSelectedClassName();
+            if(!className.isEmpty()) {
+                QList<QString> usedClasses = curAnno->classes();
+                if(!usedClasses.contains(className)) {
+                    curAnno->addClass(className);
+                    updateListData();
+                }
+            }
+        }
+        delete dlg;
+    }
 }
 
 void AnnoDataWidget::on_actionRemoveClass_triggered() {
     GlobalLogger::instance()->logDebug("AnnoDataWidget: remove class");
+    anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
+    int selIndex = ui.lstClasses->selectionModel()->currentIndex().row();
+    if (curAnno != NULL && selIndex >= 0) {
+        curAnno->removeClass(curAnno->classes()[selIndex]);
+        updateListData();
+    }
 }
 
 void AnnoDataWidget::on_trAttributes_activated(const QModelIndex &index) {
@@ -75,15 +98,8 @@ void AnnoDataWidget::on_trAttributes_activated(const QModelIndex &index) {
 }
 
 void AnnoDataWidget::updateAllData() {
-    _modelAttributes->update();
-    _modelClasses->update();
-    ::anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
-    if (curAnno != NULL) {
-        ui.lbInfo->setText(curAnno->shape()->shapeInfo());
-    } else {
-        ui.lbInfo->setText("--");
-    }
-    //update();
+    updateListData();
+    updateShapeInfo();
 }
 
 void AnnoDataWidget::updateListData() {

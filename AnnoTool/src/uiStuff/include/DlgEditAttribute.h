@@ -11,10 +11,6 @@ class DlgEditAttribute : public QDialog {
         Q_OBJECT
 
     private:
-        static QSet<QString> _acAttributes;
-        static QSet<QString> _acValues;
-
-    private:
         Ui::DlgEditAttributeClass ui;
         ::anno::dt::Annotation *_anno;
 

@@ -196,7 +196,7 @@
     <rect>
      <x>241</x>
      <y>22</y>
-     <width>167</width>
+     <width>236</width>
      <height>34</height>
     </rect>
    </property>
@@ -209,6 +209,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionLockParentAnno" />
    <addaction name="actionToolPointer" />
    <addaction name="actionToolSinglePoint" />
    <addaction name="actionToolRectangle" />
@@ -218,9 +219,9 @@
   <widget class="QToolBar" name="tbAnnotation">
    <property name="geometry">
     <rect>
-     <x>408</x>
+     <x>477</x>
      <y>22</y>
-     <width>331</width>
+     <width>262</width>
      <height>34</height>
     </rect>
    </property>
@@ -482,6 +483,14 @@
    </property>
    <property name="text">
     <string>Groundtruth Mode</string>
+   </property>
+  </action>
+  <action name="actionLockParentAnno">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Lock Parent</string>
    </property>
   </action>
  </widget>

@@ -6,9 +6,6 @@
 
 #include <QLineEdit>
 
-QSet<QString> DlgEditAttribute::_acAttributes;
-QSet<QString> DlgEditAttribute::_acValues;
-
 DlgEditAttribute::DlgEditAttribute(::anno::dt::Annotation *anno, QWidget *parent) :
     QDialog(parent), _anno(anno) {
     setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
@@ -54,7 +51,7 @@ void DlgEditAttribute::loadClassAttributes() {
 }
 
 void DlgEditAttribute::loadRecentValues() {
-    QSetIterator<QString> i(_acValues);
+    QSetIterator<QString> i(GlobalToolManager::instance()->recentValues()->attrValues);
     while (i.hasNext()) {
         ui.cbValue->addItem(i.next());
     }
@@ -64,13 +61,13 @@ void DlgEditAttribute::accept() {
     if (ui.cbName->isEditable()) {
         QString curTxt = ui.cbName->currentText();
         if(!curTxt.isEmpty()) {
-            _acAttributes.insert(curTxt);
+            GlobalToolManager::instance()->recentValues()->attrNames.insert(curTxt);
         }
     }
 
     QString curTxt = ui.cbValue->currentText();
     if(!curTxt.isEmpty()) {
-        _acValues.insert(curTxt);
+        GlobalToolManager::instance()->recentValues()->attrValues.insert(curTxt);
     }
 
     QDialog::accept();
@@ -85,7 +82,7 @@ void DlgEditAttribute::setClassMode(bool useClass) {
     ui.cbName->setEditable(!useClass);
 
     if (!useClass) {
-        QSetIterator<QString> i(_acAttributes);
+        QSetIterator<QString> i(GlobalToolManager::instance()->recentValues()->attrNames);
         while (i.hasNext()) {
             ui.cbName->addItem(i.next());
         }

@@ -14,6 +14,7 @@
         <file alias="tool_polygon" >res/poly_24.png</file>
         <file alias="tool_rectangle" >res/rect_24.png</file>
         <file alias="shutdown" >res/shutdown.png</file>
+        <file alias="delete2" >res/tbDel2_24.png</file>
         <file alias="delete" >res/tbDel_24.png</file>
         <file alias="fitImg" >res/tbFitImg.png</file>
         <file alias="groundtruth" >res/tbGroundtruth.png</file>

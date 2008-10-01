@@ -9,6 +9,7 @@
 #include "AllAnnoExceptions.h"
 #include "importGlobals.h"
 #include "AnnoFileData.h"
+#include "AnnoOperationHelper.h"
 
 #include "AnnoGraphicsScene.h"
 #include "AnnoGraphicsPixmap.h"
@@ -87,6 +88,8 @@ void AnnoToolMainWindow::newGraphicsScene(QImage *img) {
     ui.graphicsView->setScene(_graphicsScene);
     GlobalToolManager::instance()->setView(ui.graphicsView);
     GlobalToolManager::instance()->setScene(_graphicsScene);
+    //connect(GlobalProjectManager::instance(), SIGNAL(curAnnoFile_annoAdded(::anno::dt::Annotation*)), _graphicsScene, SLOT(addAnnoShape(::anno::dt::Annotation*)));
+    connect(GlobalProjectManager::instance(), SIGNAL(curAnnoFile_annoRemoved(QUuid)), _graphicsScene, SLOT(removeAnnoShape(QUuid)));
     fitGraphicsScene();
     setToolEnabled(true);
 }
@@ -131,7 +134,7 @@ void AnnoToolMainWindow::updateAnnoWidgets() {
     GlobalLogger::instance()->logDebug("MW: Updating anno widgets.");
     ui.annoFileListWidget->updateData();
     ui.annoListWidget->updateData();
-    //	ui.annoDataWidget->updateData();
+    ui.annoDataWidget->updateAllData();
 }
 
 bool AnnoToolMainWindow::checkProjectToClose() {
@@ -181,6 +184,7 @@ void AnnoToolMainWindow::uncheckTools() {
 
 void AnnoToolMainWindow::setToolEnabled(bool enabled) {
     GlobalLogger::instance()->logDebug(QString("MW: setting graphics tools to %1").arg(enabled ? "enabled" : "disabled"));
+    ui.actionLockParentAnno->setEnabled(enabled);
     ui.actionToolPointer->setEnabled(enabled);
     ui.actionToolSinglePoint->setEnabled(enabled);
     ui.actionToolRectangle->setEnabled(enabled);
@@ -190,6 +194,36 @@ void AnnoToolMainWindow::setToolEnabled(bool enabled) {
     ui.actionZtoFront->setEnabled(enabled);
     ui.actionRemoveAnnotation->setEnabled(enabled);
     ui.actionSaveCurrentImage->setEnabled(enabled);
+}
+
+void AnnoToolMainWindow::lockParentAnno(bool lock) {
+    // Lock currently selected annotation as parent
+    if (lock) {
+        if (GlobalToolManager::instance()->hasLockedAnno()) {
+            GlobalLogger::instance()->logDebug("MW: cannot lock parent, there is already a lock.");
+        } else {
+            GlobalProjectManager *pm = GlobalProjectManager::instance();
+            if (pm->isValid()) {
+                QUuid curAnnoId = pm->selectedAnnoUuid();
+                if (!curAnnoId.isNull()) {
+                    GlobalToolManager::instance()->setLockedAnno(curAnnoId);
+                    ui.actionLockParentAnno->setChecked(true);
+                    GlobalLogger::instance()->logDebug("MW: locked parent");
+                } else {
+                    GlobalToolManager::instance()->resetLockedAnno();
+                    ui.actionLockParentAnno->setChecked(false);
+                    GlobalLogger::instance()->logDebug("MW: locking parent failed");
+                }
+            }
+        }
+    }
+    // unlock parent annotation
+    else {
+        GlobalToolManager::instance()->resetLockedAnno();
+        ui.actionLockParentAnno->setChecked(false);
+        GlobalLogger::instance()->logDebug("MW: unlocked parent");
+    }
+    ui.annoListWidget->updateData();
 }
 
 void AnnoToolMainWindow::closeEvent(QCloseEvent *event) {
@@ -239,13 +273,11 @@ void AnnoToolMainWindow::on_actionFileOpen_triggered() {
     using ::anno::dt::AnnoFileData;
 
     if (checkProjectToClose()) {
-        QString
-        fileName =
-            QFileDialog::getOpenFileName(
-                this,
-                tr("Open AnnoTool Project File"),
-                ".",
-                :: QString("AnnoTool Project (%1)").arg(anno::FileExtensions::asFilter(::anno::GlobalConfig::fileExt.projects)));
+        QString fileName = QFileDialog::getOpenFileName(
+                               this,
+                               QString("Open AnnoTool Project File"),
+                               QString("."),
+                               QString("AnnoTool Project (%1)").arg(anno::FileExtensions::asFilter(::anno::GlobalConfig::fileExt.projects)));
         if (!fileName.isEmpty()) {
             try {
                 GlobalProjectManager *pm = GlobalProjectManager::instance();
@@ -438,8 +470,8 @@ void AnnoToolMainWindow::annoFileSelectChanged(int row, QUuid image) {
     GlobalProjectManager::instance()->setSelectedFileRow(row);
 }
 
-void AnnoToolMainWindow::on_annoListWidget_annoSelectChanged(int row, QUuid anno) {
-    GlobalProjectManager::instance()->setSelectedAnnoRow(row);
+void AnnoToolMainWindow::on_annoListWidget_annoSelectChanged(const QModelIndex &index, QUuid anno) {
+    GlobalProjectManager::instance()->setSelectedAnnoRow(anno);
 //	_graphicsScene->selectShape(anno);
 //	ui.annoDataWidget->updateData();
 }
@@ -472,7 +504,9 @@ void AnnoToolMainWindow::on_actionRemoveAnnotation_triggered() {
         anno::dt::Annotation *curAnno = pm->selectedAnno();
         if(curAnno != NULL) {
             _graphicsScene->removeAnnoShape(curAnno->annoId());
-            curFile->removeAnnotation(curAnno->annoId());
+            anno::dt::AnnoOperationHelper annoOp(curFile);
+            annoOp.deleteAnnotation(curAnno, false);
+            updateUI();
             //pm->setSelectedAnnoRow();
         }
     }
@@ -510,6 +544,8 @@ void AnnoToolMainWindow::onPM_annoListUpdate() {
 
 void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::anno::dt::AnnoFileData *annoFile) {
     GlobalLogger::instance()->logDebug("MW: onPM_annoFileSelectChanged");
+    setToolEnabled(false);
+    lockParentAnno(false);
 
     ui.annoListWidget->updateData();
     ui.annoDataWidget->updateAllData();
@@ -532,6 +568,7 @@ void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::an
 
     newGraphicsScene(&img);
     loadGraphicsAnno();
+    setToolEnabled(true);
     //	ui.graphicsView->invalidateScene();
 }
 
@@ -540,6 +577,14 @@ void AnnoToolMainWindow::onPM_annoSelectChanged(int row, QUuid annoId,
     GlobalLogger::instance()->logDebug(QString("Selected annotation [%1]").arg(row));
     _graphicsScene->selectShape(annoId);
     ui.annoDataWidget->updateAllData();
+}
+
+void AnnoToolMainWindow::on_actionLockParentAnno_triggered() {
+    if(ui.actionLockParentAnno->isChecked()) {
+        lockParentAnno(true);
+    } else {
+        lockParentAnno(false);
+    }
 }
 
 void AnnoToolMainWindow::on_actionToolPointer_triggered() {

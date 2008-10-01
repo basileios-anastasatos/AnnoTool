@@ -33,6 +33,7 @@ class AnnoToolMainWindow : public QMainWindow {
         void configUIproject(bool open);
         void uncheckTools();
         void setToolEnabled(bool enabled);
+        void lockParentAnno(bool lock = true);
 
         // overwritten methods
     protected:
@@ -52,7 +53,7 @@ class AnnoToolMainWindow : public QMainWindow {
         void on_actionProjectAddImage_triggered();
         void on_actionSetImageLoader_triggered();
         void annoFileSelectChanged(int row, QUuid image);
-        void on_annoListWidget_annoSelectChanged(int row, QUuid anno);
+        void on_annoListWidget_annoSelectChanged(const QModelIndex &index, QUuid anno);
         void on_actionFitImage_triggered();
         void on_actionZtoFront_triggered();
         void on_actionRemoveAnnotation_triggered();
@@ -66,6 +67,7 @@ class AnnoToolMainWindow : public QMainWindow {
         void onPM_annoSelectChanged(int row, QUuid annoId, ::anno::dt::Annotation *anno);
 
         // Tool support
+        void on_actionLockParentAnno_triggered();
         void on_actionToolPointer_triggered();
         void on_actionToolSinglePoint_triggered();
         void on_actionToolRectangle_triggered();
