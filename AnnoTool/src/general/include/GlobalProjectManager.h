@@ -161,6 +161,8 @@ namespace anno {
             void curAnnoFileModifyReset(::anno::dt::AnnoFileData *annoFile);
             void curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *annoFile, bool prevState,
                                                bool curState);
+            void curAnnoFile_annoAdded(::anno::dt::Annotation *anno);
+            void curAnnoFile_annoRemoved(QUuid annoUuid);
 
             void curAnnoModified(::anno::dt::Annotation *anno);
             void curAnnoModifyReset(::anno::dt::Annotation *anno);

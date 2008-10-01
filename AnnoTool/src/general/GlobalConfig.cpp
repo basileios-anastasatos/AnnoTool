@@ -158,7 +158,7 @@ namespace anno {
     }
 
     void GlobalConfig::loadDefaults() {
-        _settingsInt.insert("logging.loglevel", (int)logging::Debug);
+        _settingsInt.insert("logging.loglevel", (int)logging::Info);
         _settingsInt.insert("graphics.cpSize", 10);
 
         ShapeConfig defaultShapeConfig;

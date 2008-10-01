@@ -172,6 +172,8 @@ namespace anno {
                 connectOk = connectOk && connect(file, SIGNAL(modified(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModified(::anno::dt::AnnoFileData *)));
                 connectOk = connectOk && connect(file, SIGNAL(modifyReset(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModifyReset(::anno::dt::AnnoFileData *)));
                 connectOk = connectOk && connect(file, SIGNAL(modifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)));
+                connectOk = connectOk && connect(file, SIGNAL(annoAdded(::anno::dt::Annotation *)), this, SIGNAL(curAnnoFile_annoAdded(::anno::dt::Annotation *)));
+                connectOk = connectOk && connect(file, SIGNAL(annoRemoved(QUuid)), this, SIGNAL(curAnnoFile_annoRemoved(QUuid)));
 
                 if (!connectOk) {
                     GlobalLogger::instance()->logError("CONNECT-ERROR: GlobalProjectManager::setSelectedFileRow(int)");
@@ -253,6 +255,8 @@ namespace anno {
             dconOk &= disconnect(file, SIGNAL(modified(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModified(::anno::dt::AnnoFileData *)));
             dconOk &= disconnect(file, SIGNAL(modifyReset(::anno::dt::AnnoFileData *)), this, SIGNAL(curAnnoFileModifyReset(::anno::dt::AnnoFileData *)));
             dconOk &= disconnect(file, SIGNAL(modifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)));
+            dconOk &= disconnect(file, SIGNAL(annoAdded(::anno::dt::Annotation *)), this, SIGNAL(curAnnoFile_annoAdded(::anno::dt::Annotation *)));
+            dconOk &= disconnect(file, SIGNAL(annoRemoved(QUuid)), this, SIGNAL(curAnnoFile_annoRemoved(QUuid)));
 
             if (!dconOk) {
                 GlobalLogger::instance()->logError("DISCONNECT-ERROR: GlobalProjectManager::resetSelectedFile() - during file discon");

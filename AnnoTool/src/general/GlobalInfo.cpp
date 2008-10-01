@@ -32,8 +32,8 @@ const bool GlobalInfo::isDebug = false;
 #endif
 
 const quint8 GlobalInfo::appVersionMajor		= 0;
-const quint8 GlobalInfo::appVersionMid			= 2;
-const quint16 GlobalInfo::appVersionMinor		= 38;
+const quint8 GlobalInfo::appVersionMid			= 3;
+const quint16 GlobalInfo::appVersionMinor		= 0;
 
 const QString GlobalInfo::appName("AnnoTool");
 const QString GlobalInfo::appSubtitle(QObject::tr("Advanced Image Annotation"));
@@ -99,7 +99,7 @@ QString GlobalInfo::osName() {
     }
 #elif defined(Q_OS_LINUX)
     return QString("Linux System");
-#elif defined()
+#elif defined(Q_OS_UNIX)
     return QString("Unix System");
 #else
     return QString("Unknown System");

@@ -2,12 +2,18 @@
 #define GLOBALTOOLMANAGER_H_
 
 #include "GraphicsTool.h"
+#include "RecentAttrValues.h"
+#include <QUuid>
 
 class QGraphicsView;
+class ShapeContextMenu;
 
 namespace anno {
     namespace graphics {
         class AnnoGraphicsScene;
+    }
+    namespace dt {
+        class Annotation;
     }
 
     class GlobalToolManager {
@@ -26,11 +32,16 @@ namespace anno {
 
             // other members
         private:
+            RecentAttrValues _recentValues;
             bool _resetFlag;
             QGraphicsView *_curView;
+            ShapeContextMenu *_curMenu;
             graphics::AnnoGraphicsScene *_curScene;
             graphics::GraphicsTool *_curTool;
             SelGraphicsTool _curToolId;
+            QUuid _lastAnnoAdded;
+            QUuid _lockedParentAnno;
+
 
             // private singleton stuff
         private:
@@ -49,7 +60,7 @@ namespace anno {
             /**
              * Virtual destructor.
              */
-            virtual ~GlobalToolManager();
+            ~GlobalToolManager();
 
             // public singleton stuff
         public:
@@ -85,6 +96,19 @@ namespace anno {
             graphics::GraphicsTool *curTool();
             bool hasTool() const;
             void resetAll();
+
+            void triggerShapeContextMenu(anno::dt::Annotation *anno) const;
+            RecentAttrValues *recentValues();
+
+            bool hasLockedAnno() const;
+            bool hasLastAnno() const;
+            QUuid getLockedAnno() const;
+            QUuid getLastAnno() const;
+            void setLockedAnno(const QUuid &uuid);
+            void setLastAnno(const QUuid &uuid);
+            void resetLockedAnno();
+            void resetLastAnno();
+
 
     };
 

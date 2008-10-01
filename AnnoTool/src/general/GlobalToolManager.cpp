@@ -1,6 +1,7 @@
 #include "include/GlobalToolManager.h"
 #include "AnnoGraphicsScene.h"
 #include "AllGraphicsTools.h"
+#include "ShapeContextMenu.h"
 
 #include "GlobalLogger.h"
 using ::logging::GlobalLogger;
@@ -9,12 +10,9 @@ namespace anno {
 
     GlobalToolManager *GlobalToolManager::_me = NULL;
 
-    GlobalToolManager::GlobalToolManager() {
-        _resetFlag = false;
-        _curView = NULL;
-        _curScene = NULL;
-        _curTool = NULL;
-        _curToolId = GtNone;
+    GlobalToolManager::GlobalToolManager() :
+        _resetFlag(false), _curView(NULL), _curMenu(NULL), _curScene(NULL), _curTool(NULL),
+        _curToolId(GtNone) {
     }
 
     GlobalToolManager::~GlobalToolManager() {
@@ -51,6 +49,7 @@ namespace anno {
 
     void GlobalToolManager::setView(QGraphicsView *view) {
         _curView = view;
+        _curMenu = new ShapeContextMenu((QWidget *)view);
     }
 
     QGraphicsView *GlobalToolManager::curView() {
@@ -153,10 +152,56 @@ namespace anno {
         if (_curTool != NULL) {
             delete _curTool;
         }
+        if(_curMenu != NULL) {
+            delete _curMenu;
+        }
         _curTool = NULL;
         _curView = NULL;
+        _curMenu = NULL;
         _curScene = NULL;
         _resetFlag = true;
+    }
+
+    void GlobalToolManager::triggerShapeContextMenu(anno::dt::Annotation *anno) const {
+        if(_curMenu != NULL) {
+            _curMenu->triggerMenu(anno);
+        }
+    }
+
+    RecentAttrValues *GlobalToolManager::recentValues() {
+        return &_recentValues;
+    }
+
+    bool GlobalToolManager::hasLockedAnno() const {
+        return !_lockedParentAnno.isNull();
+    }
+
+    bool GlobalToolManager::hasLastAnno() const {
+        return !_lastAnnoAdded.isNull();
+    }
+
+    QUuid GlobalToolManager::getLockedAnno() const {
+        return _lockedParentAnno;
+    }
+
+    QUuid GlobalToolManager::getLastAnno() const {
+        return _lastAnnoAdded;
+    }
+
+    void GlobalToolManager::setLockedAnno(const QUuid &uuid) {
+        _lockedParentAnno = uuid;
+    }
+
+    void GlobalToolManager::setLastAnno(const QUuid &uuid) {
+        _lastAnnoAdded = uuid;
+    }
+
+    void GlobalToolManager::resetLockedAnno() {
+        _lockedParentAnno = QUuid();
+    }
+
+    void GlobalToolManager::resetLastAnno() {
+        _lastAnnoAdded = QUuid();
     }
 
 }
