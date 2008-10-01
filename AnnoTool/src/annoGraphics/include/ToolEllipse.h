@@ -4,14 +4,22 @@
 #include "GraphicsTool.h"
 
 namespace anno {
+    namespace dt {
+        class Annotation;
+    }
+
     namespace graphics {
-        class AnnoGraphicsShape;
+        class AnnoGraphicsEllipse;
 
         class ToolEllipse : public anno::graphics::GraphicsTool {
             private:
                 QCursor _cursorNormal;
                 QCursor _cursorActive;
-                AnnoGraphicsShape *_curShape;
+                AnnoGraphicsEllipse *_curShape;
+                dt::Annotation *_curParentAnno;
+
+            private:
+                void handleEscape(QKeyEvent *event);
 
             public:
                 ToolEllipse(QGraphicsView *view, AnnoGraphicsScene *scene);
@@ -50,6 +58,10 @@ namespace anno {
                                              QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(AnnoGraphicsPixmap *img,
                                              QGraphicsSceneHoverEvent *event);
+
+                virtual void keyReleaseEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event);
+                virtual void keyReleaseEvent(AnnoGraphicsShape *shape, QKeyEvent *event);
+                virtual void keyReleaseEvent(AnnoGraphicsPixmap *img, QKeyEvent *event);
         };
 
     }

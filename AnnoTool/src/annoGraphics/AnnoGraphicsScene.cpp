@@ -1,5 +1,6 @@
 #include "include/AnnoGraphicsScene.h"
 #include "include/AnnoGraphicsShape.h"
+#include "AnnoGraphicsShapeCreator.h"
 #include "importGlobals.h"
 
 namespace anno {
@@ -28,6 +29,15 @@ namespace anno {
         }
 
         AnnoGraphicsScene::~AnnoGraphicsScene() {
+        }
+
+        void AnnoGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AGS: mouseDoubleClickEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->mouseDoubleClickEvent(event);
+            }
+            QGraphicsScene::mouseDoubleClickEvent(event);
         }
 
         void AnnoGraphicsScene::setAnnoImage(const QImage &image) {
@@ -69,7 +79,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsScene::removeAnnoShape(const QUuid &annoId) {
+        void AnnoGraphicsScene::removeAnnoShape(QUuid annoId) {
             if (_image != NULL && !_shapes.isEmpty()) {
                 AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
                 if (s != NULL) {
@@ -78,6 +88,14 @@ namespace anno {
                     _shapes.remove(annoId);
                     delete s;
                 }
+            }
+        }
+
+        void AnnoGraphicsScene::addAnnoShape(::anno::dt::Annotation *anno) {
+            anno::graphics::AnnoGraphicsShape *s =
+                anno::graphics::AnnoGraphicsShapeCreator::toGraphicsShape(anno);
+            if (s != NULL) {
+                addAnnoShape(s);
             }
         }
 

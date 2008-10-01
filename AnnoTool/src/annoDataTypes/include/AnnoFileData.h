@@ -87,6 +87,9 @@ namespace anno {
                 QString filePath() const;
                 void setFilePath(const QString &path);
 
+                int annoParentCount();
+                QList<QUuid> annoParents();
+
                 int annoCount() const;
                 Annotation *getAnnotation(int index);
                 const Annotation *getAnnotation(int index) const;
@@ -94,6 +97,8 @@ namespace anno {
                 const Annotation *getAnnotation(const QUuid &uuid) const;
                 bool containsAnnotation(const QUuid &uuid) const;
                 bool containsAnnotation(const Annotation *anno) const;
+                int getAnnotationIndex(const QUuid &uuid) const;
+                int getAnnotationIndex(const Annotation *anno) const;
                 QListIterator<Annotation *> getAnnoIterator() const;
 
                 void addAnnotation(Annotation *anno);
@@ -127,6 +132,9 @@ namespace anno {
                 void annoModifyReset(::anno::dt::AnnoFileData *annoFile, ::anno::dt::Annotation *anno);
                 void annoModifyStateChanged(::anno::dt::AnnoFileData *annoFile, ::anno::dt::Annotation *anno,
                                             bool prevState, bool curState);
+
+                void annoAdded(::anno::dt::Annotation *anno);
+                void annoRemoved(QUuid annoUuid);
         };
 
         // inlining

@@ -35,6 +35,10 @@ namespace anno {
 
         void ToolSinglePoint::mousePressEvent(AnnoGraphicsShape *shape,
                                               QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (shape->parentImage() != NULL) {
                 shape->parentImage()->exMousePressEvent(event);
             }
@@ -42,6 +46,10 @@ namespace anno {
 
         void ToolSinglePoint::mousePressEvent(AnnoGraphicsPixmap *img,
                                               QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (_view != NULL) {
                 _prevCursors.push(_view->cursor());
                 _view->setCursor(_cursorActive);
@@ -67,6 +75,10 @@ namespace anno {
 
         void ToolSinglePoint::mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                                 QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (_view != NULL) {
                 _view->setCursor(_prevCursors.pop());
             }

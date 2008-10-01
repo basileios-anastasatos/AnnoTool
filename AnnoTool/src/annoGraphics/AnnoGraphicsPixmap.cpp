@@ -41,6 +41,14 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsPixmap::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_PIXMAP: mouseDoubleClickEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->mouseDoubleClickEvent(this, event);
+            }
+        }
+
         void AnnoGraphicsPixmap::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
             GlobalLogger::instance()->logDebug("AG_PIXMAP: hoverEnterEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
@@ -89,6 +97,10 @@ namespace anno {
         void AnnoGraphicsPixmap::exMousePressEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_PIXMAP: exMousePressEvent.");
             mousePressEvent(event);
+        }
+
+        void AnnoGraphicsPixmap::exDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+            mouseDoubleClickEvent(event);
         }
 
         void AnnoGraphicsPixmap::exMouseReleaseEvent(QGraphicsSceneMouseEvent *event) {

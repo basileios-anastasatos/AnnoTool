@@ -12,6 +12,10 @@ namespace anno {
         GraphicsTool::~GraphicsTool() {
         }
 
+        void GraphicsTool::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+            // Do nothing as default!
+        }
+
         void GraphicsTool::mousePressEvent(AnnoGraphicsControlPoint *cp,
                                            QGraphicsSceneMouseEvent *event) {
             // Do nothing as default!
@@ -19,6 +23,11 @@ namespace anno {
 
         void GraphicsTool::mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
                                              QGraphicsSceneMouseEvent *event) {
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::mouseDoubleClickEvent(AnnoGraphicsControlPoint *cp,
+                QGraphicsSceneMouseEvent *event) {
             // Do nothing as default!
         }
 
@@ -34,8 +43,12 @@ namespace anno {
 
         void GraphicsTool::mouseReleaseEvent(AnnoGraphicsShape *shape,
                                              QGraphicsSceneMouseEvent *event) {
-            // absorb event!
-            event->accept();
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::mouseDoubleClickEvent(AnnoGraphicsShape *shape,
+                QGraphicsSceneMouseEvent *event) {
+            // Do nothing as default!
         }
 
         void GraphicsTool::mouseMoveEvent(AnnoGraphicsShape *shape,
@@ -50,6 +63,11 @@ namespace anno {
 
         void GraphicsTool::mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                              QGraphicsSceneMouseEvent *event) {
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::mouseDoubleClickEvent(AnnoGraphicsPixmap *img,
+                QGraphicsSceneMouseEvent *event) {
             // Do nothing as default!
         }
 

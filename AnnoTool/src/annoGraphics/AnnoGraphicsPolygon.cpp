@@ -138,6 +138,13 @@ namespace anno {
             _drawClosed = closed;
         }
 
+        void AnnoGraphicsPolygon::contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent) {
+            dt::Annotation *anno = relatedAnno();
+            if(GlobalProjectManager::instance()->isAnnoSelected(anno)) {
+                GlobalToolManager::instance()->triggerShapeContextMenu(relatedAnno());
+            }
+        }
+
         void AnnoGraphicsPolygon::cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug(QString("AG_POLY: cpMousePressEvent on CP %1").arg(index));
         }
@@ -182,6 +189,14 @@ namespace anno {
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseReleaseEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsPolygon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_POLY: mouseDoubleClickEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->mouseDoubleClickEvent(this, event);
             }
         }
 

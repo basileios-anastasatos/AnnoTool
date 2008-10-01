@@ -21,8 +21,10 @@ namespace anno {
                 const dt::AnnoPolygon *annoPolygon() const;
 
             protected:
+                virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent);
                 virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+                virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
                 virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);

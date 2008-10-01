@@ -10,6 +10,9 @@
 #include "AnnoShape.h"
 #include "XmlHelper.h"
 
+#include "GlobalLogger.h"
+using logging::GlobalLogger;
+
 #ifndef NATIVE_SCORE_ATTR
 #define NATIVE_SCORE_ATTR QString("__score")
 #endif
@@ -96,7 +99,7 @@ namespace anno {
                 QUuid _annoId;
                 double _score;
                 QUuid _annoParent;
-                QSet<QUuid> _annoChildren;
+                QList<QUuid> _annoChildren;
                 QString _comment;
                 QList<QString> _annoClasses;
                 QList<AnnoAttribute> _annoAttributes;
@@ -148,10 +151,12 @@ namespace anno {
                 int annoChildCount() const;
                 QUuid annoParent() const;
                 bool containsAnnoChild(const QUuid &child) const;
-                QSet<QUuid> annoChildren() const;
+                QList<QUuid> annoChildren() const;
                 void setAnnoParent(const QUuid &parent);
                 void addAnnoChild(const QUuid &child);
+                void insertAnnoChild(int pos, const QUuid &child);
                 void removeAnnoChild(const QUuid &child);
+                void removeAnnoChild(int child);
                 QString comment() const;
                 void setComment(const QString &comment);
                 AnnoShape *shape();
@@ -312,7 +317,7 @@ namespace anno {
             return _annoChildren.contains(child);
         }
 
-        inline QSet<QUuid> Annotation::annoChildren() const {
+        inline QList<QUuid> Annotation::annoChildren() const {
             return _annoChildren;
         }
 
@@ -324,14 +329,30 @@ namespace anno {
         }
 
         inline void Annotation::addAnnoChild(const QUuid &child) {
-            if(_annoChildren.contains(child)) {
-                _annoChildren.insert(child);
+            if(!_annoChildren.contains(child)) {
+                _annoChildren.append(child);
+                setModified(true);
+            }
+        }
+
+        inline void Annotation::insertAnnoChild(int pos, const QUuid &child) {
+            if(!_annoChildren.contains(child)) {
+                _annoChildren.insert(pos, child);
                 setModified(true);
             }
         }
 
         inline void Annotation::removeAnnoChild(const QUuid &child) {
-            if(_annoChildren.remove(child)) {
+            int idx = _annoChildren.indexOf(child);
+            if(idx >= 0) {
+                _annoChildren.removeAt(idx);
+                setModified(true);
+            }
+        }
+
+        inline void Annotation::removeAnnoChild(int child) {
+            if(child >= 0 && child < _annoChildren.size()) {
+                _annoChildren.removeAt(child);
                 setModified(true);
             }
         }

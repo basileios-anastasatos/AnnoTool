@@ -54,12 +54,14 @@ namespace anno {
             public:
                 virtual void cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event);
                 virtual void cpMouseReleaseEvent(int index, QGraphicsSceneMouseEvent *event);
+                virtual void cpDoubleClickEvent(int index, QGraphicsSceneMouseEvent *event);
                 virtual void cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event);
 
                 // external mouse interface
             public:
                 virtual void exMouseMoveEvent(QGraphicsSceneMouseEvent *event);
                 virtual void exMousePressEvent(QGraphicsSceneMouseEvent *event);
+                virtual void exDoubleClickEvent(QGraphicsSceneMouseEvent *event);
                 virtual void exMouseReleaseEvent(QGraphicsSceneMouseEvent *event);
         };
 

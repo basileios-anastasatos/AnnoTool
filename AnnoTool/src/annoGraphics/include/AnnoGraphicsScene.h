@@ -6,6 +6,7 @@
 #include <QUuid>
 #include <QSize>
 #include "AnnoGraphicsPixmap.h"
+#include "Annotation.h"
 
 namespace anno {
     namespace graphics {
@@ -27,13 +28,16 @@ namespace anno {
                                   QObject *parent = 0);
                 virtual ~AnnoGraphicsScene();
 
+                // mouse interface
+            protected:
+                virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
             public:
                 void setAnnoImage(const QImage &image);
                 QSize annoImageSize() const;
                 AnnoGraphicsPixmap *annoPixmap();
                 void addAnnoShape(AnnoGraphicsShape *shape);
                 void removeAnnoShape(AnnoGraphicsShape *shape);
-                void removeAnnoShape(const QUuid &annoId);
                 bool isShapeVisible(const QUuid &annoId) const;
                 bool isEmpty() const;
                 bool hasImage() const;
@@ -43,6 +47,10 @@ namespace anno {
                 void bringToFront(const QUuid &annoId);
                 void bringSelShapeToFront();
                 void setShapeVisible(const QUuid &annoId, bool visible);
+
+                void removeAnnoShape(QUuid annoId);
+                void addAnnoShape(::anno::dt::Annotation *anno);
+
         };
 
     }

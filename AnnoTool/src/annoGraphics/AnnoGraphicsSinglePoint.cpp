@@ -55,6 +55,13 @@ namespace anno {
             return NULL;
         }
 
+        void AnnoGraphicsSinglePoint::contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent) {
+            dt::Annotation *anno = relatedAnno();
+            if(GlobalProjectManager::instance()->isAnnoSelected(anno)) {
+                GlobalToolManager::instance()->triggerShapeContextMenu(relatedAnno());
+            }
+        }
+
         void AnnoGraphicsSinglePoint::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_SPOINT: mousePressEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
@@ -68,6 +75,14 @@ namespace anno {
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseReleaseEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsSinglePoint::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_SPOINT: mouseDoubleClickEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->mouseDoubleClickEvent(this, event);
             }
         }
 

@@ -8,7 +8,11 @@
 #include <QStyleOptionGraphicsItem>
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneContextMenuEvent>
+#include <QMenu>
 #include "importGlobals.h"
+
+#include "AnnoAvClassList.h"
 
 namespace anno {
     namespace graphics {
@@ -79,6 +83,13 @@ namespace anno {
             return dt::ASTypeRectangle;
         }
 
+        void AnnoGraphicsRect::contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent) {
+            dt::Annotation *anno = relatedAnno();
+            if(GlobalProjectManager::instance()->isAnnoSelected(anno)) {
+                GlobalToolManager::instance()->triggerShapeContextMenu(relatedAnno());
+            }
+        }
+
         void AnnoGraphicsRect::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_RECT: mousePressEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
@@ -92,6 +103,14 @@ namespace anno {
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseReleaseEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsRect::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_RECT: mouseDoubleClickEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->mouseDoubleClickEvent(this, event);
             }
         }
 
@@ -171,6 +190,7 @@ namespace anno {
             setPen(sc.penNormal);
             setBrush(sc.brushNormal);
             setFlag(QGraphicsItem::ItemIsSelectable);
+            setFlag(QGraphicsItem::ItemIsFocusable);
             setAcceptsHoverEvents(true);
             setVisible(true);
             setToolTip(_anno->annoInfo());

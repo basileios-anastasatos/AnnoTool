@@ -231,6 +231,7 @@ namespace anno {
         }
 
         void Annotation::removeClass(const QString &val) {
+            //TODO delete associated attributes along with the class!
             int idx = _annoClasses.indexOf(val, 0);
             if(idx >= 0) {
                 _annoClasses.removeAt(idx);
@@ -255,7 +256,7 @@ namespace anno {
 
             if(hasAnnoChildren()) {
                 writer.writeStartElement("children");
-                QSetIterator<QUuid> i(_annoChildren);
+                QListIterator<QUuid> i(_annoChildren);
                 while (i.hasNext()) {
                     writer.writeEmptyElement("child");
                     writer.writeAttribute("uuid", XmlHelper::uuidAsString(i.next()));
@@ -331,7 +332,7 @@ namespace anno {
                     _annoParent = QUuid(parent);
                 } else if (reader.isStartElement() && reader.name() == tagChild) {
                     QString id = reader.attributes().value(attrId).toString();
-                    _annoChildren.insert(QUuid(id));
+                    _annoChildren.append(QUuid(id));
                 } else if (reader.isEndElement() && reader.name() == tagHier) {
                     reader.readNext();
                     break;

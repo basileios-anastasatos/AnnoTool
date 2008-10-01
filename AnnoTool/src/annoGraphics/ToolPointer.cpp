@@ -33,6 +33,10 @@ namespace anno {
 
         void ToolPointer::mousePressEvent(AnnoGraphicsControlPoint *cp,
                                           QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if(_view != NULL) {
                 _prevCursors.push(_view->cursor());
                 _view->setCursor(_cursorCpMoving);
@@ -42,6 +46,10 @@ namespace anno {
 
         void ToolPointer::mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
                                             QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (_view != NULL) {
                 _view->setCursor(_prevCursors.pop());
             }
@@ -55,6 +63,10 @@ namespace anno {
 
         void ToolPointer::mousePressEvent(AnnoGraphicsShape *shape,
                                           QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (GlobalProjectManager::instance()->isAnnoSelected(shape->relatedAnno())) {
                 if(_view != NULL) {
                     _prevCursors.push(_view->cursor());
@@ -65,6 +77,10 @@ namespace anno {
 
         void ToolPointer::mouseReleaseEvent(AnnoGraphicsShape *shape,
                                             QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (GlobalProjectManager::instance()->isAnnoSelected(shape->relatedAnno())) {
                 if (_view != NULL) {
                     _view->setCursor(_prevCursors.pop());
@@ -85,6 +101,10 @@ namespace anno {
 
         void ToolPointer::mousePressEvent(AnnoGraphicsPixmap *img,
                                           QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             GlobalProjectManager::instance()->setSelectedAnnoRow(-1);
         }
 

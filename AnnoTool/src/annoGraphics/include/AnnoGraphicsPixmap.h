@@ -16,6 +16,7 @@ namespace anno {
                 virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+                virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
                 virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
                 virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
@@ -30,6 +31,7 @@ namespace anno {
             public:
                 void exMouseMoveEvent(QGraphicsSceneMouseEvent *event);
                 void exMousePressEvent(QGraphicsSceneMouseEvent *event);
+                void exDoubleClickEvent(QGraphicsSceneMouseEvent *event);
                 void exMouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
         };

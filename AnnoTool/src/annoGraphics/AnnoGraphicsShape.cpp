@@ -95,6 +95,10 @@ namespace anno {
             //nothing to be done here!
         }
 
+        void AnnoGraphicsShape::cpDoubleClickEvent(int index, QGraphicsSceneMouseEvent *event) {
+            //nothing to be done here!
+        }
+
         void AnnoGraphicsShape::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
             //nothing to be done here!
         }
@@ -104,6 +108,10 @@ namespace anno {
         }
 
         void AnnoGraphicsShape::exMousePressEvent(QGraphicsSceneMouseEvent *event) {
+            //nothing to be done here!
+        }
+
+        void AnnoGraphicsShape::exDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
             //nothing to be done here!
         }
 

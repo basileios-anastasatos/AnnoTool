@@ -39,10 +39,14 @@ namespace anno {
 
                 // mouse interface
             public:
+                virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
                 virtual void mousePressEvent(AnnoGraphicsControlPoint *cp,
                                              QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
                                                QGraphicsSceneMouseEvent *event);
+                virtual void mouseDoubleClickEvent(AnnoGraphicsControlPoint *cp,
+                                                   QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(AnnoGraphicsControlPoint *cp,
                                             QGraphicsSceneMouseEvent *event);
 
@@ -50,6 +54,8 @@ namespace anno {
                                              QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(AnnoGraphicsShape *shape,
                                                QGraphicsSceneMouseEvent *event);
+                virtual void mouseDoubleClickEvent(AnnoGraphicsShape *shape,
+                                                   QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(AnnoGraphicsShape *shape,
                                             QGraphicsSceneMouseEvent *event);
 
@@ -57,6 +63,8 @@ namespace anno {
                                              QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                                QGraphicsSceneMouseEvent *event);
+                virtual void mouseDoubleClickEvent(AnnoGraphicsPixmap *img,
+                                                   QGraphicsSceneMouseEvent *event);
                 virtual void mouseMoveEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneMouseEvent *event);
 

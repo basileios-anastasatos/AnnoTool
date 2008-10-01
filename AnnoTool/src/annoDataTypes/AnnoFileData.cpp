@@ -105,6 +105,29 @@ namespace anno {
             }
         }
 
+        int AnnoFileData::annoParentCount() {
+            int count = 0;
+            QListIterator<Annotation *> iterator(_annoList);
+            while(iterator.hasNext()) {
+                if(!iterator.next()->hasAnnoParent()) {
+                    ++count;
+                }
+            }
+            return count;
+        }
+
+        QList<QUuid> AnnoFileData::annoParents() {
+            QList<QUuid> parents;
+            QListIterator<Annotation *> iterator(_annoList);
+            while(iterator.hasNext()) {
+                Annotation *cur = iterator.next();
+                if(!cur->hasAnnoParent()) {
+                    parents.append(cur->annoId());
+                }
+            }
+            return parents;
+        }
+
         QList<const Annotation *> AnnoFileData::annoList() const {
             QList<const Annotation *> lst;
             QListIterator<Annotation *> i(_annoList);
@@ -128,6 +151,7 @@ namespace anno {
                 _annoList.append(anno);
                 _annoMap.insert(uuid, anno);
                 setModified(true);
+                emit annoAdded(anno);
 
                 if(!conOk) {
                     GlobalLogger::instance()->logError("CONNECT-ERROR: AnnoFileData::addAnnotation");
@@ -138,10 +162,12 @@ namespace anno {
         void AnnoFileData::removeAnnotation(int index) {
             if (index >= 0 && index < _annoList.size()) {
                 Annotation *anno = _annoList.at(index);
+                QUuid annoUuid = anno->annoId();
                 _annoMap.remove(anno->annoId());
                 _annoList.removeAt(index);
                 delete anno;
                 setModified(true);
+                emit annoRemoved(annoUuid);
             }
         }
 
@@ -154,8 +180,36 @@ namespace anno {
                     _annoList.removeAt(index);
                     delete anno;
                     setModified(true);
+                    emit annoRemoved(uuid);
                 }
             }
+        }
+
+        int AnnoFileData::getAnnotationIndex(const QUuid &uuid) const {
+            if(!containsAnnotation(uuid)) {
+                return -1;
+            }
+
+            for(int i = 0; i < _annoList.size(); ++i) {
+                if(_annoList[i]->annoId() == uuid) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        int AnnoFileData::getAnnotationIndex(const Annotation *anno) const {
+            if (anno == NULL || !containsAnnotation(anno->annoId())) {
+                return -1;
+            }
+
+            QUuid uuid = anno->annoId();
+            for (int i = 0; i < _annoList.size(); ++i) {
+                if (_annoList[i]->annoId() == uuid) {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         void AnnoFileData::print() const {

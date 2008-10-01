@@ -40,6 +40,14 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsControlPoint::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_CP: mouseDoubleClickEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->mouseDoubleClickEvent(this, event);
+            }
+        }
+
         void AnnoGraphicsControlPoint::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_CP: mouseMoveEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();

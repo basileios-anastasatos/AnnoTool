@@ -7,15 +7,24 @@
 #include "GlobalProjectManager.h"
 
 namespace anno {
+    namespace dt {
+        class Annotation;
+    }
+
     namespace graphics {
-        class AnnoGraphicsShape;
+        class AnnoGraphicsPolygon;
 
         class ToolPolygon : public GraphicsTool {
             private:
                 QCursor _cursorNormal;
                 QCursor _cursorActive;
-                AnnoGraphicsPolygon *_curPolygon;
+                AnnoGraphicsPolygon *_curShape;
+                dt::Annotation *_curParentAnno;
                 bool _modify;
+
+            private:
+                void handleEscape(QKeyEvent *event);
+                void finishPolygon();
 
             private:
                 bool isModifyEvent(QGraphicsSceneMouseEvent *event);
@@ -40,6 +49,8 @@ namespace anno {
 
                 // mouse interface
             public:
+                virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
                 virtual void mousePressEvent(AnnoGraphicsControlPoint *cp,
                                              QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
@@ -76,6 +87,10 @@ namespace anno {
                 virtual void hoverLeaveEvent(AnnoGraphicsControlPoint *cp,
                                              QGraphicsSceneHoverEvent *event);
 
+                virtual void keyReleaseEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event);
+                virtual void keyReleaseEvent(AnnoGraphicsShape *shape, QKeyEvent *event);
+                virtual void keyReleaseEvent(AnnoGraphicsPixmap *img, QKeyEvent *event);
+
         };
 
         // inlining
@@ -111,12 +126,12 @@ namespace anno {
         inline void ToolPolygon::resetModify() {
             _modify = false;
             anno::GlobalProjectManager::instance()->setSelectedAnnoRow(-1);
-            _curPolygon = NULL;
+            _curShape = NULL;
         }
 
         inline void ToolPolygon::setModify(AnnoGraphicsShape *shape) {
             anno::GlobalProjectManager::instance()->setSelectedAnnoRow(shape->relatedAnno()->annoId());
-            _curPolygon = (AnnoGraphicsPolygon *) shape;
+            _curShape = (AnnoGraphicsPolygon *) shape;
             _modify = true;
         }
         // ---------------------------------------------------------

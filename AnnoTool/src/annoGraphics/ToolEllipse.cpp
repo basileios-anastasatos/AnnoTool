@@ -6,6 +6,7 @@
 #include "Annotation.h"
 #include "AnnoEllipse.h"
 #include "AnnoGraphicsShape.h"
+#include "AnnoGraphicsEllipse.h"
 #include "AnnoGraphicsShapeCreator.h"
 #include "importGlobals.h"
 #include "AnnoToolMainWindow.h"
@@ -15,7 +16,7 @@ namespace anno {
     namespace graphics {
 
         ToolEllipse::ToolEllipse(QGraphicsView *view, AnnoGraphicsScene *scene) :
-            GraphicsTool(view, scene), _curShape(NULL) {
+            GraphicsTool(view, scene), _curShape(NULL), _curParentAnno(NULL) {
             _cursorNormal = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curEllipse")), 0, 0);
             _cursorActive = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curEllipse_active")), 0, 0);;
         }
@@ -35,10 +36,22 @@ namespace anno {
             return true;
         }
 
+        void ToolEllipse::handleEscape(QKeyEvent *event) {
+            if (event->key() == Qt::Key_Escape && _curShape != NULL && _scene != NULL) {
+                _scene->removeAnnoShape(_curShape);
+                _curShape = NULL;
+                _curParentAnno = NULL;
+            }
+        }
+
         void ToolEllipse::mousePressEvent(AnnoGraphicsControlPoint *cp,
                                           QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (cp->parentShape() != NULL) {
-                GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mousePressEvent");
+//				GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mousePressEvent");
                 //cp->parentShape()->exMousePressEvent(event);
                 //TODO This must be bug-fixed!
             }
@@ -46,8 +59,12 @@ namespace anno {
 
         void ToolEllipse::mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
                                             QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (cp->parentShape() != NULL) {
-                GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mouseReleaseEvent");
+//				GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mouseReleaseEvent");
                 //				cp->parentShape()->exMouseReleaseEvent(event);
                 //TODO This must be bug-fixed!
             }
@@ -56,7 +73,7 @@ namespace anno {
         void ToolEllipse::mouseMoveEvent(AnnoGraphicsControlPoint *cp,
                                          QGraphicsSceneMouseEvent *event) {
             if (cp->parentShape() != NULL) {
-                GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mouseMoveEvent");
+//				GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mouseMoveEvent");
                 //				cp->parentShape()->exMouseMoveEvent(event);
                 //TODO This must be bug-fixed!
             }
@@ -64,6 +81,10 @@ namespace anno {
 
         void ToolEllipse::mousePressEvent(AnnoGraphicsShape *shape,
                                           QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (shape->parentImage() != NULL) {
                 shape->parentImage()->exMousePressEvent(event);
             }
@@ -71,6 +92,10 @@ namespace anno {
 
         void ToolEllipse::mouseReleaseEvent(AnnoGraphicsShape *shape,
                                             QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (shape->parentImage() != NULL) {
                 shape->parentImage()->exMouseReleaseEvent(event);
             }
@@ -85,41 +110,59 @@ namespace anno {
 
         void ToolEllipse::mousePressEvent(AnnoGraphicsPixmap *img,
                                           QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (_view != NULL) {
                 _prevCursors.push(_view->cursor());
                 _view->setCursor(_cursorActive);
             }
 
-            GlobalLogger::instance()->logDebug("Tool-Ellipse: MousePress");
-            dt::AnnoFileData *annoFile = GlobalProjectManager::instance()->selectedFile();
             dt::AnnoEllipse *ae = new dt::AnnoEllipse();
             ae->setTopLeft(img->mapFromScene(event->scenePos()));
             ae->setSize(QSizeF(0.0, 0.0));
+            QUuid parentId = GlobalToolManager::instance()->getLockedAnno();
             dt::Annotation *anno = new dt::Annotation();
             anno->setAnnoId(QUuid::createUuid());
             anno->setShape(ae);
-            annoFile->addAnnotation(anno);
+            if (!parentId.isNull()) {
+                _curParentAnno = GlobalProjectManager::instance()->selectedFile()->getAnnotation(parentId);
+                anno->setAnnoParent(parentId);
+            }
 
             AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
             if (s != NULL) {
-                GlobalLogger::instance()->logDebug("Tool-Ellipse: Adding GraphicsShape");
                 _scene->addAnnoShape(s);
-                _curShape = s;
-                GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
-            } else {
-                GlobalLogger::instance()->logError("Tool-Ellipse: invalid graphics shape");
+                _scene->setFocusItem(s->graphicsItem());
+                _scene->selectShape(anno->annoId());
+                _curShape = static_cast<AnnoGraphicsEllipse *>(s);
             }
-
-            AnnoToolMainWindow::updateUI();
         }
 
         void ToolEllipse::mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneMouseEvent *event) {
+            if(event->button() != Qt::LeftButton) {
+                return;
+            }
+
             if (_view != NULL) {
                 _view->setCursor(_prevCursors.pop());
             }
-            _curShape->cpMouseReleaseEvent(2, event);
-            _curShape = NULL;
+            if (_curShape != NULL) {
+                //TODO add validity-checks here!
+                _curShape->cpMouseReleaseEvent(2, event);
+                dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
+                dt::Annotation *anno = _curShape->relatedAnno();
+                if(_curParentAnno != NULL) {
+                    _curParentAnno->addAnnoChild(anno->annoId());
+                }
+                curFile->addAnnotation(anno);
+                GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
+                AnnoToolMainWindow::updateUI();
+                _curShape = NULL;
+            }
+            _curParentAnno = NULL;
         }
 
         void ToolEllipse::mouseMoveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneMouseEvent *event) {
@@ -140,6 +183,18 @@ namespace anno {
             if (_view != NULL) {
                 _view->setCursor(Qt::ArrowCursor);
             }
+        }
+
+        void ToolEllipse::keyReleaseEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event) {
+            handleEscape(event);
+        }
+
+        void ToolEllipse::keyReleaseEvent(AnnoGraphicsShape *shape, QKeyEvent *event) {
+            handleEscape(event);
+        }
+
+        void ToolEllipse::keyReleaseEvent(AnnoGraphicsPixmap *img, QKeyEvent *event) {
+            handleEscape(event);
         }
 
     }

@@ -28,6 +28,7 @@ namespace anno {
             setPen(sc.penNormal);
             setBrush(sc.brushNormal);
             setFlag(QGraphicsItem::ItemIsSelectable);
+            setFlag(QGraphicsItem::ItemIsFocusable);
             setVisible(true);
             setAcceptsHoverEvents(true);
             setToolTip(_anno->annoInfo());
@@ -73,6 +74,13 @@ namespace anno {
             moveControlPointTo(2, p.x(), p.y());
             p = ae.topRight();
             moveControlPointTo(3, p.x(), p.y());
+        }
+
+        void AnnoGraphicsEllipse::contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent) {
+            dt::Annotation *anno = relatedAnno();
+            if(GlobalProjectManager::instance()->isAnnoSelected(anno)) {
+                GlobalToolManager::instance()->triggerShapeContextMenu(relatedAnno());
+            }
         }
 
         void AnnoGraphicsEllipse::cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event) {
@@ -145,6 +153,14 @@ namespace anno {
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
                 tm->curTool()->mouseReleaseEvent(this, event);
+            }
+        }
+
+        void AnnoGraphicsEllipse::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+            GlobalLogger::instance()->logDebug("AG_ELLIPSE: mouseDoubleClickEvent.");
+            GlobalToolManager *tm = GlobalToolManager::instance();
+            if (tm->hasTool()) {
+                tm->curTool()->mouseDoubleClickEvent(this, event);
             }
         }
 
