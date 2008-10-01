@@ -2,6 +2,7 @@
 #define ALLANNOEXCEPTIONS_H_
 
 #include "AnnoException.h"
+#include "NullPointerException.h"
 #include "IOException.h"
 #include "NameConflictException.h"
 #include "NoSuchElementException.h"
