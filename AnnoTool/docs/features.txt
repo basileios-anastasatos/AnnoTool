@@ -1,0 +1,106 @@
+AnnoTool
+Advanced Image Annotation
+Version 0.3.0
+written by Oliver Schwahn
+for MIS, TU-Darmstadt
+
+
+
+This file contains short descriptions of some AnnoTool features.
+Note that the features listed here are by far not complete and subject to changes.
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>>>  Major-Features  <<<<
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+<<  Multiple Shape Support  >>
+------------------------------
+AnnoTool supports the following shapes for annotating image regions...
+
+ * 'Single Point' for marking image points, e.g. viewpoints.
+ * 'Rectangle' for marking rectangular image regions.
+ * 'Ellipse' for marking elliptic image regions.
+ * 'Polygon' for marking all kinds of advanced shaped image regions.
+
+All these shapes can be used for marking regions on the same image and they are stored
+together in the same file.
+All shapes can be drawn onto the image with the special annotation shape tools, one tool
+for every shape for easy regions marking and editing.
+
+
+<<  Annotation Classes & Attributes  >>
+---------------------------------------
+AnnoTool supports multiple annotation classes and attributes per annotation.
+You can assign multiple classes to each annotation. A class can have predefined
+attributes whose values can be set individually for each annotation.
+You can assign custom attributes without association to any class. So you have total
+freedom of how to organize your annotation data.
+
+
+<<  Rich Annotation Visualisation  >>
+-------------------------------------
+AnnoTool visualizes all image annotaions on a zoomable and panable canvas which you can
+easily interact with. You can use the various tools to create new annotation shapes
+and edit existing ones in real time seeing what you do.
+
+
+<<  Native XML File Format  >>
+------------------------------
+AnnoTool's native file format for storing project and annotation data is a
+specialized xml format. So the stored data can be easily be read by humans or imported
+by other tools and programmes.
+
+
+<<  Extensible Im- & Export-System  >>
+--------------------------------------
+AnnoTool has a built-in system for im- and exporting annotation data. There are a number
+of default plugins. These are the following...
+
+ * 'IDL-Importer' for importing default IDL annotation files including rectangles and
+   associated scores.
+ * 'IDL-Exporter' for exporting all compatible annotation data into an default IDL
+   data file.
+
+
+<<  Extensible Image- & Video-Loader-System  >>
+-----------------------------------------------
+AnnoTool has a built-in system for loading various image and video file formats. All
+image types can be viewed and annotated whith a suitable image loader plugin.
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>>>  Features Under Development  <<<<
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<  Annotation Hierarchy  >>
+----------------------------
+AnnoTool supports the possibility to organize image annotations in a tree-like
+hierarchy. Annotations can be inserted into the hierarchy at creation time or
+they can be moved within the hierarchy later on.
+
+
+<<  Easy Class & Attribute Assignment  >>
+-----------------------------------------
+AnnoTool supports a menu based way of assigning classes and attributes. That is an easy
+and fast way of perfomring such assigning actions. Recently used classes, attributes
+and values are hold in memory such that they can be assigned even faster.
+
+
+<<  Multi-Annotation Manipulation  >>
+-------------------------------------
+In future versions there will be support for manipulating (e.g. moving, sizing) multiple
+annotations and shapes at once.
+
+
+<<  Copy & Paste  >>
+--------------------
+In future versions there will be support for copying and pasting annotations along with
+all data.
+
+
+
+

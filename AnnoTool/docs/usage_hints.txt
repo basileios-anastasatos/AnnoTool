@@ -1,0 +1,84 @@
+AnnoTool
+Advanced Image Annotation
+Version 0.3.0
+written by Oliver Schwahn
+for MIS, TU-Darmstadt
+
+
+
+This file contains some usage hints for AnnoTool-Users.
+There is no manual or something like that, so this is the only source for usage
+information.
+
+
+<<  Toolbar & Tools  >>
+-----------------------
+
+In this section, the main tools are described from left to right. They are all quite easy
+to use, so there will not be too much text.
+
+ *  'Lock Parent' Button
+ 		By pressing this button you lock the currently selected annotation as parent
+ 		annotation within the annotation hierarchy. All subsequently created annotations will
+ 		be child annotations of the locked parent.
+ *  'Arrow'-Tool
+    The Arrow Tool is for manipulating and selecting annotations on the graphics canvas.
+    Before you can edit an annotation you must first select it by clicking onto it. Once
+    the shape is selected you can change its position by dragging the shape to the
+    destination location. By dragging the shape handles (little cycles) you can change
+    the shape's size or in case of a polygon the shape itself.
+ *  'SinglePoint'-Tool
+    The SinglePoint Tool is for adding single point annotations to the image. Just click
+    onto the image where you want the point to be placed.
+ *  'Rectangle'-Tool
+    The Rectangle Tool adds a rectangle annotation to the image. Click at the point where
+    you want the rectangle to start, then drag the mouse pointer to the point where you
+    want the rectangle to end. It's intuitive so just try.
+ *  'Polygon'-Tool
+    The Polygon Tool adds new polygon annotations to the image or edits existing ones.
+    To add a new polygon to the image, just click onto the image where you want the 
+    polygon points. If you are finishes and want to close the polygon you can either
+    click onto the first polygon point or just double-click anywhere else on the image.
+    To edit an existing polygon, click onto the polygon you want to edit and hold the
+    Ctrl-Key while you click. By doing that you enter the edit mode for the clicked
+    polygon. To change the position of a polygon point, hold the Ctrl-Key and drag it to
+    the location you want it to stay. To remove a polygon point hold Ctrl & Shift and
+    click onto the point you want to remove. To add a new polygon point hold Ctrl & Alt
+    and click onto the polygon line where you want to add the point. Note that you must
+    point as accurate as possible onto the polygon line, a bit inside the polygon is ok,
+    too but not outside.
+ *  'Ellipse'-Tool
+    The Ellipse Tool adds an ellipse annotation to the image. Click at the point where
+    you want the ellipse to start, then drag the mouse pointer to the point where you
+    want the ellipse to end. It's intuitive so just try.
+
+
+
+<<  Changeing the hierarchy  >>
+-------------------------------
+You can change the annotation hierarchy by dragging and dropping the annotations within
+the annotation list. There you can see the current hierarchy and change it easily by
+dragging and dropping. If you drop an annotation onto another one this other one will
+be the new parent of the dropped annotation. Just try, it's easy and intuitive.
+If you ever want to delete an annotation or a whole subtree of annotations, there are
+two buttons on top of the annotation list. The single 'X' deletes the currently selected
+annotation, the child annotations are move one level up in the hierarchy. The double
+'X' deletes the currently selected annotation and all child annotations.
+
+
+<<  Setting Annotation Classes & Attributes  >>
+-----------------------------------------------
+At first, select the annotation you want to edit. There is an extra view for all
+annotation data including attributes and classes. On top of that view there are some
+buttons. They are for adding & removing attributes and classes. Just try, it's easy
+to use.
+There is an alternate way of editing an annotation's class and attribute data.
+Right-click on the selected annotation shape. A context menu pops up. Use the menu entries
+to perform all the actions in a fast and easy way. But be aware of the fact that this
+context menu feature is still under development, so the attribute feature is incomplete.
+You cannot change an attribute's value by using the context menu, but this feature will be
+added very soon so feel free to have a closer look ;-)
+
+
+
+
