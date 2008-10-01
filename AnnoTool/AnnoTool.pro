@@ -22,7 +22,13 @@ INCLUDEPATH += ./src/annoDataTypes/include \
 QT += core \
     gui \
     xml
-HEADERS += ./src/uiStuff/include/DlgIdlExporter.h \
+HEADERS += ./src/uiStuff/helper/include/RecentAttrValues.h \
+    ./src/uiStuff/include/DlgEditAttributeShort.h \
+    ./src/uiStuff/include/ShapeContextMenu.h \
+    ./src/uiStuff/include/DlgEditClass.h \
+    ./src/annoExceptions/include/NullPointerException.h \
+    ./src/annoDataTypes/include/AnnoOperationHelper.h \
+    ./src/uiStuff/include/DlgIdlExporter.h \
     ./src/general/include/GlobalInfo.h \
     ./src/annoExceptions/include/FormatException.h \
     ./src/annoGraphics/include/ToolPolygon.h \
@@ -107,102 +113,110 @@ HEADERS += ./src/uiStuff/include/DlgIdlExporter.h \
     ./src/annoExceptions/include/OutOfRangeException.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h
-SOURCES += ./src/uiStuff/DlgIdlExporter.cpp \
+SOURCES += ./src/uiStuff/helper/RecentAttrValues.cpp \
+    ./src/uiStuff/DlgEditAttributeShort.cpp \
+    ./src/uiStuff/ShapeContextMenu.cpp \
     ./src/general/GlobalInfo.cpp \
-    ./src/annoExceptions/FormatException.cpp \
-    ./src/annoGraphics/ToolPolygon.cpp \
-    ./src/annoDataTypes/AnnoPolygon.cpp \
-    ./src/uiStuff/AnnoToolMainWindow.cpp \
-    ./src/uiStuff/ZoomControl.cpp \
-    ./src/annoGraphics/ToolEllipse.cpp \
-    ./src/annoGraphics/AnnoGraphicsEllipse.cpp \
-    ./src/annoDataTypes/AnnoEllipse.cpp \
-    ./src/annoGraphics/ToolSinglePoint.cpp \
-    ./src/uiStuff/DlgAbout.cpp \
-    ./src/annoDataTypes/AnnoSinglePoint.cpp \
-    ./src/annoGraphics/AnnoGraphicsSinglePoint.cpp \
-    ./src/uiStuff/DlgEditAttribute.cpp \
-    ./src/uiStuff/DlgImporter.cpp \
-    ./src/uiStuff/DlgExporter.cpp \
-    ./src/uiStuff/helper/AnnoDataClassesModelAdapter.cpp \
-    ./src/uiStuff/helper/AnnoDataModelAdapter.cpp \
-    ./src/general/imexporter/IdlExporterPlugin.cpp \
-    ./src/general/imexporter/IdlImporterPlugin.cpp \
-    ./src/uiStuff/DlgNewProject.cpp \
-    ./src/libAnnotationDeprecated/libAn_XmlHelpers.cpp \
-    ./src/libAnnotationDeprecated/libAn_Annotation.cpp \
-    ./src/libAnnotationDeprecated/libAn_AnnotationList.cpp \
-    ./src/libAnnotationDeprecated/libAn_AnnoRect.cpp \
-    ./src/general/GlobalImExportManager.cpp \
-    ./src/general/GlobalToolManager.cpp \
-    ./src/annoGraphics/ToolRect.cpp \
-    ./src/annoGraphics/ToolHand.cpp \
-    ./src/annoGraphics/ToolPointer.cpp \
-    ./src/annoGraphics/GraphicsTool.cpp \
-    ./src/annoGraphics/MapperHelper.cpp \
-    ./src/general/GlobalConfig.cpp \
-    ./src/annoGraphics/AnnoGraphicsScene.cpp \
-    ./src/annoGraphics/AnnoGraphicsRect.cpp \
-    ./src/uiStuff/AnnoDataWidget.cpp \
-    ./src/uiStuff/helper/AnnoListModelAdapter.cpp \
-    ./src/uiStuff/helper/AnnoFileListModelAdapter.cpp \
-    ./src/uiStuff/AnnoListWidget.cpp \
-    ./src/uiStuff/DlgLoaderDetails.cpp \
-    ./src/uiStuff/DlgAddImage.cpp \
-    ./src/general/GlobalImageLoader.cpp \
-    ./src/uiStuff/AnnoFileListWidget.cpp \
-    ./src/uiStuff/DlgFileChooser.cpp \
-    ./src/uiStuff/DlgProjectDetails.cpp \
-    ./src/annoExceptions/IllegalStateException.cpp \
-    ./src/annoDataTypes/AnnoAvClassList.cpp \
-    ./src/general/GlobalProjectManager.cpp \
-    ./src/annoDataTypes/AnnoFileData.cpp \
-    ./src/annoDataTypes/AnnoRectangle.cpp \
-    ./src/annoGraphics/AnnoGraphicsShapeCreator.cpp \
-    ./src/annoGraphics/AnnoGraphicsShape.cpp \
-    ./src/annoDataTypes/AnnoShape.cpp \
-    ./src/annoDataTypes/AnnoInfo.cpp \
-    ./src/annoDataTypes/AnnoImageInfo.cpp \
-    ./src/annoDataTypes/Annotation.cpp \
-    ./src/annoHelper/XmlHelper.cpp \
-    ./src/annoDataTypes/AnnoProject.cpp \
-    ./src/annoHelper/logging/GlobalLogger.cpp \
-    ./src/annoHelper/logging/SingleFileLogger.cpp \
-    ./src/annoHelper/logging/MultiLogger.cpp \
-    ./src/annoHelper/logging/DummyLogger.cpp \
-    ./src/annoHelper/logging/ConsoleLogger.cpp \
-    ./src/annoHelper/logging/Logger.cpp \
-    ./src/annoGraphics/AnnoGraphicsControlPoint.cpp \
-    ./src/annoGraphics/AnnoGraphicsPixmap.cpp \
-    ./src/annoGraphics/AnnoGraphicsPolygon.cpp \
-    ./src/annoDataTypes/AnnoClassDefinition.cpp \
-    ./src/annoDataTypes/AnnoClassList.cpp \
     ./src/annoExceptions/AnnoException.cpp \
+    ./src/annoExceptions/NullPointerException.cpp \
+    ./src/annoExceptions/FormatException.cpp \
     ./src/annoExceptions/IOException.cpp \
     ./src/annoExceptions/NameConflictException.cpp \
     ./src/annoExceptions/NoSuchElementException.cpp \
     ./src/annoExceptions/OutOfRangeException.cpp \
+    ./src/annoExceptions/IllegalStateException.cpp \
     ./src/annoExceptions/XmlException.cpp \
     ./src/annoExceptions/XmlFormatException.cpp \
+    ./src/annoDataTypes/AnnoClassDefinition.cpp \
+    ./src/annoDataTypes/AnnoClassList.cpp \
+    ./src/annoDataTypes/AnnoAvClassList.cpp \
+    ./src/annoDataTypes/AnnoImageInfo.cpp \
+    ./src/annoDataTypes/AnnoInfo.cpp \
+    ./src/annoDataTypes/Annotation.cpp \
+    ./src/annoDataTypes/AnnoFileData.cpp \
+    ./src/annoDataTypes/AnnoProject.cpp \
+    ./src/annoDataTypes/AnnoOperationHelper.cpp \
+    ./src/annoDataTypes/AnnoShape.cpp \
+    ./src/annoDataTypes/AnnoRectangle.cpp \
+    ./src/annoDataTypes/AnnoEllipse.cpp \
+    ./src/annoDataTypes/AnnoSinglePoint.cpp \
+    ./src/annoDataTypes/AnnoPolygon.cpp \
+    ./src/annoGraphics/AnnoGraphicsShape.cpp \
+    ./src/annoGraphics/AnnoGraphicsShapeCreator.cpp \
+    ./src/annoGraphics/AnnoGraphicsControlPoint.cpp \
+    ./src/annoGraphics/AnnoGraphicsRect.cpp \
+    ./src/annoGraphics/AnnoGraphicsEllipse.cpp \
+    ./src/annoGraphics/AnnoGraphicsSinglePoint.cpp \
+    ./src/annoGraphics/AnnoGraphicsPolygon.cpp \
+    ./src/annoGraphics/AnnoGraphicsPixmap.cpp \
+    ./src/annoGraphics/AnnoGraphicsScene.cpp \
+    ./src/annoGraphics/GraphicsTool.cpp \
+    ./src/annoGraphics/ToolHand.cpp \
+    ./src/annoGraphics/ToolPointer.cpp \
+    ./src/annoGraphics/ToolSinglePoint.cpp \
+    ./src/annoGraphics/ToolRect.cpp \
+    ./src/annoGraphics/ToolEllipse.cpp \
+    ./src/annoGraphics/ToolPolygon.cpp \
+    ./src/annoGraphics/MapperHelper.cpp \
+    ./src/general/GlobalToolManager.cpp \
+    ./src/general/GlobalConfig.cpp \
+    ./src/general/GlobalImageLoader.cpp \
+    ./src/general/GlobalProjectManager.cpp \
+    ./src/general/GlobalImExportManager.cpp \
+    ./src/general/imexporter/IdlExporterPlugin.cpp \
+    ./src/general/imexporter/IdlImporterPlugin.cpp \
+    ./src/annoHelper/XmlHelper.cpp \
+    ./src/annoHelper/logging/GlobalLogger.cpp \
+    ./src/annoHelper/logging/Logger.cpp \
+    ./src/annoHelper/logging/SingleFileLogger.cpp \
+    ./src/annoHelper/logging/MultiLogger.cpp \
+    ./src/annoHelper/logging/DummyLogger.cpp \
+    ./src/annoHelper/logging/ConsoleLogger.cpp \
+    ./src/libAnnotationDeprecated/libAn_XmlHelpers.cpp \
+    ./src/libAnnotationDeprecated/libAn_Annotation.cpp \
+    ./src/libAnnotationDeprecated/libAn_AnnotationList.cpp \
+    ./src/libAnnotationDeprecated/libAn_AnnoRect.cpp \
+    ./src/uiStuff/DlgFileChooser.cpp \
+    ./src/uiStuff/DlgLoaderDetails.cpp \
+    ./src/uiStuff/DlgImporter.cpp \
+    ./src/uiStuff/DlgExporter.cpp \
+    ./src/uiStuff/DlgIdlExporter.cpp \
+    ./src/uiStuff/DlgAbout.cpp \
+    ./src/uiStuff/DlgProjectDetails.cpp \
+    ./src/uiStuff/DlgAddImage.cpp \
+    ./src/uiStuff/DlgEditAttribute.cpp \
+    ./src/uiStuff/DlgEditClass.cpp \
+    ./src/uiStuff/DlgNewProject.cpp \
+    ./src/uiStuff/helper/AnnoDataClassesModelAdapter.cpp \
+    ./src/uiStuff/helper/AnnoDataModelAdapter.cpp \
+    ./src/uiStuff/helper/AnnoListModelAdapter.cpp \
+    ./src/uiStuff/helper/AnnoFileListModelAdapter.cpp \
+    ./src/uiStuff/AnnoDataWidget.cpp \
+    ./src/uiStuff/AnnoFileListWidget.cpp \
+    ./src/uiStuff/AnnoListWidget.cpp \
+    ./src/uiStuff/ZoomControl.cpp \
+    ./src/uiStuff/AnnoToolMainWindow.cpp \
     ./src/main.cpp
-FORMS += ./src/uiStuff/forms/DlgIdlExporter.ui \
+FORMS += ./src/uiStuff/forms/DlgEditAttributeShort.ui \
+    ./src/uiStuff/forms/DlgEditClass.ui \
     ./src/uiStuff/forms/AnnoToolMainWindow.ui \
     ./src/uiStuff/forms/ZoomControl.ui \
+    ./src/uiStuff/forms/AnnoFileListWidget.ui \
+    ./src/uiStuff/forms/AnnoDataWidget.ui \
+    ./src/uiStuff/forms/AnnoListWidget.ui \
+    ./src/uiStuff/forms/DlgNewProject.ui \
+    ./src/uiStuff/forms/DlgAddImage.ui \
+    ./src/uiStuff/forms/DlgProjectDetails.ui \
     ./src/uiStuff/forms/DlgAbout.ui \
     ./src/uiStuff/forms/DlgEditAttribute.ui \
     ./src/uiStuff/forms/DlgImporter.ui \
     ./src/uiStuff/forms/DlgExporter.ui \
-    ./src/uiStuff/forms/DlgNewProject.ui \
-    ./src/uiStuff/forms/AnnoDataWidget.ui \
-    ./src/uiStuff/forms/AnnoListWidget.ui \
     ./src/uiStuff/forms/DlgLoaderDetails.ui \
-    ./src/uiStuff/forms/DlgAddImage.ui \
-    ./src/uiStuff/forms/AnnoFileListWidget.ui \
     ./src/uiStuff/forms/DlgFileChooser.ui \
-    ./src/uiStuff/forms/DlgProjectDetails.ui
-RESOURCES += ./src/uiStuff/forms/cursors.qrc \
-    ./src/uiStuff/forms/others.qrc \
-    ./src/uiStuff/forms/icons.qrc
+    ./src/uiStuff/forms/DlgIdlExporter.ui
+RESOURCES += ./src/uiStuff/forms/icons.qrc \
+    ./src/uiStuff/forms/cursors.qrc \
+    ./src/uiStuff/forms/others.qrc
 win32 { 
     release { 
         DESTDIR = ./bin/win32/release
