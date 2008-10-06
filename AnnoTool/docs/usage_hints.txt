@@ -1,19 +1,19 @@
 AnnoTool
 Advanced Image Annotation
-Version 0.3.0
+Version 0.3.1
 written by Oliver Schwahn
 for MIS, TU-Darmstadt
 
 
-
+----
 This file contains some usage hints for AnnoTool-Users.
 There is no manual or something like that, so this is the only source for usage
 information.
+----
 
 
 <<  Toolbar & Tools  >>
 -----------------------
-
 In this section, the main tools are described from left to right. They are all quite easy
 to use, so there will not be too much text.
 
@@ -53,7 +53,6 @@ to use, so there will not be too much text.
     want the ellipse to end. It's intuitive so just try.
 
 
-
 <<  Changeing the hierarchy  >>
 -------------------------------
 You can change the annotation hierarchy by dragging and dropping the annotations within
@@ -75,9 +74,17 @@ to use.
 There is an alternate way of editing an annotation's class and attribute data.
 Right-click on the selected annotation shape. A context menu pops up. Use the menu entries
 to perform all the actions in a fast and easy way. But be aware of the fact that this
-context menu feature is still under development, so the attribute feature is incomplete.
-You cannot change an attribute's value by using the context menu, but this feature will be
-added very soon so feel free to have a closer look ;-)
+context menu feature is still under development, so watch out for bugs ;-)
+
+
+<<  Adding new images  >>
+-------------------------
+To add a new image to the annotation project you must open the "Add Image" dialog. This
+can be done either by clicking the appropriate toolbar button or by using the
+application's main menu. Add new images by clicking the "Add Images" or "Add Video"
+button and select a location where to store the annotation data files that will be created
+for the new images.
+
 
 
 

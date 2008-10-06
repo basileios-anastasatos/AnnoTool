@@ -1,14 +1,14 @@
 AnnoTool
 Advanced Image Annotation
-Version 0.3.0
+Version 0.3.1
 written by Oliver Schwahn
 for MIS, TU-Darmstadt
 
 
-
+----
 This file contains short descriptions of some AnnoTool features.
 Note that the features listed here are by far not complete and subject to changes.
-
+----
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -25,9 +25,9 @@ AnnoTool supports the following shapes for annotating image regions...
  * 'Ellipse' for marking elliptic image regions.
  * 'Polygon' for marking all kinds of advanced shaped image regions.
 
-All these shapes can be used for marking regions on the same image and they are stored
+All these shapes can be used for marking regions on the same image; they are stored
 together in the same file.
-All shapes can be drawn onto the image with the special annotation shape tools, one tool
+All shapes can be drawn onto the image with special annotation shape tools, one tool
 for every shape for easy regions marking and editing.
 
 
@@ -50,7 +50,7 @@ and edit existing ones in real time seeing what you do.
 <<  Native XML File Format  >>
 ------------------------------
 AnnoTool's native file format for storing project and annotation data is a
-specialized xml format. So the stored data can be easily be read by humans or imported
+specialized xml format. So the stored data can be easily read by humans or imported
 by other tools and programmes.
 
 
@@ -69,25 +69,30 @@ of default plugins. These are the following...
 -----------------------------------------------
 AnnoTool has a built-in system for loading various image and video file formats. All
 image types can be viewed and annotated whith a suitable image loader plugin.
-
-
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>>>  Features Under Development  <<<<
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-<<  Annotation Hierarchy  >>
-----------------------------
-AnnoTool supports the possibility to organize image annotations in a tree-like
-hierarchy. Annotations can be inserted into the hierarchy at creation time or
-they can be moved within the hierarchy later on.
+The default image loader supports all QT-native image formats, e.g. JPEG and PNG.
 
 
 <<  Easy Class & Attribute Assignment  >>
 -----------------------------------------
-AnnoTool supports a menu based way of assigning classes and attributes. That is an easy
-and fast way of perfomring such assigning actions. Recently used classes, attributes
+AnnoTool supports a menu based way of assigning classes and attributes. This is an easy
+and fast way of performing assigning actions. Recently used classes, attributes
 and values are hold in memory such that they can be assigned even faster.
+Note that this feature is still under development so it will be optimized in future
+releases.
+
+
+<<  Annotation Hierarchy  >>
+----------------------------
+AnnoTool supports the possibility of organizing image annotations in a tree-like
+hierarchy. Annotations can be inserted into the hierarchy at creation time or
+they can be moved within the hierarchy later on.
+Note that this feature is still under development and therefore subject to changes.
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>>>  Future Features & Features Under Development  <<<<
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 <<  Multi-Annotation Manipulation  >>
@@ -100,6 +105,17 @@ annotations and shapes at once.
 --------------------
 In future versions there will be support for copying and pasting annotations along with
 all data.
+
+
+<<  Ground-Truth Support  >>
+----------------------------
+In future releases there will be a ground truth mode supporting the evaluation of
+automated image annotating.
+
+
+<<  Undo & Redo  >>
+-------------------
+Future versions will support undoing and redoing annotation manipulations.
 
 
 
