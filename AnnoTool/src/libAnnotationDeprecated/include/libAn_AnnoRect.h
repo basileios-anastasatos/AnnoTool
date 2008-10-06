@@ -104,11 +104,11 @@ namespace libAn {
             ;
 
             int w() const {
-                return abs(m_x2 - m_x1);
+                return m_x2 > m_x1 ? m_x2 - m_x1 : m_x1 - m_x2;
             }
             ;
             int h() const {
-                return abs(m_y2 - m_y1);
+                return m_y2 > m_y1 ? m_y2 - m_y1 : m_y1 - m_y2;
             }
             ;
 

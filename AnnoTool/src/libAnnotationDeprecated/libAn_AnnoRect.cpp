@@ -1,6 +1,7 @@
 #include "include/libAn_AnnoRect.h"
 #include "include/libAn_XmlHelpers.h"
 #include <cmath>
+#include <cstdlib>
 
 using namespace std;
 

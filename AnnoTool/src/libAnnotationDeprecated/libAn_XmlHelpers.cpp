@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "include/libAn_XmlHelpers.h"
 
 using namespace std;

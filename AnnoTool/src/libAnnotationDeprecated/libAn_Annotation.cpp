@@ -1,4 +1,6 @@
 #include <cassert>
+#include <algorithm>
+#include <cstdlib>
 
 #include "include/libAn_Annotation.h"
 #include "include/libAn_XmlHelpers.h"
