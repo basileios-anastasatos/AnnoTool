@@ -13,6 +13,7 @@ INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/annoGraphics/include \
     ./src/annoHelper/include \
     ./src/annoHelper/logging/include \
+    ./src/utils/include \
     ./src/general/include \
     ./src/general/imexporter/include \
     ./src/uiStuff/include \
@@ -22,7 +23,9 @@ INCLUDEPATH += ./src/annoDataTypes/include \
 QT += core \
     gui \
     xml
-HEADERS += ./src/uiStuff/helper/include/RecentAttrValues.h \
+HEADERS += ./src/utils/include/PriorityList.h \
+    ./src/utils/include/SortedList.h \
+    ./src/uiStuff/helper/include/RecentAttrValues.h \
     ./src/uiStuff/include/DlgEditAttributeShort.h \
     ./src/uiStuff/include/ShapeContextMenu.h \
     ./src/uiStuff/include/DlgEditClass.h \
@@ -113,10 +116,7 @@ HEADERS += ./src/uiStuff/helper/include/RecentAttrValues.h \
     ./src/annoExceptions/include/OutOfRangeException.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h
-SOURCES += ./src/uiStuff/helper/RecentAttrValues.cpp \
-    ./src/uiStuff/DlgEditAttributeShort.cpp \
-    ./src/uiStuff/ShapeContextMenu.cpp \
-    ./src/general/GlobalInfo.cpp \
+SOURCES += ./src/general/GlobalInfo.cpp \
     ./src/annoExceptions/AnnoException.cpp \
     ./src/annoExceptions/NullPointerException.cpp \
     ./src/annoExceptions/FormatException.cpp \
@@ -158,6 +158,8 @@ SOURCES += ./src/uiStuff/helper/RecentAttrValues.cpp \
     ./src/annoGraphics/ToolEllipse.cpp \
     ./src/annoGraphics/ToolPolygon.cpp \
     ./src/annoGraphics/MapperHelper.cpp \
+    ./src/utils/PriorityList.cpp \
+    ./src/utils/SortedList.cpp \
     ./src/general/GlobalToolManager.cpp \
     ./src/general/GlobalConfig.cpp \
     ./src/general/GlobalImageLoader.cpp \
@@ -185,8 +187,10 @@ SOURCES += ./src/uiStuff/helper/RecentAttrValues.cpp \
     ./src/uiStuff/DlgProjectDetails.cpp \
     ./src/uiStuff/DlgAddImage.cpp \
     ./src/uiStuff/DlgEditAttribute.cpp \
+    ./src/uiStuff/DlgEditAttributeShort.cpp \
     ./src/uiStuff/DlgEditClass.cpp \
     ./src/uiStuff/DlgNewProject.cpp \
+    ./src/uiStuff/helper/RecentAttrValues.cpp \
     ./src/uiStuff/helper/AnnoDataClassesModelAdapter.cpp \
     ./src/uiStuff/helper/AnnoDataModelAdapter.cpp \
     ./src/uiStuff/helper/AnnoListModelAdapter.cpp \
@@ -195,6 +199,7 @@ SOURCES += ./src/uiStuff/helper/RecentAttrValues.cpp \
     ./src/uiStuff/AnnoFileListWidget.cpp \
     ./src/uiStuff/AnnoListWidget.cpp \
     ./src/uiStuff/ZoomControl.cpp \
+    ./src/uiStuff/ShapeContextMenu.cpp \
     ./src/uiStuff/AnnoToolMainWindow.cpp \
     ./src/main.cpp
 FORMS += ./src/uiStuff/forms/DlgEditAttributeShort.ui \

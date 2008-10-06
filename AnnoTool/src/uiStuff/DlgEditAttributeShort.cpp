@@ -7,10 +7,20 @@ DlgEditAttributeShort::DlgEditAttributeShort(QWidget *parent)
     : QDialog(parent) {
     setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
     ui.setupUi(this);
+
+    loadRecentValues();
+    ui.cbValue->lineEdit()->setText(QString());
 }
 
 DlgEditAttributeShort::~DlgEditAttributeShort() {
 
+}
+
+void DlgEditAttributeShort::loadRecentValues() {
+    QSetIterator<QString> i(GlobalToolManager::instance()->recentValues()->attrValues);
+    while (i.hasNext()) {
+        ui.cbValue->addItem(i.next());
+    }
 }
 
 void DlgEditAttributeShort::accept() {
@@ -35,7 +45,7 @@ int DlgEditAttributeShort::exec() {
 }
 
 void DlgEditAttributeShort::setNameEdit(bool edit) {
-    ui.cbName->setEditable(edit);
+    ui.cbName->setEnabled(edit);
 }
 
 void DlgEditAttributeShort::setAttrName(const QString &name) {

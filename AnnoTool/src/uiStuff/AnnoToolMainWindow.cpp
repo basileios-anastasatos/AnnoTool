@@ -322,6 +322,7 @@ void AnnoToolMainWindow::on_actionFileSave_triggered() {
     if (GlobalProjectManager::instance()->isValid()) {
         try {
             GlobalProjectManager::instance()->saveToFile(true);
+            updateUI();
         } catch(AnnoException *e) {
             QMessageBox::critical(this, "AnnoTool Exception", e->getTrace());
             GlobalLogger::instance()->logError(e->getTrace());

@@ -3,8 +3,12 @@
 
 #include <QObject>
 #include <QMenu>
+#include <QPair>
+#include <QList>
+
 #include "annoTypesForward.h"
 #include "RecentAttrValues.h"
+
 
 class ShapeContextMenu : public QObject {
         Q_OBJECT
@@ -16,6 +20,7 @@ class ShapeContextMenu : public QObject {
         QMenu _menuClassRem;
         QMenu _menuAttributes;
         QMenu _menuAttrValues;
+        QList< QPair<QString, QString> > _emptyClassAttr;
 
         QAction *_actionAttrAdd;
         QAction *_actionAttrRem;
@@ -32,8 +37,10 @@ class ShapeContextMenu : public QObject {
         void initAttrValues();
         void updateClassesRemove(anno::dt::Annotation *anno);
         void updateAttributes(anno::dt::Annotation *anno);
-
         void internalReset();
+
+        void doNewClassAttribute(int index, QString newValue = QString(), bool useCustom = true);
+        void doAttributeUpdate(int index, QString newValue = QString(), bool useCustom = true);
 
     private slots:
         void onAction_AttrAdd();
@@ -41,8 +48,9 @@ class ShapeContextMenu : public QObject {
 
         void onAction_ClassAdd(QAction *action);
         void onAction_ClassRemove(QAction *action);
-        void onAction_Attribute(QAction *action);
+        void onAction_AttributeVal(QAction *action);
         void onMenu_AttrHovered(QAction *action);
+        void onMenu_AttrValShow();
 
 
     public:
