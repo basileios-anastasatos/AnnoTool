@@ -12,17 +12,17 @@ DlgFileChooser::~DlgFileChooser() {
 }
 
 void DlgFileChooser::on_btSelect_clicked() {
+    QString curPath = ui.editPath->text();
     if (_selFolder) {
-        QString path = QFileDialog::getExistingDirectory(this,
-                       tr("Select a Folder"));
+        QString path = QFileDialog::getExistingDirectory(this, tr("Select a Folder"), curPath);
         ui.editPath->setText(path);
     } else {
         QString path;
         if (_filters.isEmpty()) {
-            path = QFileDialog::getOpenFileName(this, tr("Select a File"));
-        } else
-            path = QFileDialog::getOpenFileName(this, tr("Select a File"), ".",
-                                                _filters);
+            path = QFileDialog::getOpenFileName(this, tr("Select a File"), curPath);
+        } else {
+            path = QFileDialog::getOpenFileName(this, tr("Select a File"), curPath, _filters);
+        }
 
         ui.editPath->setText(path);
     }
@@ -30,6 +30,10 @@ void DlgFileChooser::on_btSelect_clicked() {
 
 void DlgFileChooser::setSelectFilter(const QString &filters) {
     _filters = filters;
+}
+
+void DlgFileChooser::setRelativePath(bool val) {
+    ui.cbRelative->setChecked(val);
 }
 
 QString DlgFileChooser::selectedPath() const {
@@ -44,6 +48,10 @@ bool DlgFileChooser::selectedDir() const {
 bool DlgFileChooser::selectedFile() const {
     QFileInfo info(ui.editPath->text());
     return info.isFile();
+}
+
+bool DlgFileChooser::useRelativePath() const {
+    return ui.cbRelative->isChecked();
 }
 
 void DlgFileChooser::accept() {

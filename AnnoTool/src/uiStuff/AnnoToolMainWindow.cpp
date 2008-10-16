@@ -55,6 +55,9 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoFileSelChanged(int, QUuid, ::anno::dt::AnnoFileData *)), this, SLOT(onPM_annoFileSelectChanged(int, QUuid, ::anno::dt::AnnoFileData *)));
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoSelChanged(int, QUuid, ::anno::dt::Annotation *)), this, SLOT(onPM_annoSelectChanged(int, QUuid, ::anno::dt::Annotation *)));
 
+    GlobalToolManager *tm = GlobalToolManager::instance();
+    connectOk = connectOk && connect(tm, SIGNAL(toolSelected(anno::GlobalToolManager::SelGraphicsTool, bool)), this, SLOT(onTM_toolSelected(anno::GlobalToolManager::SelGraphicsTool, bool)));
+
     if(!connectOk) {
         GlobalLogger::instance()->logError("CONNECT-ERROR: AnnoToolMainWindow::AnnoToolMainWindow(QWidget)");
     }
@@ -70,12 +73,12 @@ AnnoToolMainWindow::~AnnoToolMainWindow() {
 void AnnoToolMainWindow::clearGraphicsScene() {
     GlobalLogger::instance()->logDebug("MW: clearing graphics scene.");
     setToolEnabled(false);
+    GlobalToolManager::instance()->resetAll();
     if (_graphicsScene != NULL) {
         ui.graphicsView->setScene(NULL);
         delete _graphicsScene;
         _graphicsScene = NULL;
     }
-    GlobalToolManager::instance()->resetAll();
 }
 
 void AnnoToolMainWindow::newGraphicsScene(QImage *img) {
@@ -103,7 +106,7 @@ void AnnoToolMainWindow::fitGraphicsScene() {
         if ((imgSize.height() * factor) > vHeight) {
             factor = (double)vHeight / (double)imgSize.height();
         }
-        GlobalLogger::instance()->logDebug(QString("MW: fitting scene with faktor: %1 (%2x%3 -> %4x%5)").arg(factor).arg(imgSize.width()).arg(imgSize.height()).arg(vWidth).arg(vHeight));
+        GlobalLogger::instance()->logDebug(QString("MW: fitting scene with factor: %1 (%2x%3 -> %4x%5)").arg(factor).arg(imgSize.width()).arg(imgSize.height()).arg(vWidth).arg(vHeight));
         zoomCtrl->setZoom(static_cast<int>(factor * 100.0));
     }
 }
@@ -383,9 +386,8 @@ void AnnoToolMainWindow::on_actionHelpInfo_triggered() {
 
 void AnnoToolMainWindow::on_actionProjectDetails_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionProjectDetails_triggered");
-    DlgProjectDetails *dlg = new DlgProjectDetails(this);
-    dlg->exec();
-    delete dlg;
+    DlgProjectDetails dlg(this);
+    dlg.exec();
 }
 
 void AnnoToolMainWindow::on_actionProjectAddImage_triggered() {
@@ -590,37 +592,72 @@ void AnnoToolMainWindow::on_actionLockParentAnno_triggered() {
 
 void AnnoToolMainWindow::on_actionToolPointer_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionToolPointer_triggered");
-    uncheckTools();
-    ui.actionToolPointer->setChecked(true);
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtPointer);
 }
 
 void AnnoToolMainWindow::on_actionToolSinglePoint_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionToolSinglePoint_triggered");
-    uncheckTools();
-    ui.actionToolSinglePoint->setChecked(true);
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtSinglePoint);
 }
 
 void AnnoToolMainWindow::on_actionToolRectangle_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionToolRectangle_triggered");
-    uncheckTools();
-    ui.actionToolRectangle->setChecked(true);
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtRect);
 }
 
 void AnnoToolMainWindow::on_actionToolPolygon_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionToolPolygon_triggered");
-    uncheckTools();
-    ui.actionToolPolygon->setChecked(true);
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtPolygon);
 }
 
 void AnnoToolMainWindow::on_actionToolEllipse_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionToolEllipse_triggered");
-    uncheckTools();
-    ui.actionToolEllipse->setChecked(true);
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtEllipse);
+}
+
+void AnnoToolMainWindow::onTM_toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset) {
+    if (!reset) {
+        switch (tool) {
+            case anno::GlobalToolManager::GtNone: {
+                    uncheckTools();
+                    break;
+                }
+            case anno::GlobalToolManager::GtPointer: {
+                    uncheckTools();
+                    ui.actionToolPointer->setChecked(true);
+                    break;
+                }
+//			case anno::GlobalToolManager::GtHand:
+//			{
+//				uncheckTools();
+//				ui.actionToolHand->setChecked(true);
+//				break;
+//			}
+            case anno::GlobalToolManager::GtRect: {
+                    uncheckTools();
+                    ui.actionToolRectangle->setChecked(true);
+                    break;
+                }
+            case anno::GlobalToolManager::GtPolygon: {
+                    uncheckTools();
+                    ui.actionToolPolygon->setChecked(true);
+                    break;
+                }
+            case anno::GlobalToolManager::GtSinglePoint: {
+                    uncheckTools();
+                    ui.actionToolSinglePoint->setChecked(true);
+                    break;
+                }
+            case anno::GlobalToolManager::GtEllipse: {
+                    uncheckTools();
+                    ui.actionToolEllipse->setChecked(true);
+                    break;
+                }
+            default:
+                GlobalLogger::instance()->logWarning(
+                    "MW: Aborted tool selection state change due to unknown tool type.");
+        }
+    }
 }
 
 void AnnoToolMainWindow::updateUI() {

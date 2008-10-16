@@ -19,9 +19,11 @@ class DlgFileChooser : public QDialog {
         DlgFileChooser(QWidget *parent = 0, bool selFolder = false);
         ~DlgFileChooser();
         void setSelectFilter(const QString &filters);
+        void setRelativePath(bool val);
         QString selectedPath() const;
         bool selectedDir() const;
         bool selectedFile() const;
+        bool useRelativePath() const;
 
     public slots:
         virtual void accept();

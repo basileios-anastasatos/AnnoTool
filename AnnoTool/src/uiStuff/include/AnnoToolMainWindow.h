@@ -5,6 +5,7 @@
 #include <QtGui/QToolBar>
 #include "../gen/ui_AnnoToolMainWindow.h"
 #include "AnnoGraphicsScene.h"
+#include "GlobalToolManager.h"
 
 #include "annoTypesForward.h"
 
@@ -73,6 +74,7 @@ class AnnoToolMainWindow : public QMainWindow {
         void on_actionToolRectangle_triggered();
         void on_actionToolPolygon_triggered();
         void on_actionToolEllipse_triggered();
+        void onTM_toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset);
 
         // constrctor / destructor
     public:

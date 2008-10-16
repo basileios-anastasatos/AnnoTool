@@ -36,22 +36,26 @@ void DlgProjectDetails::initData() {
         ui.editProjectUuid->setText(pm->project()->uuidAsString());
 
         if (!pm->project()->classPath()->isEmpty()) {
-            QListIterator<QFileInfo> i(*pm->project()->classPath());
-            while (i.hasNext()) {
-                QString txt = i.next().filePath();
+            QList<QFileInfo> *classPath = pm->project()->classPath();
+            int size = classPath->size();
+            for(int i = 0; i < size; ++i) {
+                QString txt = classPath->at(i).filePath();
                 QListWidgetItem *item = new QListWidgetItem(ui.lstClasspath);
                 item->setText(txt);
                 item->setToolTip(txt);
+                item->setData(Qt::UserRole, i);
                 ui.lstClasspath->addItem(item);
             }
         }
         if (!pm->project()->searchPath()->isEmpty()) {
-            QListIterator<QFileInfo> i(*pm->project()->searchPath());
-            while (i.hasNext()) {
-                QString txt = i.next().filePath();
+            QList<QFileInfo> *searchPath = pm->project()->searchPath();
+            int size = searchPath->size();
+            for(int i = 0; i < size; ++i) {
+                QString txt = searchPath->at(i).filePath();
                 QListWidgetItem *item = new QListWidgetItem(ui.lstSearchpath);
                 item->setText(txt);
                 item->setToolTip(txt);
+                item->setData(Qt::UserRole, i);
                 ui.lstSearchpath->addItem(item);
             }
         }
@@ -65,11 +69,15 @@ void DlgProjectDetails::on_actionClassPathAdd_triggered() {
     if (dlg->exec() == QDialog::Accepted) {
         QFileInfo file(dlg->selectedPath());
         if (file.isFile()) {
+            if(dlg->useRelativePath()) {
+                file = GlobalProjectManager::instance()->absToRel(file);
+            }
             QString txt = file.filePath();
             QListWidgetItem *item = new QListWidgetItem(ui.lstClasspath);
             item->setText(txt);
             item->setToolTip(txt);
             ui.lstClasspath->addItem(item);
+            GlobalProjectManager::instance()->project()->addToClassPath(file.filePath());
             _modified = true;
         }
     }
@@ -78,8 +86,21 @@ void DlgProjectDetails::on_actionClassPathAdd_triggered() {
 
 void DlgProjectDetails::on_actionClassPathRem_triggered() {
     GlobalLogger::instance()->logDebug("Classpath remove...");
-    QMessageBox::information(this, "AnnoTool",
-                             "Sorry! This feature is not yet implemented :-(");
+//	QMessageBox::information(this, "AnnoTool",
+//			"Sorry! This feature is not yet implemented :-(");
+
+    QList<QFileInfo> *classPath = GlobalProjectManager::instance()->project()->classPath();
+    QList<QListWidgetItem *> items = ui.lstClasspath->selectedItems();
+    if(!items.isEmpty()) {
+        for(int i = items.size() - 1; i >= 0; --i) {
+            bool ok = false;
+            int index = items[i]->data(Qt::UserRole).toInt(&ok);
+            if(ok) {
+                delete ui.lstClasspath->takeItem(index);
+                classPath->removeAt(index);
+            }
+        }
+    }
 }
 
 void DlgProjectDetails::on_actionSearchPathAdd_triggered() {
@@ -88,11 +109,15 @@ void DlgProjectDetails::on_actionSearchPathAdd_triggered() {
     if (dlg->exec() == QDialog::Accepted) {
         QFileInfo file(dlg->selectedPath());
         if (file.isDir()) {
+            if(dlg->useRelativePath()) {
+                file = GlobalProjectManager::instance()->absToRel(file);
+            }
             QString txt = file.filePath();
             QListWidgetItem *item = new QListWidgetItem(ui.lstSearchpath);
             item->setText(txt);
             item->setToolTip(txt);
             ui.lstSearchpath->addItem(item);
+            GlobalProjectManager::instance()->project()->addToSearchPath(file.filePath());
             _modified = true;
         }
     }
@@ -101,8 +126,21 @@ void DlgProjectDetails::on_actionSearchPathAdd_triggered() {
 
 void DlgProjectDetails::on_actionSearchPathRem_triggered() {
     GlobalLogger::instance()->logDebug("Searchpath remove...");
-    QMessageBox::information(this, "AnnoTool",
-                             "Sorry! This feature is not yet implemented :-(");
+//	QMessageBox::information(this, "AnnoTool",
+//			"Sorry! This feature is not yet implemented :-(");
+
+    QList<QFileInfo> *searchPath = GlobalProjectManager::instance()->project()->searchPath();
+    QList<QListWidgetItem *> items = ui.lstSearchpath->selectedItems();
+    if (!items.isEmpty()) {
+        for (int i = items.size() - 1; i >= 0; --i) {
+            bool ok = false;
+            int index = items[i]->data(Qt::UserRole).toInt(&ok);
+            if (ok) {
+                delete ui.lstSearchpath->takeItem(index);
+                searchPath->removeAt(index);
+            }
+        }
+    }
 }
 
 void DlgProjectDetails::accept() {
@@ -113,10 +151,6 @@ void DlgProjectDetails::accept() {
             this,
             "AnnoTool",
             "In order to take effect and to prevent data inconsistency\nthe current project should be saved and reopened!");
-
-        ::anno::dt::AnnoProject *prj = GlobalProjectManager::instance()->project();
-        prj->classPath()->clear();
-        //TODO add listed classes to project!
     }
     QDialog::accept();
 }
