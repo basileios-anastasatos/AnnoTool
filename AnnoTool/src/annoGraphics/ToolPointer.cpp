@@ -31,6 +31,12 @@ namespace anno {
             return false;
         }
 
+        void ToolPointer::toolActivate() {
+            if(_view != NULL) {
+                _view->setCursor(_cursorNormal);
+            }
+        }
+
         void ToolPointer::mousePressEvent(AnnoGraphicsControlPoint *cp,
                                           QGraphicsSceneMouseEvent *event) {
             if(event->button() != Qt::LeftButton) {

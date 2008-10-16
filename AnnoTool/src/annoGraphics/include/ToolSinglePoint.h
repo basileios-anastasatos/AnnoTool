@@ -12,6 +12,9 @@ namespace anno {
                 QCursor _cursorNormal;
                 QCursor _cursorActive;
 
+            private:
+                void switchDefaultTool();
+
             public:
                 ToolSinglePoint(QGraphicsView *view, AnnoGraphicsScene *scene);
                 virtual ~ToolSinglePoint();
@@ -22,14 +25,13 @@ namespace anno {
                 virtual bool handlesShape() const;
                 virtual bool handlesImage() const;
 
+                // general tool interface
+            public:
+                //virtual void toolActivate();
+                //virtual void toolDeactivate();
+
                 // mouse interface
             public:
-//				virtual void mousePressEvent(AnnoGraphicsControlPoint* cp,
-//						QGraphicsSceneMouseEvent* event);
-//				virtual void mouseReleaseEvent(AnnoGraphicsControlPoint* cp,
-//						QGraphicsSceneMouseEvent* event);
-//				virtual void mouseMoveEvent(AnnoGraphicsControlPoint* cp,
-//						QGraphicsSceneMouseEvent* event);
 
                 virtual void mousePressEvent(AnnoGraphicsShape *shape,
                                              QGraphicsSceneMouseEvent *event);

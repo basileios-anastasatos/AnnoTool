@@ -36,46 +36,28 @@ namespace anno {
             return true;
         }
 
+        void ToolEllipse::escape() {
+            _scene->removeAnnoShape(_curShape);
+            _curShape = NULL;
+            _curParentAnno = NULL;
+        }
+
         void ToolEllipse::handleEscape(QKeyEvent *event) {
             if (event->key() == Qt::Key_Escape && _curShape != NULL && _scene != NULL) {
-                _scene->removeAnnoShape(_curShape);
-                _curShape = NULL;
-                _curParentAnno = NULL;
+                escape();
             }
         }
 
-        void ToolEllipse::mousePressEvent(AnnoGraphicsControlPoint *cp,
-                                          QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
-                return;
+        void ToolEllipse::switchDefaultTool() {
+            if(_curShape != NULL && _scene != NULL) {
+                escape();
             }
-
-            if (cp->parentShape() != NULL) {
-//				GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mousePressEvent");
-                //cp->parentShape()->exMousePressEvent(event);
-                //TODO This must be bug-fixed!
-            }
+            GlobalToolManager::instance()->selectToolDefault();
         }
 
-        void ToolEllipse::mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
-                                            QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
-                return;
-            }
-
-            if (cp->parentShape() != NULL) {
-//				GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mouseReleaseEvent");
-                //				cp->parentShape()->exMouseReleaseEvent(event);
-                //TODO This must be bug-fixed!
-            }
-        }
-
-        void ToolEllipse::mouseMoveEvent(AnnoGraphicsControlPoint *cp,
-                                         QGraphicsSceneMouseEvent *event) {
-            if (cp->parentShape() != NULL) {
-//				GlobalLogger::instance()->logDebug("Tool-Ellipse: CP: mouseMoveEvent");
-                //				cp->parentShape()->exMouseMoveEvent(event);
-                //TODO This must be bug-fixed!
+        void ToolEllipse::toolDeactivate() {
+            if(_curShape != NULL) {
+                escape();
             }
         }
 
@@ -142,7 +124,10 @@ namespace anno {
 
         void ToolEllipse::mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
+            if(event->button() == Qt::RightButton) {
+                switchDefaultTool();
+                return;
+            } else if(event->button() != Qt::LeftButton) {
                 return;
             }
 

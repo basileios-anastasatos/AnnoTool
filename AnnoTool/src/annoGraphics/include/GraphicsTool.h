@@ -37,6 +37,11 @@ namespace anno {
                 virtual bool handlesShape() const = 0;
                 virtual bool handlesImage() const = 0;
 
+                // general tool interface
+            public:
+                virtual void toolActivate();
+                virtual void toolDeactivate();
+
                 // mouse interface
             public:
                 virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -89,6 +94,8 @@ namespace anno {
                 virtual void hoverMoveEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneHoverEvent *event);
 
+                // key interface
+            public:
                 virtual void keyPressEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event);
                 virtual void keyReleaseEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event);
 

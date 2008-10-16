@@ -19,7 +19,9 @@ namespace anno {
                 dt::Annotation *_curParentAnno;
 
             private:
+                void escape();
                 void handleEscape(QKeyEvent *event);
+                void switchDefaultTool();
 
             public:
                 ToolEllipse(QGraphicsView *view, AnnoGraphicsScene *scene);
@@ -31,14 +33,13 @@ namespace anno {
                 virtual bool handlesShape() const;
                 virtual bool handlesImage() const;
 
+                // general tool interface
+            public:
+                //virtual void toolActivate();
+                virtual void toolDeactivate();
+
                 // mouse interface
             public:
-                virtual void mousePressEvent(AnnoGraphicsControlPoint *cp,
-                                             QGraphicsSceneMouseEvent *event);
-                virtual void mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
-                                               QGraphicsSceneMouseEvent *event);
-                virtual void mouseMoveEvent(AnnoGraphicsControlPoint *cp,
-                                            QGraphicsSceneMouseEvent *event);
 
                 virtual void mousePressEvent(AnnoGraphicsShape *shape,
                                              QGraphicsSceneMouseEvent *event);

@@ -23,8 +23,10 @@ namespace anno {
                 bool _modify;
 
             private:
+                void escape();
                 void handleEscape(QKeyEvent *event);
                 void finishPolygon();
+                void switchDefaultTool();
 
             private:
                 bool isModifyEvent(QGraphicsSceneMouseEvent *event);
@@ -46,6 +48,11 @@ namespace anno {
                 virtual bool handlesCp() const;
                 virtual bool handlesShape() const;
                 virtual bool handlesImage() const;
+
+                // general tool interface
+            public:
+                //virtual void toolActivate();
+                virtual void toolDeactivate();
 
                 // mouse interface
             public:

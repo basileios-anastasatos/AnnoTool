@@ -12,6 +12,14 @@ namespace anno {
         GraphicsTool::~GraphicsTool() {
         }
 
+        void GraphicsTool::toolActivate() {
+            // Do nothing as default!
+        }
+
+        void GraphicsTool::toolDeactivate() {
+            // Do nothing as default!
+        }
+
         void GraphicsTool::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
             // Do nothing as default!
         }

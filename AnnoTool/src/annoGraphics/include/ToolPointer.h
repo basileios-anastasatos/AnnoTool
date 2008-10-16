@@ -25,6 +25,11 @@ namespace anno {
                 virtual bool handlesShape() const;
                 virtual bool handlesImage() const;
 
+                // general tool interface
+            public:
+                virtual void toolActivate();
+                //virtual void toolDeactivate();
+
                 // mouse interface
             public:
                 virtual void mousePressEvent(AnnoGraphicsControlPoint *cp,

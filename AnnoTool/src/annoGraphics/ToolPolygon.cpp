@@ -34,28 +34,51 @@ namespace anno {
             return true;
         }
 
+        void ToolPolygon::escape() {
+            _scene->removeAnnoShape(_curShape);
+            _curShape = NULL;
+            _curParentAnno = NULL;
+        }
+
         void ToolPolygon::handleEscape(QKeyEvent *event) {
             if (!_modify && event->key() == Qt::Key_Escape && _curShape != NULL && _scene != NULL) {
-                _scene->removeAnnoShape(_curShape);
-                _curShape = NULL;
-                _curParentAnno = NULL;
+                escape();
             }
         }
 
         void ToolPolygon::finishPolygon() {
             if (_curShape != NULL) {
-                dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
-                dt::Annotation *anno = _curShape->relatedAnno();
-                if (_curParentAnno != NULL) {
-                    _curParentAnno->addAnnoChild(anno->annoId());
+                if(_curShape->polygon().size() > 2) {
+                    dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
+                    dt::Annotation *anno = _curShape->relatedAnno();
+                    if (_curParentAnno != NULL) {
+                        _curParentAnno->addAnnoChild(anno->annoId());
+                    }
+                    curFile->addAnnotation(anno);
+                    _curShape->setClosedDrawing(true);
+                    _curShape->update();
+                    GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
+                    AnnoToolMainWindow::updateUI();
+                    _curShape = NULL;
+                    _curParentAnno = NULL;
+                } else {
+                    if (!_modify && _curShape != NULL && _scene != NULL) {
+                        escape();
+                    }
                 }
-                curFile->addAnnotation(anno);
-                _curShape->setClosedDrawing(true);
-                _curShape->update();
-                GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
-                AnnoToolMainWindow::updateUI();
-                _curShape = NULL;
-                _curParentAnno = NULL;
+            }
+        }
+
+        void ToolPolygon::switchDefaultTool() {
+            if (!_modify && _curShape != NULL && _scene != NULL) {
+                escape();
+            }
+            GlobalToolManager::instance()->selectToolDefault();
+        }
+
+        void ToolPolygon::toolDeactivate() {
+            if (_curShape != NULL) {
+                escape();
             }
         }
 
@@ -202,11 +225,19 @@ namespace anno {
 
         void ToolPolygon::mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                             QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
+            if(event->button() == Qt::RightButton) {
+                //TODO think of right click handling during active poly mode
+                if(_curShape == NULL) {
+                    switchDefaultTool();
+                } else {
+                    if (!_modify && _curShape != NULL && _scene != NULL) {
+                        escape();
+                    }
+                }
+                return;
+            } else if(event->button() != Qt::LeftButton) {
                 return;
             }
-
-//			GlobalLogger::instance()->logDebug("ToolPolygon::mouseReleaseEvent");
 
             if (isModifyActive(event)) {
 

@@ -35,46 +35,28 @@ namespace anno {
             return true;
         }
 
+        void ToolRect::escape() {
+            _scene->removeAnnoShape(_curShape);
+            _curShape = NULL;
+            _curParentAnno = NULL;
+        }
+
         void ToolRect::handleEscape(QKeyEvent *event) {
             if (event->key() == Qt::Key_Escape && _curShape != NULL && _scene != NULL) {
-                _scene->removeAnnoShape(_curShape);
-                _curShape = NULL;
-                _curParentAnno = NULL;
+                escape();
             }
         }
 
-        void ToolRect::mousePressEvent(AnnoGraphicsControlPoint *cp,
-                                       QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
-                return;
+        void ToolRect::switchDefaultTool() {
+            if (_curShape != NULL && _scene != NULL) {
+                escape();
             }
-
-            if (cp->parentShape() != NULL) {
-//				GlobalLogger::instance()->logDebug("Tool-Rect: CP: mousePressEvent");
-                //cp->parentShape()->exMousePressEvent(event);
-                //TODO This must be bug-fixed!
-            }
+            GlobalToolManager::instance()->selectToolDefault();
         }
 
-        void ToolRect::mouseReleaseEvent(AnnoGraphicsControlPoint *cp,
-                                         QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
-                return;
-            }
-
-            if (cp->parentShape() != NULL) {
-//				GlobalLogger::instance()->logDebug("Tool-Rect: CP: mouseReleaseEvent");
-                //				cp->parentShape()->exMouseReleaseEvent(event);
-                //TODO This must be bug-fixed!
-            }
-        }
-
-        void ToolRect::mouseMoveEvent(AnnoGraphicsControlPoint *cp,
-                                      QGraphicsSceneMouseEvent *event) {
-            if (cp->parentShape() != NULL) {
-//				GlobalLogger::instance()->logDebug("Tool-Rect: CP: mouseMoveEvent");
-                //				cp->parentShape()->exMouseMoveEvent(event);
-                //TODO This must be bug-fixed!
+        void ToolRect::toolDeactivate() {
+            if(_curShape != NULL) {
+                escape();
             }
         }
 
@@ -141,7 +123,10 @@ namespace anno {
 
         void ToolRect::mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                          QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
+            if (event->button() == Qt::RightButton) {
+                switchDefaultTool();
+                return;
+            } else if (event->button() != Qt::LeftButton) {
                 return;
             }
 

@@ -33,6 +33,10 @@ namespace anno {
             return true;
         }
 
+        void ToolSinglePoint::switchDefaultTool() {
+            GlobalToolManager::instance()->selectToolDefault();
+        }
+
         void ToolSinglePoint::mousePressEvent(AnnoGraphicsShape *shape,
                                               QGraphicsSceneMouseEvent *event) {
             if(event->button() != Qt::LeftButton) {
@@ -75,7 +79,10 @@ namespace anno {
 
         void ToolSinglePoint::mouseReleaseEvent(AnnoGraphicsPixmap *img,
                                                 QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
+            if(event->button() == Qt::RightButton) {
+                switchDefaultTool();
+                return;
+            } else if(event->button() != Qt::LeftButton) {
                 return;
             }
 
