@@ -52,6 +52,7 @@ namespace anno {
             void loadClassDefs() throw(IOException *, XmlException *);
             void loadAnnoFiles() throw(IOException *, XmlException *);
             void loadAnnoFilesFromDir(QDir dir) throw(IOException *, XmlException *);
+            void sortAnnoFiles();
 
         private slots:
             void onAnnoFileModifyChange(::anno::dt::AnnoFileData *annoFile, bool prevState, bool curState);

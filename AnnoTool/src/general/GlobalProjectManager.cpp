@@ -1,5 +1,7 @@
 #include "include/GlobalProjectManager.h"
 #include "importGlobals.h"
+#include "AnnoFileListSorter.h"
+
 #include <QFileInfo>
 #include <QDir>
 #include <QThread>
@@ -430,7 +432,15 @@ namespace anno {
                 }
             }
             GlobalLogger::instance()->logDebug("Finished loading annotation files.");
+
         }
+    }
+
+    void GlobalProjectManager::sortAnnoFiles() {
+        GlobalLogger::instance()->logDebug("Sorting annotation files.");
+        anno::dt::AnnoFileListSorter sorter(_fileList);
+        sorter.sort();
+        GlobalLogger::instance()->logDebug("Finished sorting annotation files.");
     }
 
     void GlobalProjectManager::loadAnnoFilesFromDir(QDir dir) throw(IOException *,
@@ -478,6 +488,7 @@ namespace anno {
         if (loadSub) {
             loadClassDefs();
             loadAnnoFiles();
+            sortAnnoFiles();
             setupAllSignals();
         }
     }

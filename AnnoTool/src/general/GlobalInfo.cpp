@@ -33,7 +33,7 @@ const bool GlobalInfo::isDebug = false;
 
 const quint8 GlobalInfo::appVersionMajor		= 0;
 const quint8 GlobalInfo::appVersionMid			= 3;
-const quint16 GlobalInfo::appVersionMinor		= 1;
+const quint16 GlobalInfo::appVersionMinor		= 5;
 
 const QString GlobalInfo::appName("AnnoTool");
 const QString GlobalInfo::appSubtitle(QObject::tr("Advanced Image Annotation"));

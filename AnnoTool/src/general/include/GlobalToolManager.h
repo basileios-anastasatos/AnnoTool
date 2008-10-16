@@ -16,7 +16,9 @@ namespace anno {
         class Annotation;
     }
 
-    class GlobalToolManager {
+    class GlobalToolManager : public QObject {
+            Q_OBJECT
+
             // enum of selectable tools
         public:
             enum SelGraphicsTool {
@@ -91,7 +93,8 @@ namespace anno {
             void setScene(graphics::AnnoGraphicsScene *scene);
             graphics::AnnoGraphicsScene *curScene();
             bool hasScene() const;
-            void selectTool(SelGraphicsTool tool);
+            bool selectTool(SelGraphicsTool tool);
+            bool selectToolDefault();
             SelGraphicsTool curToolId() const;
             graphics::GraphicsTool *curTool();
             bool hasTool() const;
@@ -108,6 +111,10 @@ namespace anno {
             void setLastAnno(const QUuid &uuid);
             void resetLockedAnno();
             void resetLastAnno();
+
+
+        signals:
+            void toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset);
 
 
     };
