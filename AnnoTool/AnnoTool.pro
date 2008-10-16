@@ -23,7 +23,8 @@ INCLUDEPATH += ./src/annoDataTypes/include \
 QT += core \
     gui \
     xml
-HEADERS += ./src/utils/include/PriorityList.h \
+HEADERS += ./src/annoDataTypes/include/AnnoFileListSorter.h \
+    ./src/utils/include/PriorityList.h \
     ./src/utils/include/SortedList.h \
     ./src/uiStuff/helper/include/RecentAttrValues.h \
     ./src/uiStuff/include/DlgEditAttributeShort.h \
@@ -136,6 +137,7 @@ SOURCES += ./src/general/GlobalInfo.cpp \
     ./src/annoDataTypes/AnnoFileData.cpp \
     ./src/annoDataTypes/AnnoProject.cpp \
     ./src/annoDataTypes/AnnoOperationHelper.cpp \
+    ./src/annoDataTypes/AnnoFileListSorter.cpp \
     ./src/annoDataTypes/AnnoShape.cpp \
     ./src/annoDataTypes/AnnoRectangle.cpp \
     ./src/annoDataTypes/AnnoEllipse.cpp \
@@ -223,6 +225,8 @@ RESOURCES += ./src/uiStuff/forms/icons.qrc \
     ./src/uiStuff/forms/cursors.qrc \
     ./src/uiStuff/forms/others.qrc
 win32 { 
+	RC_FILE = ./src/uiStuff/forms/appicon.rc
+	
     release { 
         DESTDIR = ./bin/win32/release
         OBJECTS_DIR = ./bin/win32/release/obj
@@ -243,6 +247,7 @@ unix {
     }
 }
 macx { 
+	ICON = ./src/uiStuff/forms/res/appicon.ico
     release { 
         DESTDIR = ./bin/macOSX/release
         OBJECTS_DIR = ./bin/macOSX/release/obj
