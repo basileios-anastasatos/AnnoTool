@@ -16,6 +16,7 @@ class GlobalInfo {
         static const bool isMac;
         static const bool isRelease;
         static const bool isDebug;
+        static const bool isExperimental;
 
         static const quint8 appVersionMajor;
         static const quint8 appVersionMid;
@@ -24,6 +25,7 @@ class GlobalInfo {
         static const QString appName;
         static const QString appSubtitle;
         static const QString appAuthor;
+        static const QString appBuildInfo;
         static const QString orgName;
         static const QString orgDep;
         static const QString orgUni;

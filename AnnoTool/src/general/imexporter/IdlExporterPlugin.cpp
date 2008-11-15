@@ -25,7 +25,7 @@ namespace anno {
     }
 
     QString IdlExporterPlugin::description() const {
-        return QString("Exports to the old IDL immage annotation format.");
+        return QString("Exports to the old IDL image annotation format.");
     }
 
     bool IdlExporterPlugin::exec(const QFileInfo &startDir) {

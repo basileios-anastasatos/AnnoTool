@@ -31,13 +31,16 @@ const bool GlobalInfo::isRelease = true;
 const bool GlobalInfo::isDebug = false;
 #endif
 
+const bool GlobalInfo::isExperimental = true;
+
 const quint8 GlobalInfo::appVersionMajor		= 0;
 const quint8 GlobalInfo::appVersionMid			= 3;
-const quint16 GlobalInfo::appVersionMinor		= 5;
+const quint16 GlobalInfo::appVersionMinor		= 8;
 
 const QString GlobalInfo::appName("AnnoTool");
 const QString GlobalInfo::appSubtitle(QObject::tr("Advanced Image Annotation"));
 const QString GlobalInfo::appAuthor("Oliver Schwahn");
+const QString GlobalInfo::appBuildInfo("Experimental Filter-Testing Build");
 const QString GlobalInfo::orgName(QObject::tr("Multimodal Interactive Systems (MIS)"));
 const QString GlobalInfo::orgDep(QObject::tr("Department of Computer Science"));
 const QString GlobalInfo::orgUni(QObject::tr("Darmstadt University of Technology"));
