@@ -56,9 +56,14 @@ class AnnoToolMainWindow : public QMainWindow {
         void annoFileSelectChanged(int row, QUuid image);
         void on_annoListWidget_annoSelectChanged(const QModelIndex &index, QUuid anno);
         void on_actionFitImage_triggered();
+        void on_actionEnableAutoFit_triggered();
         void on_actionZtoFront_triggered();
+        void on_actionZtoBack_triggered();
         void on_actionRemoveAnnotation_triggered();
         void on_actionSaveCurrentImage_triggered();
+
+        void on_actionPreviousImage_triggered();
+        void on_actionNextImage_triggered();
 
         void onZoomCtrl_zoomChanged(int value);
 

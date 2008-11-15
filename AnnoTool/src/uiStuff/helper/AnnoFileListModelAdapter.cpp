@@ -37,7 +37,7 @@ QVariant AnnoFileListModelAdapter::data(const QModelIndex &index, int role) cons
                 }
                 return name;
             } else if (index.column() == 1) {
-                return pm->getAnnoFile(index.row())->imageUuidAsString();
+                return cur->annoCount();
             }
         }
     }
@@ -48,9 +48,9 @@ QVariant AnnoFileListModelAdapter::headerData(int section,
         Qt::Orientation orientation, int role) const {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         if (section == 0) {
-            return QVariant("Image File");
+            return QVariant("Image");
         } else if (section == 1) {
-            return QVariant("UUID");
+            return QVariant("#");
         }
     }
     return QVariant();

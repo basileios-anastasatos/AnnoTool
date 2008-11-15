@@ -17,12 +17,10 @@ AnnoFileListWidget::AnnoFileListWidget(QWidget *parent) :
     connect(ui.lstFiles->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(onLstFilesCurrentRowChanged(
                 const QModelIndex &, const QModelIndex &)));
 
-    //	if(ui.lstFiles->horizontalHeader() != NULL)
-    //	{
-    //		GlobalLogger::instance()->logDebug("configuring list header");
-    //		QHeaderView* head = ui.lstFiles->horizontalHeader();
-    //		head->setSelectionMode(QAbstractItemView::NoSelection);
-    //	}
+    ui.lstFiles->header()->setStretchLastSection(false);
+    ui.lstFiles->setColumnWidth(0, 150);
+    ui.lstFiles->setColumnWidth(1, 50);
+    ui.lstFiles->header()->setResizeMode(0, QHeaderView::Stretch);
 }
 
 AnnoFileListWidget::~AnnoFileListWidget() {

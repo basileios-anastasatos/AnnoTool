@@ -3,7 +3,6 @@
 #include "AnnoOperationHelper.h"
 #include "AnnoToolMainWindow.h"
 #include "importGlobals.h"
-
 #include <QItemSelectionModel>
 
 AnnoListWidget::AnnoListWidget(QWidget *parent) :

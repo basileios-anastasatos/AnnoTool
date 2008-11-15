@@ -4,7 +4,6 @@
 #include "Annotation.h"
 #include "DlgEditAttributeShort.h"
 #include <QAction>
-
 #include "AnnoToolMainWindow.h"
 
 

@@ -46,22 +46,10 @@
     <enum>QFrame::Plain</enum>
    </property>
    <layout class="QGridLayout">
-    <property name="leftMargin">
+    <property name="margin">
      <number>0</number>
     </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <property name="horizontalSpacing">
-     <number>0</number>
-    </property>
-    <property name="verticalSpacing">
+    <property name="spacing">
      <number>0</number>
     </property>
     <item row="0" column="0">
@@ -70,23 +58,32 @@
        <number>2</number>
       </property>
       <item>
-       <widget class="QListView" name="lstFiles">
+       <widget class="QTreeView" name="lstFiles">
         <property name="sizePolicy">
          <sizepolicy vsizetype="Expanding" hsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="alternatingRowColors">
+        <property name="contextMenuPolicy">
+         <enum>Qt::CustomContextMenu</enum>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="indentation">
+         <number>8</number>
+        </property>
+        <property name="rootIsDecorated">
+         <bool>false</bool>
+        </property>
+        <property name="uniformRowHeights">
          <bool>true</bool>
         </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::SingleSelection</enum>
+        <property name="itemsExpandable">
+         <bool>false</bool>
         </property>
-        <property name="modelColumn">
-         <number>0</number>
-        </property>
-        <property name="uniformItemSizes">
+        <property name="allColumnsShowFocus">
          <bool>true</bool>
         </property>
        </widget>

@@ -64,6 +64,10 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
 
     configUIproject(false);
     setToolEnabled(false);
+
+    //TODO remove this later on
+    ui.tbFilter->setVisible(false);
+    ui.actionGroundtruthMode->setVisible(false);
 }
 
 AnnoToolMainWindow::~AnnoToolMainWindow() {
@@ -93,7 +97,12 @@ void AnnoToolMainWindow::newGraphicsScene(QImage *img) {
     GlobalToolManager::instance()->setScene(_graphicsScene);
     //connect(GlobalProjectManager::instance(), SIGNAL(curAnnoFile_annoAdded(::anno::dt::Annotation*)), _graphicsScene, SLOT(addAnnoShape(::anno::dt::Annotation*)));
     connect(GlobalProjectManager::instance(), SIGNAL(curAnnoFile_annoRemoved(QUuid)), _graphicsScene, SLOT(removeAnnoShape(QUuid)));
-    fitGraphicsScene();
+    if(ui.actionEnableAutoFit->isChecked()) {
+        fitGraphicsScene();
+    } else {
+        zoomCtrl->setZoom(zoomCtrl->getZoom());
+    }
+
     setToolEnabled(true);
 }
 
@@ -195,6 +204,7 @@ void AnnoToolMainWindow::setToolEnabled(bool enabled) {
     ui.actionToolEllipse->setEnabled(enabled);
 
     ui.actionZtoFront->setEnabled(enabled);
+    ui.actionZtoBack->setEnabled(enabled);
     ui.actionRemoveAnnotation->setEnabled(enabled);
     ui.actionSaveCurrentImage->setEnabled(enabled);
 }
@@ -455,15 +465,15 @@ void AnnoToolMainWindow::onAppClose() {
 void AnnoToolMainWindow::setDocumentName(const QString &name) {
 #ifdef QT_DEBUG
     if(name.isEmpty()) {
-        setWindowTitle(QString("%1   [Debug-Version: %2 - %3]").arg(GlobalInfo::appName).arg(GlobalInfo::appVersionString()).arg(GlobalInfo::compileDateTime()));
+        setWindowTitle(QString("%1   [Debug-Version: %2 - %3] %4").arg(GlobalInfo::appName).arg(GlobalInfo::appVersionString()).arg(GlobalInfo::compileDateTime()).arg(GlobalInfo::isExperimental ? QString("- EXPERIMENTAL Build") : QString()));
     } else {
-        setWindowTitle(QString("%1  <%2>   [Debug-Version: %3 - %4]").arg(GlobalInfo::appName).arg(name).arg(GlobalInfo::appVersionString()).arg(GlobalInfo::compileDateTime()));
+        setWindowTitle(QString("%1  <%2>   [Debug-Version: %3 - %4] %5").arg(GlobalInfo::appName).arg(name).arg(GlobalInfo::appVersionString()).arg(GlobalInfo::compileDateTime()).arg(GlobalInfo::isExperimental ? QString("- EXPERIMENTAL Build") : QString()));
     }
 #else
     if(name.isEmpty()) {
-        setWindowTitle(GlobalInfo::appName);
+        setWindowTitle(QString("%1 %2").arg(GlobalInfo::appName).arg(GlobalInfo::isExperimental ? QString("- EXPERIMENTAL Build") : QString()));
     } else {
-        setWindowTitle(QString("%1  <%2>").arg(GlobalInfo::appName).arg(name));
+        setWindowTitle(QString("%1  <%2> %3").arg(GlobalInfo::appName).arg(name).arg(GlobalInfo::isExperimental ? QString("- EXPERIMENTAL Build") : QString()));
     }
 #endif
 }
@@ -491,12 +501,25 @@ void AnnoToolMainWindow::on_actionFitImage_triggered() {
     fitGraphicsScene();
 }
 
+void AnnoToolMainWindow::on_actionEnableAutoFit_triggered() {
+
+}
+
 void AnnoToolMainWindow::on_actionZtoFront_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionZtoFront_triggered");
     GlobalProjectManager *pm = GlobalProjectManager::instance();
     if(pm->selectedAnno() != NULL) {
-        _graphicsScene->selectShape(pm->selectedAnnoUuid());
+        //_graphicsScene->selectShape(pm->selectedAnnoUuid());
         _graphicsScene->bringSelShapeToFront();
+    }
+}
+
+void AnnoToolMainWindow::on_actionZtoBack_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionZtoBack_triggered");
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+    if(pm->selectedAnno() != NULL) {
+        //_graphicsScene->selectShape(pm->selectedAnnoUuid());
+        _graphicsScene->bringSelShapeToBack();
     }
 }
 
@@ -532,6 +555,24 @@ void AnnoToolMainWindow::on_actionSaveCurrentImage_triggered() {
                 QMessageBox::critical(this, "AnnoTool", tr("Cannot save image to %1.").arg(fileName));
             }
         }
+    }
+}
+
+void AnnoToolMainWindow::on_actionPreviousImage_triggered() {
+    GlobalLogger::instance()->logDebug("prev image");
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+    int curRow = pm->selectedFileRow();
+    if(curRow > 0) {
+        pm->setSelectedFileRow(--curRow);
+    }
+}
+
+void AnnoToolMainWindow::on_actionNextImage_triggered() {
+    GlobalLogger::instance()->logDebug("next image");
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+    int curRow = pm->selectedFileRow();
+    if(curRow < pm->fileCount() - 1) {
+        pm->setSelectedFileRow(++curRow);
     }
 }
 

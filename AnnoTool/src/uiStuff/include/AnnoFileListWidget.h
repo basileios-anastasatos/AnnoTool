@@ -3,8 +3,10 @@
 
 #include <QtGui/QDockWidget>
 #include <QUuid>
+#include <QMenu>
 #include "../gen/ui_AnnoFileListWidget.h"
 #include "AnnoFileListModelAdapter.h"
+
 
 class AnnoFileListWidget : public QDockWidget {
         Q_OBJECT
@@ -13,6 +15,7 @@ class AnnoFileListWidget : public QDockWidget {
         Ui::AnnoFileListWidgetClass ui;
         AnnoFileListModelAdapter *_model;
         QString _strCount;
+        QMenu _contextMenu;
 
     private slots:
         void onLstFilesCurrentRowChanged(const QModelIndex &current,
