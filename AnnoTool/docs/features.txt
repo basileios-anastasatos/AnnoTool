@@ -1,14 +1,15 @@
 AnnoTool
 Advanced Image Annotation
-Version 0.3.1
-written by Oliver Schwahn
+Version 0.3.5
+written by Oliver Schwahn (schwahn@rbg.informatik.tu-darmstadt.de)
 for MIS, TU-Darmstadt
+---
 
 
-----
-This file contains short descriptions of some AnnoTool features.
+---------
+This file contains short descriptions of some major AnnoTool features.
 Note that the features listed here are by far not complete and subject to changes.
-----
+---------
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

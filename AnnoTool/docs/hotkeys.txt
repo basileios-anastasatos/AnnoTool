@@ -1,0 +1,52 @@
+AnnoTool
+Advanced Image Annotation
+Version 0.3.7+
+written by Oliver Schwahn (schwahn@rbg.informatik.tu-darmstadt.de)
+for MIS, TU-Darmstadt
+---
+
+
+---------
+This file contains a listing of AnnoTool's hotkey bindings.
+Note that there are no further explanations on the hotkey functions here.
+---------
+
+
+<<  Common Hotkeys  >>
+----------------------
+Ctrl + N      Start the "New Project" Dialog.
+Ctrl + O      Open an existing AnnoTool project.
+Ctrl + S      Save the currently opened project.
+
+
+Future Hotkeys
+~~~~~~~~~~~~~~~~~~~~~~~
+Ctrl + A      Select all annotations of the current image.
+Ctrl + C      Copy all currently selected annotations to the clipboard.
+Ctrl + P      Paste annotations from the clipboard.
+Ctrl + X      Copy all currently selected annotations to the clipboard and delete them on
+              the current image.
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+<<  Tool related Hotkeys  >>
+----------------------------
+Ctrl + 1      Select the Pointer Tool.
+Ctrl + 2      Select the Single Point Tool.
+Ctrl + 3      Select the Rectangle Tool.
+Ctrl + 4      Select the Polygon Tool.
+Ctrl + 5      Select the Ellipse Tool.
+
+Del           Remove the currently selected annotations.
+
+
+<<  Various Annotation Related Hotkeys  >>
+------------------------------------------
+Ctrl + F      Bring the currently selected annotations to the front (z-order).
+Ctrl + B      Bring the currently selected annotations to the back (z-order).
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
