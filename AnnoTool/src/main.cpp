@@ -1,5 +1,4 @@
 #include "AnnoToolMainWindow.h"
-
 #include <QtGui>
 #include <QApplication>
 #include "importGlobals.h"

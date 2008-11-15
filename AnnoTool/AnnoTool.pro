@@ -9,6 +9,7 @@ UI_DIR = ./src/uiStuff/gen
 MOC_DIR = ./tmp/moc
 RCC_DIR = ./tmp
 INCLUDEPATH += ./src/annoDataTypes/include \
+    ./src/annoDataTypes/filter/include \
     ./src/annoExceptions/include \
     ./src/annoGraphics/include \
     ./src/annoHelper/include \
@@ -23,7 +24,18 @@ INCLUDEPATH += ./src/annoDataTypes/include \
 QT += core \
     gui \
     xml
-HEADERS += ./src/annoDataTypes/include/AnnoFileListSorter.h \
+HEADERS += ./src/annoFilter/include/AfrScore.h \
+    ./src/annoFilter/include/AfrClass.h \
+    ./src/annoFilter/include/AfrAttributeValue.h \
+    ./src/annoFilter/include/LogicFilterRule.h \
+    ./src/annoFilter/include/AnnoFilterRuleAtom.h \
+    ./src/annoFilter/include/AfrXor.h \
+    ./src/annoFilter/include/AfrNot.h \
+    ./src/annoFilter/include/AfrOr.h \
+    ./src/annoFilter/include/AfrAnd.h \
+    ./src/annoFilter/include/AnnoFilter.h \
+    ./src/annoFilter/include/AnnoFilterRule.h \
+    ./src/annoDataTypes/include/AnnoFileListSorter.h \
     ./src/utils/include/PriorityList.h \
     ./src/utils/include/SortedList.h \
     ./src/uiStuff/helper/include/RecentAttrValues.h \
@@ -117,7 +129,18 @@ HEADERS += ./src/annoDataTypes/include/AnnoFileListSorter.h \
     ./src/annoExceptions/include/OutOfRangeException.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h
-SOURCES += ./src/general/GlobalInfo.cpp \
+SOURCES += ./src/annoFilter/AfrScore.cpp \
+    ./src/annoFilter/AfrClass.cpp \
+    ./src/annoFilter/AfrAttributeValue.cpp \
+    ./src/annoFilter/LogicFilterRule.cpp \
+    ./src/annoFilter/AnnoFilterRuleAtom.cpp \
+    ./src/annoFilter/AfrXor.cpp \
+    ./src/annoFilter/AfrNot.cpp \
+    ./src/annoFilter/AfrOr.cpp \
+    ./src/annoFilter/AfrAnd.cpp \
+    ./src/annoFilter/AnnoFilter.cpp \
+    ./src/annoFilter/AnnoFilterRule.cpp \
+    ./src/general/GlobalInfo.cpp \
     ./src/annoExceptions/AnnoException.cpp \
     ./src/annoExceptions/NullPointerException.cpp \
     ./src/annoExceptions/FormatException.cpp \
@@ -225,8 +248,7 @@ RESOURCES += ./src/uiStuff/forms/icons.qrc \
     ./src/uiStuff/forms/cursors.qrc \
     ./src/uiStuff/forms/others.qrc
 win32 { 
-	RC_FILE = ./src/uiStuff/forms/appicon.rc
-	
+    RC_FILE = ./src/uiStuff/forms/appicon.rc
     release { 
         DESTDIR = ./bin/win32/release
         OBJECTS_DIR = ./bin/win32/release/obj
@@ -247,7 +269,7 @@ unix {
     }
 }
 macx { 
-	ICON = ./src/uiStuff/forms/res/appicon.ico
+    ICON = ./src/uiStuff/forms/res/appicon.ico
     release { 
         DESTDIR = ./bin/macOSX/release
         OBJECTS_DIR = ./bin/macOSX/release/obj
