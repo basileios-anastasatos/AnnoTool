@@ -19,7 +19,11 @@ namespace anno {
                 AnnoGraphicsPixmap *_image;
                 AnnoGraphicsShape *_selShape;
                 QMap<QUuid, AnnoGraphicsShape *> _shapes;
+                int _curMinZ;
                 int _curMaxZ;
+
+            private:
+                void initScene();
 
             public:
                 AnnoGraphicsScene(QObject *parent = 0);
@@ -45,7 +49,9 @@ namespace anno {
             public slots:
                 void selectShape(const QUuid &annoId);
                 void bringToFront(const QUuid &annoId);
+                void bringToBack(const QUuid &annoId);
                 void bringSelShapeToFront();
+                void bringSelShapeToBack();
                 void setShapeVisible(const QUuid &annoId, bool visible);
 
                 void removeAnnoShape(QUuid annoId);

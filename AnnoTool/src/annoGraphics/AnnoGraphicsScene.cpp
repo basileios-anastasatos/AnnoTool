@@ -7,28 +7,26 @@ namespace anno {
     namespace graphics {
 
         AnnoGraphicsScene::AnnoGraphicsScene(QObject *parent) :
-            QGraphicsScene(parent) {
-            _image = NULL;
-            _selShape = NULL;
-            _curMaxZ = 0;
+            QGraphicsScene(parent), _image(NULL), _selShape(NULL), _curMinZ(0), _curMaxZ(0) {
+            initScene();
         }
 
         AnnoGraphicsScene::AnnoGraphicsScene(const QRectF &sceneRect, QObject *parent) :
-            QGraphicsScene(sceneRect, parent) {
-            _image = NULL;
-            _selShape = NULL;
-            _curMaxZ = 0;
+            QGraphicsScene(sceneRect, parent), _image(NULL), _selShape(NULL), _curMinZ(0), _curMaxZ(0) {
+            initScene();
         }
 
         AnnoGraphicsScene::AnnoGraphicsScene(qreal x, qreal y, qreal width, qreal height,
                                              QObject *parent) :
-            QGraphicsScene(x, y, width, height, parent) {
-            _image = NULL;
-            _selShape = NULL;
-            _curMaxZ = 0;
+            QGraphicsScene(x, y, width, height, parent), _image(NULL), _selShape(NULL), _curMinZ(0), _curMaxZ(0) {
+            initScene();
         }
 
         AnnoGraphicsScene::~AnnoGraphicsScene() {
+        }
+
+        void AnnoGraphicsScene::initScene() {
+//			setBackgroundBrush(Qt::red);
         }
 
         void AnnoGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
@@ -117,10 +115,26 @@ namespace anno {
             }
         }
 
+        void AnnoGraphicsScene::bringToBack(const QUuid &annoId) {
+            AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
+            if (s != NULL) {
+                GlobalLogger::instance()->logDebug(QString("AGS: bringing shape %1 to Zorder back. [z=%2]").arg(annoId).arg(_curMinZ - 1));
+                s->graphicsItem()->setZValue(--_curMinZ);
+            }
+        }
+
         void AnnoGraphicsScene::bringSelShapeToFront() {
             if (_selShape != NULL) {
                 GlobalLogger::instance()->logDebug(QString("AGS: bringing selected shape %1 to Zorder top. [z=%2]").arg(_selShape->relatedAnno()->annoIdAsString()).arg(_curMaxZ + 1));
                 _selShape->graphicsItem()->setZValue(++_curMaxZ);
+                update();
+            }
+        }
+
+        void AnnoGraphicsScene::bringSelShapeToBack() {
+            if (_selShape != NULL) {
+                GlobalLogger::instance()->logDebug(QString("AGS: bringing selected shape %1 to Zorder back. [z=%2]").arg(_selShape->relatedAnno()->annoIdAsString()).arg(_curMinZ - 1));
+                _selShape->graphicsItem()->setZValue(--_curMinZ);
                 update();
             }
         }
