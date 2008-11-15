@@ -17,6 +17,10 @@ using logging::GlobalLogger;
 #define NATIVE_SCORE_ATTR QString("__score")
 #endif
 
+#ifndef NATIVE_ZORDER_ATTR
+#define NATIVE_ZORDER_ATTR QString("__zorder")
+#endif
+
 class QXmlStreamWriter;
 class QXmlStreamReader;
 
@@ -98,6 +102,7 @@ namespace anno {
             private:
                 QUuid _annoId;
                 double _score;
+                int _zOrder;
                 QUuid _annoParent;
                 QList<QUuid> _annoChildren;
                 QString _comment;
