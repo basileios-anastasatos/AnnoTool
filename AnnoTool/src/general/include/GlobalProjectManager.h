@@ -4,6 +4,7 @@
 #include <QObject>
 #include "AllAnnoExceptions.h"
 #include "AnnoProject.h"
+#include "AnnoFilterManager.h"
 #include "AnnoAvClassList.h"
 #include "AnnoFileData.h"
 #include <QList>
@@ -30,6 +31,7 @@ namespace anno {
             // private vars
         private:
             dt::AnnoProject *_project;
+            filter::AnnoFilterManager *_filterMan;
             dt::AnnoAvClassList *_classList;
             QList<dt::AnnoFileData *> *_fileList;
             QList<dt::AnnoFileData *> *_fileListMod;
@@ -78,6 +80,8 @@ namespace anno {
         public:
             dt::AnnoProject *project();
             const dt::AnnoProject *project() const;
+            filter::AnnoFilterManager *filterMan();
+            const filter::AnnoFilterManager *filterMan() const;
             dt::AnnoAvClassList *classes();
             const dt::AnnoAvClassList *classes() const;
 
@@ -174,7 +178,7 @@ namespace anno {
     // inlining
     //-----------------------------------------------------------
     inline GlobalProjectManager::GlobalProjectManager() :
-        QObject(NULL), _project(NULL), _classList(NULL), _fileList(NULL), _fileListMod(NULL),
+        QObject(NULL), _project(NULL), _filterMan(NULL), _classList(NULL), _fileList(NULL), _fileListMod(NULL),
         _curSelFile(-1), _curSelAnno(-1) {
     }
 
@@ -188,6 +192,14 @@ namespace anno {
 
     inline const dt::AnnoProject *GlobalProjectManager::project() const {
         return _project;
+    }
+
+    inline filter::AnnoFilterManager *GlobalProjectManager::filterMan() {
+        return _filterMan;
+    }
+
+    inline const filter::AnnoFilterManager *GlobalProjectManager::filterMan() const {
+        return _filterMan;
     }
 
     inline dt::AnnoAvClassList *GlobalProjectManager::classes() {

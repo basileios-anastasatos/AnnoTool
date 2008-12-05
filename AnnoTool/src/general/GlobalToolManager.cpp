@@ -97,12 +97,13 @@ namespace anno {
                     GlobalLogger::instance()->logDebug("GlobalToolManager: Selected Tool GtPointer.");
                     break;
                 }
-            case GtHand: {
-                    clearTool();
-                    _curTool = new graphics::ToolHand(_curView, _curScene);
-                    GlobalLogger::instance()->logDebug("GlobalToolManager: Selected Tool GtHand.");
-                    break;
-                }
+//			case GtHand:
+//			{
+//				clearTool();
+//				_curTool = new graphics::ToolHand(_curView, _curScene);
+//				GlobalLogger::instance()->logDebug("GlobalToolManager: Selected Tool GtHand.");
+//				break;
+//			}
             case GtRect: {
                     clearTool();
                     _curTool = new graphics::ToolRect(_curView, _curScene);

@@ -160,6 +160,8 @@ namespace anno {
     void GlobalConfig::loadDefaults() {
         _settingsInt.insert("logging.loglevel", (int)logging::Info);
         _settingsInt.insert("graphics.cpSize", 10);
+        _settingsInt.insert("graphics.useGL", 0);
+        _settingsInt.insert("graphics.glSampling", 4);
 
         ShapeConfig defaultShapeConfig;
         defaultShapeConfig.penNormal.setWidth(1);
@@ -172,7 +174,6 @@ namespace anno {
         _settingsShapeConfig.insert("rectangle", defaultShapeConfig);
         _settingsShapeConfig.insert("ellipse", defaultShapeConfig);
         _settingsShapeConfig.insert("polygon", defaultShapeConfig);
-
     }
 
     void GlobalConfig::clearConfig() {

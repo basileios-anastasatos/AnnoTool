@@ -52,13 +52,17 @@ namespace anno {
     }
 
     bool GlobalProjectManager::isValid() const {
-        return (_project != NULL && !_project->uuid().isNull() && _classList != NULL && _fileList != NULL && _fileListMod != NULL);
+        return (_project != NULL && !_project->uuid().isNull() && _filterMan != NULL && _classList != NULL && _fileList != NULL && _fileListMod != NULL);
     }
 
     void GlobalProjectManager::clear() {
         if (_project != NULL) {
             delete _project;
             _project = NULL;
+        }
+        if(_filterMan != NULL) {
+            delete _filterMan;
+            _filterMan = NULL;
         }
         if (_classList != NULL) {
             delete _classList;
@@ -80,6 +84,7 @@ namespace anno {
         }
         _curSelFile = -1;
         _curSelAnno = -1;
+        emit projectClosed();
     }
 
     void GlobalProjectManager::newEmpty(const QString &projectPath, const QUuid &projectUuid)
@@ -89,6 +94,7 @@ namespace anno {
         }
 
         _project = new dt::AnnoProject(projectPath, projectUuid);
+        _filterMan = new filter::AnnoFilterManager();
         _classList = new dt::AnnoAvClassList();
         _fileList = new QList<dt::AnnoFileData *>();
         _fileListMod = new QList<dt::AnnoFileData *>();
@@ -481,6 +487,7 @@ namespace anno {
         }
 
         _project = dt::AnnoProject::fromFile(path);
+        _filterMan = new filter::AnnoFilterManager();
         _classList = new dt::AnnoAvClassList();
         _fileList = new QList<dt::AnnoFileData *>();
         _fileListMod = new QList<dt::AnnoFileData *>();
@@ -491,6 +498,7 @@ namespace anno {
             sortAnnoFiles();
             setupAllSignals();
         }
+        emit projectOpened(_project);
     }
 
     void GlobalProjectManager::saveToFile(bool saveSub) const throw(IOException *,

@@ -78,6 +78,7 @@ namespace libAn {
         cerr << "Finished AnnotationList::save( " << filename << " )\n";
     }
 
+    //TODO fix ofstream to non-textmode to avoid \r\n conversion
     void AnnotationList::saveIDL(const string &filename) const {
         cerr << "AnnotationList::saveIDL( " << filename << " )\n";
         ofstream f(filename.c_str());
