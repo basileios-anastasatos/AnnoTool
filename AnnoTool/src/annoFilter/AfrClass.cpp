@@ -2,16 +2,37 @@
 #include "Annotation.h"
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include "AnnoFilterXmlLoader.h"
+#include "XmlHelper.h"
+using anno::helper::XmlHelper;
 
 namespace anno {
     namespace filter {
+        const QString AfrClass::XML_NAME("hasClass");
 
-        AfrClass::AfrClass(const QString &className) :
-            AnnoFilterRuleAtom(true), _className(className) {
+        AfrClass::AfrClass() :
+            AnnoFilterRuleAtom(true) {
+        }
+
+        AfrClass::AfrClass(const QString &className, bool caseSensitive) :
+            AnnoFilterRuleAtom(true), _className(className), _caseSensitive(caseSensitive) {
         }
 
         AfrClass::~AfrClass() {
             printf("delete <AfrClass>\n");
+        }
+
+        AfrClass *AfrClass::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
+            AfrClass *pRule = new AfrClass();
+
+            try {
+                pRule->loadFromXml(reader);
+            } catch(exc::XmlException *e) {
+                delete pRule;
+                throw e;
+            }
+
+            return pRule;
         }
 
         bool AfrClass::isValid() const {
@@ -25,12 +46,24 @@ namespace anno {
         }
 
         void AfrClass::toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
-            writer.writeEmptyElement("hasClass");
+            writer.writeEmptyElement(XML_NAME);
             writer.writeAttribute("name", _className);
         }
 
         void AfrClass::loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            //TODO
+            QString curParent = reader.name().toString();
+            if(!reader.isStartElement() || !isXmlName(curParent)) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, XML_NAME, curParent);
+            }
+
+            QString name = reader.attributes().value("name").toString();
+
+            if(name.isEmpty()) {
+                throw new exc::XmlFormatException(__FILE__, __LINE__, "Class name must not be empty!");
+            }
+            _className = name;
+            reader.readNext();
+            //reader.readNext();
         }
 
         bool AfrClass::eval(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
@@ -38,6 +71,7 @@ namespace anno {
                 throw new exc::IllegalStateException(__FILE__, __LINE__, "<hasClass>-rule has invalid config.");
             }
             return (anno->classes().indexOf(_className) >= 0);
+            //TODO think about the use of case sensitivity settings here!
         }
 
     }

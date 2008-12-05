@@ -1,9 +1,13 @@
 #include "include/AfrNot.h"
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include "AnnoFilterXmlLoader.h"
+#include "XmlHelper.h"
+using anno::helper::XmlHelper;
 
 namespace anno {
     namespace filter {
+        const QString AfrNot::XML_NAME("not");
 
         AfrNot::AfrNot(bool autoDelete) :
             LogicFilterRule(autoDelete) {
@@ -17,6 +21,19 @@ namespace anno {
 
         AfrNot::~AfrNot() {
             printf("delete <not>\n");
+        }
+
+        AfrNot *AfrNot::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
+            AfrNot *pRule = new AfrNot(true);
+
+            try {
+                pRule->loadFromXml(reader);
+            } catch(exc::XmlException *e) {
+                delete pRule;
+                throw e;
+            }
+
+            return pRule;
         }
 
         bool AfrNot::isValid() const {
@@ -40,13 +57,29 @@ namespace anno {
         }
 
         void AfrNot::toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
-            writer.writeStartElement("not");
+            writer.writeStartElement(XML_NAME);
             LogicFilterRule::toXml(writer);
             writer.writeEndElement();
         }
 
         void AfrNot::loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            //TODO implement this
+            QString curParent = reader.name().toString();
+            if(!reader.isStartElement() || !isXmlName(curParent)) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, XML_NAME, curParent);
+            }
+
+            XmlHelper::skipToNextStartElement(true, reader);
+            AnnoFilterRule *pRule = AnnoFilterXmlLoader::loadRule(reader);
+            if(pRule == NULL) {
+                throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Filter Rule Tag <%1>").arg(reader.name().toString()));
+            }
+            addChild(pRule);
+
+            XmlHelper::skipToNextEndElement(false, reader);
+            if(!reader.isEndElement() || !isXmlName(reader.name().toString())) {
+                throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered invalid tag <%1>, but expected </%2>").arg(reader.name().toString()).arg(XML_NAME));
+            }
+            reader.readNext();
         }
 
         bool AfrNot::eval(const dt::Annotation *anno) const

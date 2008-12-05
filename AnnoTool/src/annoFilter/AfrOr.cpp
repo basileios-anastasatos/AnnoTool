@@ -1,9 +1,13 @@
 #include "include/AfrOr.h"
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+#include "AnnoFilterXmlLoader.h"
+#include "XmlHelper.h"
+using anno::helper::XmlHelper;
 
 namespace anno {
     namespace filter {
+        const QString AfrOr::XML_NAME("or");
 
         AfrOr::AfrOr(bool autoDelete) :
             LogicFilterRule(autoDelete) {
@@ -12,6 +16,19 @@ namespace anno {
 
         AfrOr::~AfrOr() {
             printf("delete <or>\n");
+        }
+
+        AfrOr *AfrOr::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
+            AfrOr *pRule = new AfrOr(true);
+
+            try {
+                pRule->loadFromXml(reader);
+            } catch(exc::XmlException *e) {
+                delete pRule;
+                throw e;
+            }
+
+            return pRule;
         }
 
         bool AfrOr::isValid() const {
@@ -29,13 +46,31 @@ namespace anno {
         }
 
         void AfrOr::toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
-            writer.writeStartElement("or");
+            writer.writeStartElement(XML_NAME);
             LogicFilterRule::toXml(writer);
             writer.writeEndElement();
         }
 
         void AfrOr::loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            //TODO implement this
+            QString curParent = reader.name().toString();
+            if(!reader.isStartElement() || !isXmlName(curParent)) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, XML_NAME, curParent);
+            }
+
+            XmlHelper::skipToNextStartElement(true, reader);
+            while(!reader.atEnd()) {
+                if(reader.isStartElement()) {
+                    AnnoFilterRule *pRule = AnnoFilterXmlLoader::loadRule(reader);
+                    if(pRule == NULL) {
+                        throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Filter Rule Tag <%1>").arg(reader.name().toString()));
+                    }
+                    addChild(pRule);
+                } else if(reader.isEndElement() && isXmlName(reader.name().toString())) {
+                    reader.readNext();
+                    break;
+                }
+                reader.readNext();
+            }
         }
 
         bool AfrOr::eval(const dt::Annotation *anno) const
