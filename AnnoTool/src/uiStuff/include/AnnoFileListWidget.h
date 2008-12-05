@@ -6,6 +6,7 @@
 #include <QMenu>
 #include "../gen/ui_AnnoFileListWidget.h"
 #include "AnnoFileListModelAdapter.h"
+#include "annoTypesForward.h"
 
 
 class AnnoFileListWidget : public QDockWidget {
@@ -20,6 +21,7 @@ class AnnoFileListWidget : public QDockWidget {
     private slots:
         void onLstFilesCurrentRowChanged(const QModelIndex &current,
                                          const QModelIndex &previous);
+        void onPM_annoFileSelectChanged(int row, QUuid imageId, ::anno::dt::AnnoFileData *annoFile);
 
     public:
         AnnoFileListWidget(QWidget *parent = 0);

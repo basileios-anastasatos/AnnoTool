@@ -10,16 +10,24 @@
         <file alias="tool_ellipse" >res/ellipse_24.png</file>
         <file alias="folder_close" >res/folder_close_24.png</file>
         <file alias="folder_open" >res/folder_open_24.png</file>
+        <file alias="img_next" >res/imgNext.png</file>
+        <file alias="img_prev" >res/imgPrev.png</file>
         <file alias="tool_pointerS" >res/pointer_24.png</file>
         <file alias="tool_polygon" >res/poly_24.png</file>
         <file alias="tool_rectangle" >res/rect_24.png</file>
         <file alias="shutdown" >res/shutdown.png</file>
+        <file alias="fitImgAuto" >res/tbAutoFitImg.png</file>
         <file alias="delete2" >res/tbDel2_24.png</file>
         <file alias="delete" >res/tbDel_24.png</file>
+        <file alias="filter_edit" >res/tbFilterEdit.png</file>
+        <file alias="filter_enable" >res/tbFilterEnable.png</file>
+        <file alias="filter_score" >res/tbFilterScore.png</file>
         <file alias="fitImg" >res/tbFitImg.png</file>
         <file alias="groundtruth" >res/tbGroundtruth.png</file>
+        <file alias="lock_parent" >res/tbLockParent.png</file>
         <file alias="new" >res/tbNew_24.png</file>
         <file alias="tool_point" >res/tbPoint_24.png</file>
+        <file alias="toBack" >res/tbToBack_24.png</file>
         <file alias="toFront" >res/tbToFront_24.png</file>
     </qresource>
 </RCC>

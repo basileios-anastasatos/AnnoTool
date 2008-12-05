@@ -1,5 +1,6 @@
 #include "include/AnnoToolMainWindow.h"
 #include "include/ZoomControl.h"
+#include "include/FilterControl.h"
 #include "include/DlgNewProject.h"
 #include "include/DlgProjectDetails.h"
 #include "include/DlgAddImage.h"
@@ -22,6 +23,7 @@
 #include "IdlExporterPlugin.h"
 
 #include <QFileDialog>
+#include <QScrollBar>
 #include <QMessageBox>
 #include <QApplication>
 #include <QImage>
@@ -39,9 +41,24 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     setDocumentName(QString());
 
     setCentralWidget(ui.graphicsView);
+    ui.graphicsView->setScene(&anno::graphics::AnnoGraphicsScene::EmptyScene);
+
     zoomCtrl = new ZoomControl(ui.tbView);
     QAction *za = ui.tbView->addWidget(zoomCtrl);
     za->setVisible(true);
+
+    _tbFilterCtrl = new FilterControl(this);
+    addToolBar(Qt::TopToolBarArea, _tbFilterCtrl);
+
+    _lbGraphicsEngine = new QLabel(this);
+    if(ui.graphicsView->isOpenGl()) {
+        _lbGraphicsEngine->setText("OpenGL");
+    } else {
+        _lbGraphicsEngine->setText("Qt native");
+    }
+    _lbCurImage = new QLabel("No current Image", this);
+    statusBar()->addPermanentWidget(_lbCurImage);
+    statusBar()->addPermanentWidget(_lbGraphicsEngine);
 
     bool connectOk = true;
     connectOk = connectOk && connect(ui.annoFileListWidget, SIGNAL(annoFileSelectChanged(int, QUuid)), this, SLOT(annoFileSelectChanged(int, QUuid)));
@@ -66,8 +83,8 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     setToolEnabled(false);
 
     //TODO remove this later on
-    ui.tbFilter->setVisible(false);
     ui.actionGroundtruthMode->setVisible(false);
+    _tbFilterCtrl->setVisible(false);
 }
 
 AnnoToolMainWindow::~AnnoToolMainWindow() {
@@ -79,7 +96,7 @@ void AnnoToolMainWindow::clearGraphicsScene() {
     setToolEnabled(false);
     GlobalToolManager::instance()->resetAll();
     if (_graphicsScene != NULL) {
-        ui.graphicsView->setScene(NULL);
+        ui.graphicsView->setScene(&anno::graphics::AnnoGraphicsScene::EmptyScene);
         delete _graphicsScene;
         _graphicsScene = NULL;
     }
@@ -87,6 +104,8 @@ void AnnoToolMainWindow::clearGraphicsScene() {
 
 void AnnoToolMainWindow::newGraphicsScene(QImage *img) {
     GlobalLogger::instance()->logDebug("MW: creating new graphics scene.");
+    int posX = ui.graphicsView->horizontalScrollBar()->sliderPosition();
+    int posY = ui.graphicsView->verticalScrollBar()->sliderPosition();
     clearGraphicsScene();
     _graphicsScene = new anno::graphics::AnnoGraphicsScene(ui.graphicsView);
     if (img != NULL) {
@@ -101,6 +120,8 @@ void AnnoToolMainWindow::newGraphicsScene(QImage *img) {
         fitGraphicsScene();
     } else {
         zoomCtrl->setZoom(zoomCtrl->getZoom());
+        ui.graphicsView->horizontalScrollBar()->setSliderPosition(posX);
+        ui.graphicsView->verticalScrollBar()->setSliderPosition(posY);
     }
 
     setToolEnabled(true);
@@ -124,8 +145,9 @@ void AnnoToolMainWindow::loadGraphicsAnno() {
     if (_graphicsScene != NULL && GlobalProjectManager::instance()->isValid()) {
         GlobalLogger::instance()->logDebug("MW: loading annotation shapes into scene.");
         anno::dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
-        if (curFile != NULL && curFile->annoCount() != 0) {
+        if (curFile != NULL && curFile->annoCount() > 0) {
             QListIterator<anno::dt::Annotation *> i = curFile->getAnnoIterator();
+            //TODO hier filter einfügen!
             int j = 0;
             while (i.hasNext()) {
                 anno::dt::Annotation *cur = i.next();
@@ -161,10 +183,10 @@ bool AnnoToolMainWindow::checkProjectToClose() {
         if (ret == QMessageBox::No) {
             return false;
         } else {
-            GlobalProjectManager::instance()->clear();
             configUIproject(false);
             setDocumentName(QString());
             clearGraphicsScene();
+            GlobalProjectManager::instance()->clear();
             return true;
         }
     }
@@ -179,9 +201,14 @@ void AnnoToolMainWindow::configUIproject(bool open) {
     ui.actionProjectDetails->setEnabled(open);
     ui.actionProjectAddImage->setEnabled(open);
     ui.actionGroundtruthMode->setEnabled(open);
+    _tbFilterCtrl->setEnabled(open);
 
     if(!open) {
         ui.actionGroundtruthMode->setChecked(false);
+        _lbCurImage->setText("No current image");
+        _tbFilterCtrl->resetFilters();
+    } else {
+        _tbFilterCtrl->updateFilters();
     }
 }
 
@@ -207,6 +234,7 @@ void AnnoToolMainWindow::setToolEnabled(bool enabled) {
     ui.actionZtoBack->setEnabled(enabled);
     ui.actionRemoveAnnotation->setEnabled(enabled);
     ui.actionSaveCurrentImage->setEnabled(enabled);
+    zoomCtrl->setEnabled(enabled);
 }
 
 void AnnoToolMainWindow::lockParentAnno(bool lock) {
@@ -242,6 +270,34 @@ void AnnoToolMainWindow::lockParentAnno(bool lock) {
 void AnnoToolMainWindow::closeEvent(QCloseEvent *event) {
     if (checkProjectToClose()) {
         event->accept();
+    } else {
+        event->ignore();
+    }
+}
+
+void AnnoToolMainWindow::wheelEvent(QWheelEvent *event) {
+    if(GlobalProjectManager::instance()->isValid() && (event->modifiers() & Qt::ControlModifier) != 0) {
+        event->accept();
+        int delta = event->delta();
+        if(delta < 0) {
+            ui.actionNextImage->trigger();
+        } else if(delta > 0) {
+            ui.actionPreviousImage->trigger();
+        }
+    } else if(GlobalProjectManager::instance()->isValid() && (event->modifiers() & Qt::ShiftModifier) != 0) {
+        int curTool = (int)GlobalToolManager::instance()->curToolId();
+        int delta = event->delta();
+        if((curTool >= GlobalToolManager::GtNone) && (curTool < GlobalToolManager::GtNone2 - 1) && (delta < 0)) {
+            GlobalToolManager::instance()->selectTool((GlobalToolManager::SelGraphicsTool)(curTool + 1));
+        } else if(curTool <= GlobalToolManager::GtNone2 && (curTool > GlobalToolManager::GtNone + 1) && (delta > 0)) {
+            GlobalToolManager::instance()->selectTool((GlobalToolManager::SelGraphicsTool)(curTool - 1));
+        }
+
+    } else if(GlobalProjectManager::instance()->isValid() && (event->modifiers() == 0)) {
+        event->accept();
+        int dir = (event->delta() <= 0) ? -1 : 1;
+        int curZoom = zoomCtrl->getZoom();
+        zoomCtrl->setZoom(curZoom + dir * 10);
     } else {
         event->ignore();
     }
@@ -299,6 +355,9 @@ void AnnoToolMainWindow::on_actionFileOpen_triggered() {
                 configUIproject(true);
                 setDocumentName(pm->project()->projectName());
                 updateAnnoWidgets();
+                if(pm->fileCount() > 0) {
+                    pm->setSelectedFileRow(0);
+                }
             } catch(AnnoException *e) {
                 QMessageBox::critical(this, "AnnoTool Exception", e->getTrace());
                 GlobalLogger::instance()->logError(e->getTrace());
@@ -321,10 +380,10 @@ void AnnoToolMainWindow::on_actionFileClose_triggered() {
         if (ret == QMessageBox::No) {
             return;
         } else {
-            GlobalProjectManager::instance()->clear();
             configUIproject(false);
             setDocumentName(QString());
             clearGraphicsScene();
+            GlobalProjectManager::instance()->clear();
             updateAnnoWidgets();
         }
     }
@@ -590,6 +649,7 @@ void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::an
     GlobalLogger::instance()->logDebug("MW: onPM_annoFileSelectChanged");
     setToolEnabled(false);
     lockParentAnno(false);
+    _lbCurImage->setText(QString());
 
     ui.annoListWidget->updateData();
     ui.annoDataWidget->updateAllData();
@@ -613,6 +673,7 @@ void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::an
     newGraphicsScene(&img);
     loadGraphicsAnno();
     setToolEnabled(true);
+    _lbCurImage->setText(annoFile->imageInfo()->imagePath().filePath());
     //	ui.graphicsView->invalidateScene();
 }
 
@@ -659,6 +720,7 @@ void AnnoToolMainWindow::on_actionToolEllipse_triggered() {
 void AnnoToolMainWindow::onTM_toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset) {
     if (!reset) {
         switch (tool) {
+            case anno::GlobalToolManager::GtNone2:
             case anno::GlobalToolManager::GtNone: {
                     uncheckTools();
                     break;

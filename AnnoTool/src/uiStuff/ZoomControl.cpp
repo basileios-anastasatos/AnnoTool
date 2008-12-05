@@ -2,7 +2,7 @@
 #include <QLineEdit>
 
 ZoomControl::ZoomControl(QWidget *parent) :
-    QWidget(parent) {
+    QWidget(parent), _sliderActive(false) {
     ui.setupUi(this);
     initZoomList();
 }
@@ -28,13 +28,27 @@ void ZoomControl::on_zoomSlider_valueChanged(int value) {
     emit zoomChanged(value);
 }
 
+void ZoomControl::on_zoomSlider_sliderMoved(int value) {
+    ui.cbZoom->lineEdit()->setText(QString("%1").arg(value));
+}
+
+void ZoomControl::on_zoomSlider_sliderPressed() {
+    _sliderActive = true;
+}
+
+void ZoomControl::on_zoomSlider_sliderReleased() {
+    _sliderActive = false;
+}
+
 void ZoomControl::on_cbZoom_editTextChanged(const QString &text) {
-    bool isOk = false;
-    int value = text.toInt(&isOk, 10);
-    if (isOk && value >= 10 && value <= 500) {
-        ui.zoomSlider->setValue(value);
-    } else if (!isOk) {
-        on_zoomSlider_valueChanged(ui.zoomSlider->value());
+    if(!_sliderActive) {
+        bool isOk = false;
+        int value = text.toInt(&isOk, 10);
+        if (isOk && value >= 10 && value <= 500) {
+            ui.zoomSlider->setValue(value);
+        } else if (!isOk) {
+            on_zoomSlider_valueChanged(ui.zoomSlider->value());
+        }
     }
 }
 

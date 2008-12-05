@@ -12,6 +12,7 @@
 class QCloseEvent;
 class QImage;
 class ZoomControl;
+class FilterControl;
 
 class AnnoToolMainWindow : public QMainWindow {
         Q_OBJECT
@@ -21,6 +22,9 @@ class AnnoToolMainWindow : public QMainWindow {
         static AnnoToolMainWindow *_me;
         Ui::AnnoToolMainWindowClass ui;
         ZoomControl *zoomCtrl;
+        FilterControl *_tbFilterCtrl;
+        QLabel *_lbCurImage;
+        QLabel *_lbGraphicsEngine;
         anno::graphics::AnnoGraphicsScene *_graphicsScene;
 
         // internal helper methods
@@ -39,6 +43,7 @@ class AnnoToolMainWindow : public QMainWindow {
         // overwritten methods
     protected:
         virtual void closeEvent(QCloseEvent *event);
+        virtual void wheelEvent(QWheelEvent *event);
 
         // internal slots
     private slots:
@@ -67,10 +72,14 @@ class AnnoToolMainWindow : public QMainWindow {
 
         void onZoomCtrl_zoomChanged(int value);
 
+        // Project Manager Handling
         void onPM_fileListUpdate();
         void onPM_annoListUpdate();
         void onPM_annoFileSelectChanged(int row, QUuid imageId, ::anno::dt::AnnoFileData *annoFile);
         void onPM_annoSelectChanged(int row, QUuid annoId, ::anno::dt::Annotation *anno);
+
+        // Filter handling
+        //void onFM_
 
         // Tool support
         void on_actionLockParentAnno_triggered();

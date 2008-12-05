@@ -1,7 +1,6 @@
 #include "include/AnnoFileListWidget.h"
 #include <QHeaderView>
-#include "GlobalLogger.h"
-#include "GlobalProjectManager.h"
+#include "importGlobals.h"
 
 using ::logging::GlobalLogger;
 using ::anno::GlobalProjectManager;
@@ -16,6 +15,7 @@ AnnoFileListWidget::AnnoFileListWidget(QWidget *parent) :
 
     connect(ui.lstFiles->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(onLstFilesCurrentRowChanged(
                 const QModelIndex &, const QModelIndex &)));
+    connect(GlobalProjectManager::instance(), SIGNAL(curAnnoFileSelChanged(int, QUuid, ::anno::dt::AnnoFileData *)), this, SLOT(onPM_annoFileSelectChanged(int, QUuid, ::anno::dt::AnnoFileData *)));
 
     ui.lstFiles->header()->setStretchLastSection(false);
     ui.lstFiles->setColumnWidth(0, 150);
@@ -33,10 +33,19 @@ void AnnoFileListWidget::updateData() {
     update();
 }
 
-void AnnoFileListWidget::onLstFilesCurrentRowChanged(
-    const QModelIndex &current, const QModelIndex &previous) {
+void AnnoFileListWidget::onLstFilesCurrentRowChanged(const QModelIndex &current,
+        const QModelIndex &previous) {
     GlobalLogger::instance()->logDebug("AnnoFileListWidget::on_lstFiles_currentRowChanged");
-    emit annoFileSelectChanged(current.row(), GlobalProjectManager::instance()->getAnnoFile(current.row())->imageUuid());
+    emit annoFileSelectChanged(current.row(),
+                               GlobalProjectManager::instance()->getAnnoFile(current.row())->imageUuid());
+}
+
+void AnnoFileListWidget::onPM_annoFileSelectChanged(int row, QUuid imageId,
+        ::anno::dt::AnnoFileData *annoFile) {
+    blockSignals(true);
+    QModelIndex idx = ui.lstFiles->model()->index(row, 0, QModelIndex());
+    ui.lstFiles->setCurrentIndex(idx);
+    blockSignals(false);
 }
 
 
