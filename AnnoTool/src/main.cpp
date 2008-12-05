@@ -14,7 +14,6 @@ int main(int argc, char *argv[]) {
     GlobalLogger::instance()->setLogLevel((logging::LogLevel)GlobalConfig::instance()->getInt("logging.loglevel"));
     // ------------------------------------------
 
-
     // Application Configuration
     // ------------------------------------------
     QApplication a(argc, argv);
@@ -30,6 +29,7 @@ int main(int argc, char *argv[]) {
     ieman->addImporter(new anno::IdlImporterPlugin());
     ieman->addExporter(new anno::IdlExporterPlugin());
     //----------------------------------------------------------------
+
 
     AnnoToolMainWindow w;
     w.show();

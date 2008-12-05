@@ -1,4 +1,4 @@
-TEMPLATE = app
+TEMPLATE += app
 TARGET = AnnoTool
 CONFIG += release
 CONFIG -= exceptions_off \
@@ -9,7 +9,7 @@ UI_DIR = ./src/uiStuff/gen
 MOC_DIR = ./tmp/moc
 RCC_DIR = ./tmp
 INCLUDEPATH += ./src/annoDataTypes/include \
-    ./src/annoDataTypes/filter/include \
+    ./src/annoFilter/include \
     ./src/annoExceptions/include \
     ./src/annoGraphics/include \
     ./src/annoHelper/include \
@@ -23,8 +23,20 @@ INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/libAnnotationDeprecated/include
 QT += core \
     gui \
+    opengl \
     xml
-HEADERS += ./src/annoFilter/include/AfrScore.h \
+HEADERS += ./src/annoFilter/include/annoFiltersForward.h \
+    ./src/uiStuff/include/AnnoGraphicsView.h \
+    ./src/uiStuff/include/FilterControl.h \
+    ./src/uiStuff/helper/include/AnnoGLView.h \
+    ./src/uiStuff/helper/include/AnnoFilterHighlighter.h \
+    ./src/uiStuff/helper/include/AnnoFiltersModelAdapter.h \
+    ./src/annoFilter/include/AnnoFilterManager.h \
+    ./src/uiStuff/include/DlgFilterEdit.h \
+    ./src/annoFilter/include/AfrSwitch.h \
+    ./src/annoFilter/include/AllAnnoFilterRules.h \
+    ./src/annoFilter/include/AnnoFilterXmlLoader.h \
+    ./src/annoFilter/include/AfrScore.h \
     ./src/annoFilter/include/AfrClass.h \
     ./src/annoFilter/include/AfrAttributeValue.h \
     ./src/annoFilter/include/LogicFilterRule.h \
@@ -129,7 +141,16 @@ HEADERS += ./src/annoFilter/include/AfrScore.h \
     ./src/annoExceptions/include/OutOfRangeException.h \
     ./src/annoExceptions/include/XmlException.h \
     ./src/annoExceptions/include/XmlFormatException.h
-SOURCES += ./src/annoFilter/AfrScore.cpp \
+SOURCES += ./src/uiStuff/AnnoGraphicsView.cpp \
+    ./src/uiStuff/FilterControl.cpp \
+    ./src/uiStuff/helper/AnnoGLView.cpp \
+    ./src/uiStuff/helper/AnnoFilterHighlighter.cpp \
+    ./src/uiStuff/helper/AnnoFiltersModelAdapter.cpp \
+    ./src/annoFilter/AnnoFilterManager.cpp \
+    ./src/uiStuff/DlgFilterEdit.cpp \
+    ./src/annoFilter/AfrSwitch.cpp \
+    ./src/annoFilter/AnnoFilterXmlLoader.cpp \
+    ./src/annoFilter/AfrScore.cpp \
     ./src/annoFilter/AfrClass.cpp \
     ./src/annoFilter/AfrAttributeValue.cpp \
     ./src/annoFilter/LogicFilterRule.cpp \
@@ -227,7 +248,8 @@ SOURCES += ./src/annoFilter/AfrScore.cpp \
     ./src/uiStuff/ShapeContextMenu.cpp \
     ./src/uiStuff/AnnoToolMainWindow.cpp \
     ./src/main.cpp
-FORMS += ./src/uiStuff/forms/DlgEditAttributeShort.ui \
+FORMS += ./src/uiStuff/forms/DlgFilterEdit.ui \
+    ./src/uiStuff/forms/DlgEditAttributeShort.ui \
     ./src/uiStuff/forms/DlgEditClass.ui \
     ./src/uiStuff/forms/AnnoToolMainWindow.ui \
     ./src/uiStuff/forms/ZoomControl.ui \
