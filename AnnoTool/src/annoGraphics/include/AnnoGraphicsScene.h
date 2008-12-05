@@ -22,6 +22,9 @@ namespace anno {
                 int _curMinZ;
                 int _curMaxZ;
 
+            public:
+                static AnnoGraphicsScene EmptyScene;
+
             private:
                 void initScene();
 
