@@ -8,11 +8,27 @@ namespace anno {
 
         class AfrClass: public AnnoFilterRuleAtom {
             private:
+                static const QString XML_NAME;
+
+            private:
                 QString _className;
+                bool _caseSensitive;
+
+            private:
+                Qt::CaseSensitivity convCase() const;
+                AfrClass();
 
             public:
-                AfrClass(const QString &className);
+                AfrClass(const QString &className, bool caseSensitive = true);
                 virtual ~AfrClass();
+
+                // Class specific methods
+            public:
+                static bool isXmlName(const QString &str);
+                static QString xmlName();
+                static AfrClass *fromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
+                bool isCaseSensitive() const;
+                QString getName() const;
 
                 // inherited interface stuff
                 // ------------------------------------------------------------------------------------
@@ -32,6 +48,30 @@ namespace anno {
                 // ------------------------------------------------------------------------------------
 
         };
+
+        // Inlining
+        // ------------------------------------------------------------------------------------
+        inline bool AfrClass::isXmlName(const QString &str) {
+            return (QString::compare(str, XML_NAME, Qt::CaseInsensitive) == 0);
+        }
+
+        inline QString AfrClass::xmlName() {
+            return XML_NAME;
+        }
+
+        inline Qt::CaseSensitivity AfrClass::convCase() const {
+            return (_caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+        }
+
+        inline bool AfrClass::isCaseSensitive() const {
+            return _caseSensitive;
+        }
+
+        inline QString AfrClass::getName() const {
+            return _className;
+        }
+        // ------------------------------------------------------------------------------------
+
 
     }
 }

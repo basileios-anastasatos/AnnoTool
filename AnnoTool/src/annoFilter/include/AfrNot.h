@@ -7,10 +7,19 @@ namespace anno {
     namespace filter {
 
         class AfrNot: public LogicFilterRule {
+            private:
+                static const QString XML_NAME;
+
             public:
                 AfrNot(bool autoDelete = true);
                 AfrNot(AnnoFilterRule *rule, bool autoDelete = true);
                 virtual ~AfrNot();
+
+                // Class specific methods
+            public:
+                static bool isXmlName(const QString &str);
+                static QString xmlName();
+                static AfrNot *fromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
 
                 // inherited interface stuff
                 // ------------------------------------------------------------------------------------
@@ -43,6 +52,18 @@ namespace anno {
                 AnnoFilterRule *getOperand();
                 const AnnoFilterRule *getOperand() const;
         };
+
+        // Inlining
+        // ------------------------------------------------------------------------------------
+        inline bool AfrNot::isXmlName(const QString &str) {
+            return (QString::compare(str, XML_NAME, Qt::CaseInsensitive) == 0);
+        }
+
+        inline QString AfrNot::xmlName() {
+            return XML_NAME;
+        }
+        // ------------------------------------------------------------------------------------
+
 
     }
 }

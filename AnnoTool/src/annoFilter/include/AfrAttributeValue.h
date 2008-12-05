@@ -2,23 +2,41 @@
 #define AFRATTRIBUTEVALUE_H_
 
 #include "AnnoFilterRuleAtom.h"
-#include "Annotation.h"
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 
 namespace anno {
     namespace filter {
 
         class AfrAttributeValue: public AnnoFilterRuleAtom {
             private:
+                static const QString XML_NAME;
+
+            private:
                 QString _attrClass;
                 QString _attrName;
                 QString _attrValue;
+                bool _caseSensitive;
+
+            private:
+                Qt::CaseSensitivity convCase() const;
+
+            private:
+                AfrAttributeValue();
 
             public:
-                AfrAttributeValue(const QString &attrName, const QString &attrValue = QString());
-                AfrAttributeValue(const QString &attrClass, const QString &attrName, const QString &attrValue);
+                AfrAttributeValue(const QString &attrName, bool caseSensitive = true);
+                AfrAttributeValue(const QString &attrName, const QString &attrValue, bool caseSensitive = true);
+                AfrAttributeValue(const QString &attrClass, const QString &attrName, const QString &attrValue, bool caseSensitive = true);
                 virtual ~AfrAttributeValue();
+
+                // Class specific methods
+            public:
+                static bool isXmlName(const QString &str);
+                static QString xmlName();
+                static AfrAttributeValue *fromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
+                bool isCaseSensitive() const;
+                QString getClass() const;
+                QString getName() const;
+                QString getValue() const;
 
                 // inherited interface stuff
                 // ------------------------------------------------------------------------------------
@@ -39,6 +57,37 @@ namespace anno {
                 // ------------------------------------------------------------------------------------
 
         };
+
+        // Inlining
+        // ------------------------------------------------------------------------------------
+        inline bool AfrAttributeValue::isXmlName(const QString &str) {
+            return (QString::compare(str, XML_NAME, Qt::CaseInsensitive) == 0);
+        }
+
+        inline QString AfrAttributeValue::xmlName() {
+            return XML_NAME;
+        }
+
+        inline Qt::CaseSensitivity AfrAttributeValue::convCase() const {
+            return (_caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+        }
+
+        inline bool AfrAttributeValue::isCaseSensitive() const {
+            return _caseSensitive;
+        }
+
+        inline QString AfrAttributeValue::getClass() const {
+            return _attrClass;
+        }
+
+        inline QString AfrAttributeValue::getName() const {
+            return _attrName;
+        }
+
+        inline QString AfrAttributeValue::getValue() const {
+            return _attrValue;
+        }
+        // ------------------------------------------------------------------------------------
 
     }
 }

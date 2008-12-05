@@ -7,17 +7,30 @@
 #include <QUuid>
 
 #include "annoTypesForward.h"
+#include "AllAnnoExceptions.h"
+#include "AnnoFilterRule.h"
+
+class QXmlStreamReader;
+class QXmlStreamWriter;
 
 namespace anno {
     namespace filter {
-        class AnnoFilterRule;
 
         class AnnoFilter : public QObject {
                 Q_OBJECT
 
             private:
-                // Filter rules.
-                QList<AnnoFilterRule *> _rules;
+                // Flag indicating whether the filter is active or not.
+                bool _active;
+
+                // Filer name (should be unique)
+                QString _name;
+
+                // Filter comment
+                QString _comment;
+
+                // Current Filter Rule.
+                AnnoFilterRule *_rule;
 
                 // File with data to be filtered
                 dt::AnnoFileData *_fileData;
@@ -25,15 +38,45 @@ namespace anno {
                 // filtered set of annotations
                 QMap<QUuid, dt::Annotation *> _filteredAnnoMap;
 
-            public:
-                AnnoFilter();
-                virtual ~AnnoFilter() {}
+                // internal signal connections
+            private slots:
+                void onAnnoAdded(::anno::dt::Annotation *anno);
+                void onAnnoRemoved(QUuid uuid);
+                void onAnnoUpdated(::anno::dt::Annotation *anno);
 
+                // internal helpers
+            private:
+                void invalidate();
+                bool connectSignals();
+                bool disconnectSignals();
+
+            public:
+                AnnoFilter(QObject *parent = NULL);
+                AnnoFilter(AnnoFilterRule *rule, dt::AnnoFileData *fileData = NULL, QObject *parent = NULL);
+                AnnoFilter(const QString &name, AnnoFilterRule *rule, dt::AnnoFileData *fileData = NULL, QObject *parent = NULL);
+                AnnoFilter(const QString &name, const QString &comment, AnnoFilterRule *rule, dt::AnnoFileData *fileData = NULL, QObject *parent = NULL);
+                virtual ~AnnoFilter();
+
+                // Filter-Access stuff
             public:
                 // Applies the filter to the data.
-                void apply();
+                bool applyFilter(bool partial = false);
+                void resetFilter();
+                bool isActive() const;
+                void deactivate();
+                bool hasRule() const;
 
-                // Access stuff
+                void setName(const QString &name);
+                void setComment(const QString &comment);
+                void setFilterRule(AnnoFilterRule *rule, bool deleteOld = false);
+                void setFileData(dt::AnnoFileData *fileData);
+                QString getName() const;
+                QString getComment() const;
+                AnnoFilterRule *getFilterRule() const;
+                dt::AnnoFileData *getFileData() const;
+
+
+                // Anno-Access stuff
             public:
                 // How many annos were left after filtering?
                 int filterCount() const;
@@ -41,19 +84,73 @@ namespace anno {
                 const dt::Annotation *getAnnotation(const QUuid &uuid) const;
                 bool containsAnnotation(const QUuid &uuid) const;
                 bool containsAnnotation(const dt::Annotation *anno) const;
+                QList<dt::Annotation *> getAnnoList() const;
 
-                QListIterator<dt::Annotation *> getAnnoIterator() const;
+                // Copying stuff
+            public:
+                AnnoFilter *getCleanCopy(QObject *parent = 0) const;
 
-
+                // XML interface
+            public:
+                void toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *);
+                void loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
+                static AnnoFilter *fromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
 
             signals:
-                void filterSetChanged();
-
-                //TODO signal: ergebnismenge des filters verändert
-                //TODO signal: ergebnismenger verändert: added
-                //TODO signal: ergebnismenger verändert: removed
+                void filterSetChanged(bool update);
+                void filterAnnoAdded(::anno::dt::Annotation *anno);
+                void filterAnnoRemoved(QUuid uuid);
 
         };
+
+
+        // Inlining
+        // ----------------------------------------------------------------------------------
+        inline bool AnnoFilter::isActive() const {
+            return _active;
+        }
+
+        inline bool AnnoFilter::hasRule() const {
+            return (_rule != NULL);
+        }
+
+        inline void AnnoFilter::setName(const QString &name) {
+            _name = name;
+        }
+
+        inline void AnnoFilter::setComment(const QString &comment) {
+            _comment = comment;
+        }
+
+        inline void AnnoFilter::setFilterRule(AnnoFilterRule *rule, bool deleteOld) {
+            if(deleteOld) {
+                delete _rule;
+            }
+            _rule = rule;
+            invalidate();
+        }
+
+        inline void AnnoFilter::setFileData(dt::AnnoFileData *fileData) {
+            _fileData = fileData;
+            invalidate();
+        }
+
+        inline QString AnnoFilter::getName() const {
+            return _name;
+        }
+
+        inline QString AnnoFilter::getComment() const {
+            return _comment;
+        }
+
+        inline AnnoFilterRule *AnnoFilter::getFilterRule() const {
+            return _rule;
+        }
+
+        inline dt::AnnoFileData *AnnoFilter::getFileData() const {
+            return _fileData;
+        }
+        // ----------------------------------------------------------------------------------
 
     }
 }
