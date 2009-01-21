@@ -114,7 +114,17 @@
     <addaction name="separator" />
     <addaction name="actionProjectAddImage" />
    </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionCopy" />
+    <addaction name="actionPaste" />
+    <addaction name="separator" />
+    <addaction name="actionInterpolate" />
+   </widget>
    <addaction name="menu_File" />
+   <addaction name="menu_Edit" />
    <addaction name="menu_Project" />
    <addaction name="menu_Settings" />
    <addaction name="menu_Help" />
@@ -519,6 +529,33 @@
    </property>
    <property name="text">
     <string>Enable Auto Fit</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionInterpolate">
+   <property name="text">
+    <string>Interpolate</string>
    </property>
   </action>
  </widget>

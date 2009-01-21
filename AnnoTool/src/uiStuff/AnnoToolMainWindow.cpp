@@ -6,6 +6,7 @@
 #include "include/DlgAddImage.h"
 #include "include/DlgLoaderDetails.h"
 #include "include/DlgAbout.h"
+#include "include/DlgInterpolate.h"
 
 #include "AllAnnoExceptions.h"
 #include "importGlobals.h"
@@ -67,10 +68,18 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
 
     GlobalProjectManager *pm = GlobalProjectManager::instance();
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoModified(::anno::dt::Annotation *)), ui.annoDataWidget, SLOT(updateShapeInfo()));
+
+    connectOk = connectOk && connect(pm, SIGNAL(projectOpened(::anno::dt::AnnoProject *)), this, SLOT(onPM_projectOpened(::anno::dt::AnnoProject *)));
+    connectOk = connectOk && connect(pm, SIGNAL(projectClosed()), this, SLOT(onPM_projectClosed()));
+    connectOk = connectOk && connect(pm, SIGNAL(projectNew()), this, SLOT(onPM_projectNew()));
+
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoFileModifyStateChanged(::anno::dt::AnnoFileData *, bool, bool)), this, SLOT(onPM_fileListUpdate()));
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoModifyStateChanged(::anno::dt::Annotation *, bool, bool)), this, SLOT(onPM_annoListUpdate()));
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoFileSelChanged(int, QUuid, ::anno::dt::AnnoFileData *)), this, SLOT(onPM_annoFileSelectChanged(int, QUuid, ::anno::dt::AnnoFileData *)));
     connectOk = connectOk && connect(pm, SIGNAL(curAnnoSelChanged(int, QUuid, ::anno::dt::Annotation *)), this, SLOT(onPM_annoSelectChanged(int, QUuid, ::anno::dt::Annotation *)));
+
+    connectOk = connectOk && connect(&_copyMan, SIGNAL(dataAvailable()), this, SLOT(onCM_dataAvailable()));
+    connectOk = connectOk && connect(&_copyMan, SIGNAL(lostData()), this, SLOT(onCM_lostData()));
 
     GlobalToolManager *tm = GlobalToolManager::instance();
     connectOk = connectOk && connect(tm, SIGNAL(toolSelected(anno::GlobalToolManager::SelGraphicsTool, bool)), this, SLOT(onTM_toolSelected(anno::GlobalToolManager::SelGraphicsTool, bool)));
@@ -84,7 +93,7 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
 
     //TODO remove this later on
     ui.actionGroundtruthMode->setVisible(false);
-    _tbFilterCtrl->setVisible(false);
+    ui.actionInterpolate->setEnabled(false);
 }
 
 AnnoToolMainWindow::~AnnoToolMainWindow() {
@@ -124,6 +133,8 @@ void AnnoToolMainWindow::newGraphicsScene(QImage *img) {
         ui.graphicsView->verticalScrollBar()->setSliderPosition(posY);
     }
 
+    connect(GlobalProjectManager::instance()->filterMan(), SIGNAL(coloringUpdateNeeded()), _graphicsScene, SLOT(applyColoring()));
+
     setToolEnabled(true);
 }
 
@@ -141,25 +152,44 @@ void AnnoToolMainWindow::fitGraphicsScene() {
     }
 }
 
-void AnnoToolMainWindow::loadGraphicsAnno() {
+void AnnoToolMainWindow::loadGraphicsAnnoRaw() {
     if (_graphicsScene != NULL && GlobalProjectManager::instance()->isValid()) {
-        GlobalLogger::instance()->logDebug("MW: loading annotation shapes into scene.");
+        GlobalLogger::instance()->logDebug("MW: loading annotation shapes into scene (raw).");
+
         anno::dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
         if (curFile != NULL && curFile->annoCount() > 0) {
             QListIterator<anno::dt::Annotation *> i = curFile->getAnnoIterator();
-            //TODO hier filter einfügen!
             int j = 0;
             while (i.hasNext()) {
                 anno::dt::Annotation *cur = i.next();
                 anno::graphics::AnnoGraphicsShape *s =
                     anno::graphics::AnnoGraphicsShapeCreator::toGraphicsShape(cur);
                 if (s != NULL) {
-                    GlobalLogger::instance()->logDebug(QString("MW: Adding annotation shape %1").arg(s->relatedAnno()->annoIdAsString()));
+                    //GlobalLogger::instance()->logDebug(QString("MW: Adding annotation shape %1").arg(s->relatedAnno()->annoIdAsString()));
                     _graphicsScene->addAnnoShape(s);
                     ++j;
                 }
             }
-            GlobalLogger::instance()->logInfo(QString("Loaded %1 annotation shapes.").arg(j));
+            GlobalLogger::instance()->logDebug(QString("Loaded %1 annotation shapes.").arg(j));
+        }
+    }
+}
+
+void AnnoToolMainWindow::loadGraphicsAnnoFiltered() {
+    if (_graphicsScene != NULL && GlobalProjectManager::instance()->isValid() && GlobalProjectManager::instance()->filterMan()->curFilter() != NULL) {
+        GlobalLogger::instance()->logDebug("MW: loading annotation shapes into scene (filtered).");
+
+        anno::filter::AnnoFilter *filter = GlobalProjectManager::instance()->filterMan()->curFilter();
+        if (filter->filterCount() > 0) {
+            QList<anno::dt::Annotation *> filtered = filter->getAnnoList();
+            foreach(anno::dt::Annotation * a, filtered) {
+                anno::graphics::AnnoGraphicsShape *s = anno::graphics::AnnoGraphicsShapeCreator::toGraphicsShape(a);
+                if (s != NULL) {
+                    //GlobalLogger::instance()->logDebug(QString("MW: Adding annotation shape %1").arg(s->relatedAnno()->annoIdAsString()));
+                    _graphicsScene->addAnnoShape(s);
+                }
+            }
+            GlobalLogger::instance()->logDebug(QString("Loaded %1 annotation shapes.").arg(filtered.size()));
         }
     }
 }
@@ -206,7 +236,7 @@ void AnnoToolMainWindow::configUIproject(bool open) {
     if(!open) {
         ui.actionGroundtruthMode->setChecked(false);
         _lbCurImage->setText("No current image");
-        _tbFilterCtrl->resetFilters();
+        _tbFilterCtrl->resetAll();
     } else {
         _tbFilterCtrl->updateFilters();
     }
@@ -267,6 +297,20 @@ void AnnoToolMainWindow::lockParentAnno(bool lock) {
     ui.annoListWidget->updateData();
 }
 
+void AnnoToolMainWindow::connectFilterSignals() {
+    anno::filter::AnnoFilterManager *fm = GlobalProjectManager::instance()->filterMan();
+    if(fm != NULL) {
+        bool conOk = true;
+        conOk = conOk && connect(fm, SIGNAL(filterEnable(bool, bool)), this, SLOT(onFM_filterEnable(bool, bool)));
+        conOk = conOk && connect(fm, SIGNAL(curFilterBegin(int)), this, SLOT(onFM_curFilterBegin(int)));
+        conOk = conOk && connect(fm, SIGNAL(curFilterEnd(int, int)), this, SLOT(onFM_curFilterEnd(int, int)));
+
+        if(!conOk) {
+            GlobalLogger::instance()->logError("CONNECT-ERROR: AnnoToolMainWindow::connectFilterSignals()");
+        }
+    }
+}
+
 void AnnoToolMainWindow::closeEvent(QCloseEvent *event) {
     if (checkProjectToClose()) {
         event->accept();
@@ -320,7 +364,6 @@ void AnnoToolMainWindow::on_actionFileNew_triggered() {
                 if(dp.path().isEmpty()) {
                     dp = QFileInfo(".");
                 }
-                GlobalLogger::instance()->logDebug(QString(">>> path: [%1]  dp-rel-path: [%2]").arg(dp.absoluteFilePath()).arg(dp.filePath()));
             }
             GlobalLogger::instance()->logDebug(QString(">>> dp-path: %1").arg(dp.filePath()));
 
@@ -410,12 +453,12 @@ void AnnoToolMainWindow::on_actionFileImport_triggered() {
     if (dlg->exec() == QDialog::Accepted) {
         anno::ImporterPlugin *p = dlg->getSelectedImporterPtr();
         if (p != NULL) {
-            GlobalLogger::instance()->logInfo(QString("Starting importer plugin [%1].").arg(p->name()));
+            GlobalLogger::instance()->logDebug(QString("Starting importer plugin [%1].").arg(p->name()));
             if (!p->exec(QFileInfo(GlobalProjectManager::instance()->projectDir(), QString()))) {
                 GlobalLogger::instance()->logError(QString("Importer plugin [%1] finished execution with an error.").arg(p->name()));
             } else {
-                GlobalLogger::instance()->logInfo(QString(
-                                                      "Importer plugin [%1] finished successfully.").arg(p->name()));
+                GlobalLogger::instance()->logDebug(QString(
+                                                       "Importer plugin [%1] finished successfully.").arg(p->name()));
                 updateAnnoWidgets();
             }
         } else {
@@ -429,11 +472,11 @@ void AnnoToolMainWindow::on_actionFileExport_triggered() {
     if (dlg->exec() == QDialog::Accepted) {
         anno::ExporterPlugin *p = dlg->getSelectedExporterPtr();
         if (p != NULL) {
-            GlobalLogger::instance()->logInfo(QString("Starting exporter plugin [%1].").arg(p->name()));
+            GlobalLogger::instance()->logDebug(QString("Starting exporter plugin [%1].").arg(p->name()));
             if (!p->exec(QFileInfo(GlobalProjectManager::instance()->projectDir(), QString()))) {
                 GlobalLogger::instance()->logError(QString("Exporter plugin [%1] finished execution with an error.").arg(p->name()));
             } else {
-                GlobalLogger::instance()->logInfo(QString("Exporter plugin [%1] finished successfully.").arg(p->name()));
+                GlobalLogger::instance()->logDebug(QString("Exporter plugin [%1] finished successfully.").arg(p->name()));
                 updateAnnoWidgets();
             }
         } else {
@@ -511,8 +554,9 @@ void AnnoToolMainWindow::on_actionSetImageLoader_triggered() {
 void AnnoToolMainWindow::onAppClose() {
     GlobalLogger::instance()->logInfo("AnnoTool is shutting down.");
     GlobalProjectManager::instance()->clear();
-    GlobalLogger::instance()->logInfo("Writing anno config file.");
+
     try {
+        GlobalLogger::instance()->logDebug("Writing anno config file.");
         GlobalConfig::instance()->saveConfig();
     } catch(AnnoException *e) {
         GlobalLogger::instance()->logError(e->msg());
@@ -635,6 +679,44 @@ void AnnoToolMainWindow::on_actionNextImage_triggered() {
     }
 }
 
+void AnnoToolMainWindow::on_actionCopy_triggered() {
+    anno::dt::Annotation *curAnno = GlobalProjectManager::instance()->selectedAnno();
+    if(curAnno != NULL) {
+        _copyMan.copyAnnotation(curAnno);
+    }
+}
+
+void AnnoToolMainWindow::on_actionPaste_triggered() {
+    anno::dt::AnnoFileData *file = GlobalProjectManager::instance()->selectedFile();
+    if(_copyMan.hasAnnotation() && file != NULL) {
+        anno::dt::Annotation *anno = _copyMan.getCopyAnnotation();
+        if(anno != NULL) {
+            if(!file->containsAnnotation(anno)) {
+                file->addAnnotation(anno);
+                _graphicsScene->addAnnoShape(anno);
+                updateAnnoWidgets();
+            }
+        }
+    }
+}
+
+void AnnoToolMainWindow::on_actionInterpolate_triggered() {
+    DlgInterpolate dlg(this);
+    dlg.setVisible(true);
+}
+
+void AnnoToolMainWindow::onPM_projectOpened(::anno::dt::AnnoProject *project) {
+    connectFilterSignals();
+}
+
+void AnnoToolMainWindow::onPM_projectNew() {
+    connectFilterSignals();
+}
+
+void AnnoToolMainWindow::onPM_projectClosed() {
+
+}
+
 void AnnoToolMainWindow::onPM_fileListUpdate() {
     GlobalLogger::instance()->logDebug("MW: onPM_fileListUpdate");
     ui.annoFileListWidget->updateData();
@@ -654,7 +736,10 @@ void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::an
     ui.annoListWidget->updateData();
     ui.annoDataWidget->updateAllData();
 
-    //TODO handling für sel = -1 !!
+    //TODO check correctness!
+    if(row < 0) {
+        return;
+    }
 
     QFileInfo fileName = annoFile->imageInfo()->imagePath();
     int frame = annoFile->imageInfo()->frame();
@@ -662,6 +747,7 @@ void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::an
         fileName = GlobalProjectManager::instance()->relToAbs(fileName);
     }
     GlobalLogger::instance()->logDebug(QString("Loading image [%1]").arg(fileName.filePath()));
+    _lbCurImage->setText(annoFile->imageInfo()->imagePath().filePath());
 
     QImage img = GlobalImageLoader::instance()->loadImage(fileName, frame, GlobalImageLoader::LoadLinearRev);
     if (img.isNull()) {
@@ -671,10 +757,11 @@ void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::an
     }
 
     newGraphicsScene(&img);
-    loadGraphicsAnno();
+    if(!GlobalProjectManager::instance()->filterMan()->isEnabled()) {
+        loadGraphicsAnnoRaw();
+    }
     setToolEnabled(true);
-    _lbCurImage->setText(annoFile->imageInfo()->imagePath().filePath());
-    //	ui.graphicsView->invalidateScene();
+    ui.actionCopy->setEnabled(false);
 }
 
 void AnnoToolMainWindow::onPM_annoSelectChanged(int row, QUuid annoId,
@@ -682,6 +769,46 @@ void AnnoToolMainWindow::onPM_annoSelectChanged(int row, QUuid annoId,
     GlobalLogger::instance()->logDebug(QString("Selected annotation [%1]").arg(row));
     _graphicsScene->selectShape(annoId);
     ui.annoDataWidget->updateAllData();
+
+    if(row >= 0) {
+        ui.actionCopy->setEnabled(true);
+    } else {
+        ui.actionCopy->setEnabled(false);
+    }
+}
+
+void AnnoToolMainWindow::onFM_filterEnable(bool commonState, bool scoreState) {
+    if(!commonState && !scoreState) {
+        _graphicsScene->removeAllAnnoShapes();
+        loadGraphicsAnnoRaw();
+    }
+}
+
+void AnnoToolMainWindow::onFM_curFilterBegin(int preAnnoCount) {
+    GlobalLogger::instance()->logDebug(QString("Begin annotation filtering of %1 annotations.").arg(preAnnoCount));
+}
+
+void AnnoToolMainWindow::onFM_curFilterEnd(int preAnnoCount, int postAnnoCount) {
+    GlobalLogger::instance()->logDebug(QString("Finished annotation filtering, filtered %1 out of %2 annotations.").arg(postAnnoCount).arg(preAnnoCount));
+
+    if(GlobalProjectManager::instance()->filterMan() != NULL && GlobalProjectManager::instance()->filterMan()->isEnabled() && _graphicsScene != NULL) {
+        _graphicsScene->removeAllAnnoShapes();
+        if(postAnnoCount > 0) {
+            loadGraphicsAnnoFiltered();
+        }
+    }
+}
+
+void AnnoToolMainWindow::onCM_dataAvailable() {
+    if(_copyMan.hasAnnotation()) {
+        ui.actionPaste->setEnabled(true);
+    }
+}
+
+void AnnoToolMainWindow::onCM_lostData() {
+    if(!_copyMan.hasAnnotation()) {
+        ui.actionPaste->setEnabled(false);
+    }
 }
 
 void AnnoToolMainWindow::on_actionLockParentAnno_triggered() {

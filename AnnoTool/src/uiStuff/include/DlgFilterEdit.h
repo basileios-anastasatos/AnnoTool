@@ -11,9 +11,11 @@ namespace anno {
     namespace filter {
         class AnnoFilterManager;
         class AnnoFilter;
+        class ColorFilterEntry;
     }
 }
 class AnnoFiltersModelAdapter;
+class ColorFilterListModelAdapter;
 
 class DlgFilterEdit: public QDialog {
         Q_OBJECT
@@ -28,14 +30,29 @@ class DlgFilterEdit: public QDialog {
         anno::filter::AnnoFilterManager *_filterMan;
         anno::filter::AnnoFilter *_curFilter;
         AnnoFiltersModelAdapter *_model;
+        anno::filter::ColorFilterEntry *_curColor;
+        int _curColorIndex;
+        ColorFilterListModelAdapter *_colorModel;
         AnnoFilterHighlighter *_highlighter;
 
+    private:
+        void coloringSettingsEnable(bool state);
+
     private slots:
-        void onLst_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+        void onLst_currentRowChanged(const QModelIndex &current, const QModelIndex &previous);
+        void onColor_currentRowChanged(const QModelIndex &current, const QModelIndex &previous);
         void on_actionFilterAdd_triggered();
         void on_actionFilterRem_triggered();
-        void on_btCompile_clicked();
+        void on_actionColorAdd_triggered();
+        void on_actionColorRem_triggered();
+        void on_actionColorUp_triggered();
+        void on_actionColorDown_triggered();
 
+        void on_ceFill_colorChanged(QColor color);
+        void on_ceBorder_colorChanged(QColor color);
+        void on_txtBorderWidth_editingFinished();
+
+        void on_btCompile_clicked();
         void on_btAnd_clicked();
         void on_btOr_clicked();
         void on_btXor_clicked();

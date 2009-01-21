@@ -5,6 +5,9 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QLineEdit>
 #include <QtGui/QAction>
+#include <QUuid>
+
+#include "annoTypesForward.h"
 #include "annoFiltersForward.h"
 
 class FilterControl: public QToolBar {
@@ -13,9 +16,11 @@ class FilterControl: public QToolBar {
     private:
         QAction *actionFilterEnable;
         QAction *actionFilterEdit;
+        QAction *actionColorEnable;
         QAction *actionScoreEnable;
         QComboBox *cbFilters;
-        QLineEdit *txtScore;
+        QLineEdit *txtScoreLower;
+        QLineEdit *txtScoreUpper;
 
         bool _connected;
 
@@ -26,11 +31,15 @@ class FilterControl: public QToolBar {
     private slots:
         void on_actionFilterEnable_triggered();
         void on_actionFilterEdit_triggered();
+        void on_actionColorEnable_triggered();
         void on_actionScoreEnable_triggered();
         void on_cbFilters_currentIndexChanged(const QString &text);
+        void on_txtScoreLower_editingFinished();
+        void on_txtScoreUpper_editingFinished();
 
         void onFM_filterAdded(::anno::filter::AnnoFilter *filter);
         void onFM_filterRemoved(QString filterName);
+        void onFM_filterEnable(bool commonState, bool scoreState);
 
     public:
         FilterControl(QWidget *parent = 0);
@@ -39,6 +48,8 @@ class FilterControl: public QToolBar {
     public slots:
         void updateFilters();
         void resetFilters();
+        void resetUi();
+        void resetAll();
 
 };
 

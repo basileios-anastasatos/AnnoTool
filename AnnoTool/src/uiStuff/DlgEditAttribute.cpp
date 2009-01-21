@@ -5,6 +5,7 @@
 #include "AnnoAvClassList.h"
 
 #include <QLineEdit>
+#include <QMessageBox>
 
 DlgEditAttribute::DlgEditAttribute(::anno::dt::Annotation *anno, QWidget *parent) :
     QDialog(parent), _anno(anno) {
@@ -62,6 +63,9 @@ void DlgEditAttribute::accept() {
         QString curTxt = ui.cbName->currentText();
         if(!curTxt.isEmpty()) {
             GlobalToolManager::instance()->recentValues()->attrNames.insert(curTxt);
+        } else {
+            QMessageBox::critical(this, "Invalid Data", "Empty Attribute name is illegal.\nPlease enter an attribute name.");
+            return;
         }
     }
 

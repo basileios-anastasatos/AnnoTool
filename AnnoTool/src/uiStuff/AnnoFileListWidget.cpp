@@ -2,9 +2,6 @@
 #include <QHeaderView>
 #include "importGlobals.h"
 
-using ::logging::GlobalLogger;
-using ::anno::GlobalProjectManager;
-
 AnnoFileListWidget::AnnoFileListWidget(QWidget *parent) :
     QDockWidget(parent), _strCount("%1 files loaded") {
     ui.setupUi(this);

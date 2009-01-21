@@ -1,5 +1,5 @@
-#ifndef ANNOFILTERSMODELADAPTER_H_
-#define ANNOFILTERSMODELADAPTER_H_
+#ifndef COLORFILTERLISTMODELADAPTER_H_
+#define COLORFILTERLISTMODELADAPTER_H_
 
 #include <QAbstractListModel>
 #include <QList>
@@ -7,23 +7,23 @@
 namespace anno {
     namespace filter {
         class AnnoFilterManager;
-        class AnnoFilter;
+        class ColorFilterEntry;
     }
 }
 
-class AnnoFiltersModelAdapter : public QAbstractListModel {
+class ColorFilterListModelAdapter : public QAbstractListModel {
         Q_OBJECT
 
     private:
         anno::filter::AnnoFilterManager *_filterMan;
-        QList<anno::filter::AnnoFilter *> _filterList;
 
     private slots:
-        void onFM_filterAdded(::anno::filter::AnnoFilter *filter);
-        void onFM_filterRemoved(QString filterName);
+        void onFM_coloringAdded(::anno::filter::ColorFilterEntry *entry, int index);
+        void onFM_coloringRemoved(QString name, int index);
+        void onFM_coloringMoved(int oldIndex, int newIndex);
 
     public:
-        AnnoFiltersModelAdapter(anno::filter::AnnoFilterManager *filterMan, QObject *parent = 0);
+        ColorFilterListModelAdapter(anno::filter::AnnoFilterManager *filterMan, QObject *parent = 0);
 
     public:
         virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -34,6 +34,6 @@ class AnnoFiltersModelAdapter : public QAbstractListModel {
         void update();
 };
 
-#endif /* ANNOFILTERSMODELADAPTER_H_ */
+#endif /* COLORFILTERLISTMODELADAPTER_H_ */
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

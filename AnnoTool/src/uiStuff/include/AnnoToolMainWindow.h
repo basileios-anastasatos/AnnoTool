@@ -6,6 +6,7 @@
 #include "../gen/ui_AnnoToolMainWindow.h"
 #include "AnnoGraphicsScene.h"
 #include "GlobalToolManager.h"
+#include "CopyManager.h"
 
 #include "annoTypesForward.h"
 
@@ -26,19 +27,22 @@ class AnnoToolMainWindow : public QMainWindow {
         QLabel *_lbCurImage;
         QLabel *_lbGraphicsEngine;
         anno::graphics::AnnoGraphicsScene *_graphicsScene;
+        CopyManager _copyMan;
 
         // internal helper methods
     private:
         void clearGraphicsScene();
         void newGraphicsScene(QImage *img = NULL);
         void fitGraphicsScene();
-        void loadGraphicsAnno();
+        void loadGraphicsAnnoRaw();
+        void loadGraphicsAnnoFiltered();
         void updateAnnoWidgets();
         bool checkProjectToClose();
         void configUIproject(bool open);
         void uncheckTools();
         void setToolEnabled(bool enabled);
         void lockParentAnno(bool lock = true);
+        void connectFilterSignals();
 
         // overwritten methods
     protected:
@@ -70,16 +74,29 @@ class AnnoToolMainWindow : public QMainWindow {
         void on_actionPreviousImage_triggered();
         void on_actionNextImage_triggered();
 
+        void on_actionCopy_triggered();
+        void on_actionPaste_triggered();
+        void on_actionInterpolate_triggered();
+
         void onZoomCtrl_zoomChanged(int value);
 
         // Project Manager Handling
+        void onPM_projectOpened(::anno::dt::AnnoProject *project);
+        void onPM_projectNew();
+        void onPM_projectClosed();
         void onPM_fileListUpdate();
         void onPM_annoListUpdate();
         void onPM_annoFileSelectChanged(int row, QUuid imageId, ::anno::dt::AnnoFileData *annoFile);
         void onPM_annoSelectChanged(int row, QUuid annoId, ::anno::dt::Annotation *anno);
 
         // Filter handling
-        //void onFM_
+        void onFM_filterEnable(bool commonState, bool scoreState);
+        void onFM_curFilterBegin(int preAnnoCount);
+        void onFM_curFilterEnd(int preAnnoCount, int postAnnoCount);
+
+        //Copy/Paste handling
+        void onCM_dataAvailable();
+        void onCM_lostData();
 
         // Tool support
         void on_actionLockParentAnno_triggered();

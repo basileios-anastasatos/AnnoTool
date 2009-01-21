@@ -1,8 +1,6 @@
 #include "include/RecentAttrValues.h"
 
 RecentAttrValues::RecentAttrValues() {
-    // TODO Auto-generated constructor stub
-
 }
 
 QSet<QString> RecentAttrValues::allValues() const {

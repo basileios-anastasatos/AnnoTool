@@ -9,25 +9,14 @@ AnnoFiltersModelAdapter::AnnoFiltersModelAdapter(anno::filter::AnnoFilterManager
     connect(_filterMan, SIGNAL(filterRemoved(QString)), this, SLOT(onFM_filterRemoved(QString)));
 }
 
-AnnoFiltersModelAdapter::~AnnoFiltersModelAdapter() {
-}
-
 void AnnoFiltersModelAdapter::onFM_filterAdded(::anno::filter::AnnoFilter *filter) {
     _filterList = _filterMan->getAllFilters();
-    int idx = _filterList.indexOf(filter);
-    insertRow(idx);
+    update();
 }
 
 void AnnoFiltersModelAdapter::onFM_filterRemoved(QString filterName) {
-    int idx = -1;
-    for(int i = 0; i < _filterList.size(); ++i) {
-        if(_filterList[i]->getName() == filterName) {
-            idx = i;
-            break;
-        }
-    }
     _filterList = _filterMan->getAllFilters();
-    removeRow(idx);
+    update();
 }
 
 int AnnoFiltersModelAdapter::rowCount(const QModelIndex &parent) const {

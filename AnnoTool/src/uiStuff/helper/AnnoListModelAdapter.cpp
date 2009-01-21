@@ -70,7 +70,6 @@ int AnnoListModelAdapter::rowCount(const QModelIndex &parent) const {
         }
     }
 
-    GlobalLogger::instance()->logWarning("AnnoListModelAdapter::rowCount - Invalid call.");
     return 0;
 }
 
@@ -117,7 +116,6 @@ QVariant AnnoListModelAdapter::data(const QModelIndex &index, int role) const {
         }
     }
 
-    //GlobalLogger::instance()->logWarning("AnnoListModelAdapter::data - Invalid call.");
     return QVariant();
 }
 
@@ -257,17 +255,17 @@ QModelIndex AnnoListModelAdapter::index(int row, int column, const QModelIndex &
                             return createIndex(row, column, childIndex);
                         }
                     } else {
-                        GlobalLogger::instance()->logWarning("AnnoListModelAdapter::index - invalid child row number.");
+                        GlobalLogger::instance()->logDebug("AnnoListModelAdapter::index - invalid child row number.");
                     }
                 } else {
-                    GlobalLogger::instance()->logWarning("AnnoListModelAdapter::index - invalid parent.");
+                    GlobalLogger::instance()->logDebug("AnnoListModelAdapter::index - invalid parent.");
                 }
             }
         } else {
-            GlobalLogger::instance()->logWarning("AnnoListModelAdapter::index - no file selected.");
+            GlobalLogger::instance()->logDebug("AnnoListModelAdapter::index - no file selected.");
         }
     } else {
-        GlobalLogger::instance()->logWarning("AnnoListModelAdapter::index - invalid project state.");
+        GlobalLogger::instance()->logDebug("AnnoListModelAdapter::index - invalid project state.");
     }
 //	}
 //	else
@@ -275,7 +273,6 @@ QModelIndex AnnoListModelAdapter::index(int row, int column, const QModelIndex &
 //		GlobalLogger::instance()->logWarning("AnnoListModelAdapter::index - has no index.");
 //	}
 
-    GlobalLogger::instance()->logWarning("AnnoListModelAdapter::index - Invalid call.");
     return QModelIndex();
 }
 
@@ -301,7 +298,7 @@ QModelIndex AnnoListModelAdapter::parent(const QModelIndex &index) const {
                         //GlobalLogger::instance()->logDebug(QString("AnnoListModelAdapter::parent - parent row [%1] - parent idx [%2].").arg(row).arg(parentIdx));
                         return createIndex(row, 0, parentIdx);
                     } else {
-                        GlobalLogger::instance()->logWarning(QString("AnnoListModelAdapter::parent - invalid parent row number."));
+                        GlobalLogger::instance()->logDebug(QString("AnnoListModelAdapter::parent - invalid parent row number."));
                     }
                 } else {
                     // there is no parent
@@ -311,7 +308,7 @@ QModelIndex AnnoListModelAdapter::parent(const QModelIndex &index) const {
         }
     }
 
-    GlobalLogger::instance()->logWarning("AnnoListModelAdapter::parent - Invalid call.");
+    GlobalLogger::instance()->logDebug("AnnoListModelAdapter::parent - Invalid call.");
     return QModelIndex();
 }
 

@@ -3,12 +3,18 @@
 #include "AnnoFilter.h"
 #include "AnnoFilterXmlLoader.h"
 #include "AnnoFiltersModelAdapter.h"
+#include "ColorFilterListModelAdapter.h"
+#include "ColorFilterEntry.h"
 #include "importGlobals.h"
 
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QMessageBox>
 #include <QModelIndex>
+#include <QColorDialog>
+#include <QImage>
+#include <QPixmap>
+#include <QIcon>
 
 #include "AnnoFilterHighlighter.h"
 #include "XmlHelper.h"
@@ -17,27 +23,41 @@ using anno::helper::XmlHelper;
 const QString DlgFilterEdit::NEWFILTER("<New Filter>");
 
 DlgFilterEdit::DlgFilterEdit(anno::filter::AnnoFilterManager *filterMan, QWidget *parent)
-    : QDialog(parent), _filterMan(filterMan), _curFilter(NULL) {
+    : QDialog(parent), _filterMan(filterMan), _curFilter(NULL), _curColor(NULL), _curColorIndex(-1) {
     ui.setupUi(this);
     ui.btFiltersAdd->setDefaultAction(ui.actionFilterAdd);
     ui.btFiltersRem->setDefaultAction(ui.actionFilterRem);
+    ui.btColorAdd->setDefaultAction(ui.actionColorAdd);
+    ui.btColorRem->setDefaultAction(ui.actionColorRem);
+    ui.btColorUp->setDefaultAction(ui.actionColorUp);
+    ui.btColorDown->setDefaultAction(ui.actionColorDown);
+
+    ui.grpFilterSettings->setEnabled(false);
+    ui.grpColoring->setEnabled(false);
+    coloringSettingsEnable(false);
 
     _model = new AnnoFiltersModelAdapter(_filterMan, this);
+    _colorModel = new ColorFilterListModelAdapter(_filterMan, this);
     ui.lstFilters->setModel(_model);
+    ui.lstColors->setModel(_colorModel);
     _highlighter = new AnnoFilterHighlighter(ui.txtFilterRule->document());
 
-    connect(ui.lstFilters->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(onLst_selectionChanged(const QItemSelection &, const QItemSelection &)));
+    connect(ui.lstFilters->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(onLst_currentRowChanged(const QModelIndex &, const QModelIndex &)));
+    connect(ui.lstColors->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(onColor_currentRowChanged(const QModelIndex &, const QModelIndex &)));
 }
-
-void onLst_currentChanged(const QModelIndex &current, const QModelIndex &previous);
 
 DlgFilterEdit::~DlgFilterEdit() {
 
 }
 
-void DlgFilterEdit::onLst_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+void DlgFilterEdit::coloringSettingsEnable(bool state) {
+    ui.grpColorBorder->setEnabled(state);
+    ui.grpColorFill->setEnabled(state);
+    ui.txtBorderWidth->setEnabled(state);
+}
+
+void DlgFilterEdit::onLst_currentRowChanged(const QModelIndex &current, const QModelIndex &previous) {
     QList<anno::filter::AnnoFilter *> filterList = _filterMan->getAllFilters();
-    QModelIndex current = selected.indexes()[0];
     if(current.row() >= 0 && current.row() < filterList.size()) {
         _curFilter = filterList[current.row()];
         ui.txtFilterName->setText(_curFilter->getName());
@@ -59,12 +79,34 @@ void DlgFilterEdit::onLst_selectionChanged(const QItemSelection &selected, const
         }
         strXml = strXml.trimmed();
         ui.txtFilterRule->setPlainText(strXml);
+        ui.grpFilterSettings->setEnabled(true);
+        ui.grpColoring->setEnabled(true);
+    } else {
+        _curFilter = NULL;
+        ui.txtFilterName->setText("");
+        ui.txtFilterRule->setPlainText("");
+        ui.grpFilterSettings->setEnabled(false);
+    }
+}
+
+void DlgFilterEdit::onColor_currentRowChanged(const QModelIndex &current, const QModelIndex &previous) {
+    if(current.row() >= 0 && current.row() < _filterMan->colorCount()) {
+        _curColor = _filterMan->getColorRule(current.row());
+        _curColorIndex = current.row();
+        anno::graphics::VisualShapeConfig sc = _curColor->getColoring();
+        ui.ceFill->setColor(sc.getFillColor());
+        ui.ceBorder->setColor(sc.getBorderColor());
+        ui.txtBorderWidth->setText(QString::number(sc.getBorderWidth(), 10));
+        coloringSettingsEnable(true);
+    } else {
+        ui.ceFill->setColor(Qt::white);
+        ui.ceBorder->setColor(Qt::white);
+        ui.txtBorderWidth->setText("");
+        coloringSettingsEnable(false);
     }
 }
 
 void DlgFilterEdit::on_actionFilterAdd_triggered() {
-    GlobalLogger::instance()->logInfo("on_actionFilterAdd_triggered");
-
     anno::filter::AnnoFilter *f = new anno::filter::AnnoFilter();
     f->setName(NEWFILTER);
     if(!_filterMan->addFilter(f)) {
@@ -72,25 +114,110 @@ void DlgFilterEdit::on_actionFilterAdd_triggered() {
         QMessageBox::warning(this, "Anno Filter Warning", "A new filter cannot be created unless\nthe previous created filter was edited correctly.");
     } else {
         int idx = _filterMan->getAllFilters().indexOf(f);
-        ui.lstFilters->selectionModel()->select(_model->index(idx), QItemSelectionModel::SelectCurrent);
-        _model->update();
+        ui.lstFilters->setCurrentIndex(_model->index(idx));
     }
 }
 
 void DlgFilterEdit::on_actionFilterRem_triggered() {
-    GlobalLogger::instance()->logInfo("on_actionFilterRem_triggered");
+    if(_curFilter != NULL) {
+        int selIdx = _filterMan->getAllFilters().indexOf(_curFilter);
+        if(_filterMan->filterCount() <= 1) {
+            selIdx = -1;
+        } else if(selIdx == _filterMan->filterCount() - 1) {
+            --selIdx;
+        }
+
+        _filterMan->removeFilter(_curFilter->getName(), true);
+        _curFilter = NULL;
+        if(selIdx >= 0) {
+            ui.lstFilters->setCurrentIndex(_model->index(selIdx));
+        } else {
+            onLst_currentRowChanged(QModelIndex(), QModelIndex());
+        }
+    }
+}
+
+void DlgFilterEdit::on_actionColorAdd_triggered() {
+    if(_curFilter != NULL) {
+        anno::filter::ColorFilterEntry *entry = new anno::filter::ColorFilterEntry(_curFilter, anno::filter::AnnoFilterManager::getDefaultColoring());
+        _filterMan->addColorRule(entry);
+        int idx = _filterMan->colorCount() - 1;
+        ui.lstColors->setCurrentIndex(_colorModel->index(idx));
+    }
+}
+
+void DlgFilterEdit::on_actionColorRem_triggered() {
+    if(_curColor != NULL) {
+        int selIdx = _curColorIndex;
+        if(_filterMan->colorCount() <= 1) {
+            selIdx = -1;
+        } else if(_curColorIndex == _filterMan->colorCount() - 1) {
+            selIdx = _curColorIndex - 1;
+        }
+
+        _filterMan->removeColorRule(_curColorIndex, true);
+        _curColor = NULL;
+        _curColorIndex = -1;
+        if(selIdx >= 0) {
+            ui.lstColors->setCurrentIndex(_colorModel->index(selIdx));
+        } else {
+            onColor_currentRowChanged(QModelIndex(), QModelIndex());
+        }
+    }
+}
+
+void DlgFilterEdit::on_actionColorUp_triggered() {
+    if(_curColor != NULL && _curColorIndex >= 1) {
+        _filterMan->incColorRule(_curColorIndex);
+        ui.lstColors->setCurrentIndex(_colorModel->index(_curColorIndex + 1));
+    }
+}
+
+void DlgFilterEdit::on_actionColorDown_triggered() {
+    if(_curColor != NULL && _curColorIndex < _filterMan->colorCount() - 1) {
+        _filterMan->decColorRule(_curColorIndex);
+        ui.lstColors->setCurrentIndex(_colorModel->index(_curColorIndex - 1));
+    }
+}
+
+void DlgFilterEdit::on_ceFill_colorChanged(QColor color) {
+    if(_curColor != NULL) {
+        anno::graphics::VisualShapeConfig sc = _curColor->getColoring();
+        sc.setFillColor(color);
+        _curColor->setColoring(sc);
+        _filterMan->updateColoring();
+    }
+}
+
+void DlgFilterEdit::on_ceBorder_colorChanged(QColor color) {
+    if(_curColor != NULL) {
+        anno::graphics::VisualShapeConfig sc = _curColor->getColoring();
+        sc.setBorderColor(color);
+        _curColor->setColoring(sc);
+        _filterMan->updateColoring();
+    }
+}
+
+void DlgFilterEdit::on_txtBorderWidth_editingFinished() {
+    if(_curColor != NULL) {
+        bool ok = false;
+        int width = ui.txtBorderWidth->text().toInt(&ok, 10);
+        if(ok && width >= 0) {
+            anno::graphics::VisualShapeConfig sc = _curColor->getColoring();
+            sc.setBorderWidth(width);
+            _curColor->setColoring(sc);
+            _filterMan->updateColoring();
+        }
+    }
 }
 
 void DlgFilterEdit::on_btCompile_clicked() {
-    GlobalLogger::instance()->logInfo("on_btCompile_clicked");
-
     if(_curFilter != NULL) {
         QString fName = ui.txtFilterName->text();
         if(fName.isEmpty() || fName == NEWFILTER || (fName != _curFilter->getName() && _filterMan->containsFilter(fName))) {
             QMessageBox::critical(this, "Anno Filter", "Invalid filter name.\nPlease choose another filter name.");
         } else {
             QString strRule = ui.txtFilterRule->document()->toPlainText();
-            GlobalLogger::instance()->logInfo(QString("XMLTEXT: ") + strRule);
             QXmlStreamReader reader(strRule);
             anno::filter::AnnoFilterRule *rule = NULL;
 
@@ -136,7 +263,6 @@ void DlgFilterEdit::on_btCompile_clicked() {
 
 
 }
-
 
 void DlgFilterEdit::on_btAnd_clicked() {
     ui.txtFilterRule->insertPlainText("<and></and>");

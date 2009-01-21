@@ -1,24 +1,31 @@
 #include "include/FilterControl.h"
 #include "DlgFilterEdit.h"
+#include "AnnoFileData.h"
 #include "AnnoFilter.h"
 #include "AnnoFilterManager.h"
 #include "importGlobals.h"
+
+#include <QMessageBox>
 
 FilterControl::FilterControl(QWidget *parent) :
     QToolBar(parent), _connected(false) {
     setupActions(parent);
     setupInputs(this);
+    resetUi();
 
     addAction(actionFilterEnable);
+    addAction(actionColorEnable);
     addAction(actionFilterEdit);
     addWidget(cbFilters);
     addSeparator();
     addAction(actionScoreEnable);
-    addWidget(txtScore);
+    addWidget(txtScoreLower);
+    addWidget(txtScoreUpper);
 
     //TODO remove later on
-    actionScoreEnable->setEnabled(false);
-    txtScore->setEnabled(false);
+//	actionScoreEnable->setEnabled(false);
+//	txtScoreLower->setEnabled(false);
+//	txtScoreUpper->setEnabled(false);
 }
 
 FilterControl::~FilterControl() {
@@ -28,6 +35,8 @@ FilterControl::~FilterControl() {
 void FilterControl::setupActions(QWidget *parent) {
     QIcon icFilterEnable(QString::fromUtf8(":/res/filter_enable"));
     QIcon icFilterEdit(QString::fromUtf8(":/res/filter_edit"));
+    QIcon icColorEnable(QString::fromUtf8(":/res/filter_enable"));
+    QIcon icColorEdit(QString::fromUtf8(":/res/filter_edit"));
     QIcon icScoreEnable(QString::fromUtf8(":/res/filter_score"));
 
     actionFilterEnable = new QAction(parent);
@@ -46,6 +55,13 @@ void FilterControl::setupActions(QWidget *parent) {
     actionFilterEdit->setToolTip("Edit Filters");
     actionFilterEdit->setIcon(icFilterEdit);
 
+    actionColorEnable = new QAction(parent);
+    actionColorEnable->setObjectName(QString::fromUtf8("actionColorEnable"));
+    actionColorEnable->setCheckable(true);
+    actionColorEnable->setText("Enable Coloring");
+    actionColorEnable->setToolTip("Enable Coloring");
+    actionColorEnable->setIcon(icColorEnable);
+
     actionScoreEnable = new QAction(parent);
     actionScoreEnable->setObjectName(QString::fromUtf8("actionScoreEnable"));
     actionScoreEnable->setCheckable(true);
@@ -57,6 +73,7 @@ void FilterControl::setupActions(QWidget *parent) {
 
     connect(actionFilterEnable, SIGNAL(triggered()), this, SLOT(on_actionFilterEnable_triggered()));
     connect(actionFilterEdit, SIGNAL(triggered()), this, SLOT(on_actionFilterEdit_triggered()));
+    connect(actionColorEnable, SIGNAL(triggered()), this, SLOT(on_actionColorEnable_triggered()));
     connect(actionScoreEnable, SIGNAL(triggered()), this, SLOT(on_actionScoreEnable_triggered()));
 }
 
@@ -65,17 +82,26 @@ void FilterControl::setupInputs(QWidget *parent) {
     cbFilters->setObjectName(QString::fromUtf8("cbFilters"));
     cbFilters->setEditable(false);
     cbFilters->setInsertPolicy(QComboBox::InsertAlphabetically);
-    cbFilters->setFixedWidth(180);
+    cbFilters->setFixedWidth(160);
 
-    txtScore = new QLineEdit(parent);
-    txtScore->setObjectName(QString::fromUtf8("txtScore"));
-    txtScore->setText("0.0");
-    txtScore->setFixedWidth(72);
+    txtScoreLower = new QLineEdit(parent);
+    txtScoreLower->setObjectName(QString::fromUtf8("txtScoreLower"));
+    txtScoreLower->setToolTip("Lower score limit.");
+    txtScoreLower->setFixedWidth(55);
+
+    txtScoreUpper = new QLineEdit(parent);
+    txtScoreUpper->setObjectName(QString::fromUtf8("txtScoreUpper"));
+    txtScoreUpper->setToolTip("Upper score limit.");
+    txtScoreUpper->setFixedWidth(55);
+
+    connect(cbFilters, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(on_cbFilters_currentIndexChanged(const QString &)));
+    connect(txtScoreLower, SIGNAL(editingFinished()), this, SLOT(on_txtScoreLower_editingFinished()));
+    connect(txtScoreUpper, SIGNAL(editingFinished()), this, SLOT(on_txtScoreUpper_editingFinished()));
 }
 
 void FilterControl::on_actionFilterEnable_triggered() {
     if(GlobalProjectManager::instance()->isValid()) {
-        GlobalProjectManager::instance()->filterMan()->setEnabled(actionFilterEnable->isChecked());
+        GlobalProjectManager::instance()->filterMan()->setCommonEnabled(actionFilterEnable->isChecked());
     }
 }
 
@@ -86,13 +112,59 @@ void FilterControl::on_actionFilterEdit_triggered() {
     }
 }
 
+void FilterControl::on_actionColorEnable_triggered() {
+    if(GlobalProjectManager::instance()->isValid()) {
+        GlobalProjectManager::instance()->filterMan()->setColoringEnable(actionColorEnable->isChecked());
+    }
+}
+
 void FilterControl::on_actionScoreEnable_triggered() {
-    GlobalLogger::instance()->logInfo("on_actionScoreEnable_triggered");
+    if(GlobalProjectManager::instance()->isValid()) {
+        GlobalProjectManager::instance()->filterMan()->setScoreEnabled(actionScoreEnable->isChecked());
+    }
 }
 
 void FilterControl::on_cbFilters_currentIndexChanged(const QString &text) {
     if(GlobalProjectManager::instance()->filterMan() != NULL) {
         GlobalProjectManager::instance()->filterMan()->selectFilter(text);
+    }
+}
+
+void FilterControl::on_txtScoreLower_editingFinished() {
+    if(GlobalProjectManager::instance()->filterMan() != NULL) {
+        anno::filter::AnnoFilterManager *fm = GlobalProjectManager::instance()->filterMan();
+        bool ok = false;
+        double lower = txtScoreLower->text().toDouble(&ok);
+        GlobalLogger::instance()->logDebug(QString("Changed lower - Actual Bounds: [%1, %2]").arg(fm->getScoreLower()).arg(fm->getScoreUpper()));
+        if (ok) {
+            GlobalLogger::instance()->logDebug(QString("New lower bound text: %1").arg(lower));
+            if(lower > fm->getScoreUpper()) {
+                QMessageBox::critical(this, "Invalid Score Bounds", "Lower score bound too high.");
+            } else {
+                fm->setScoreLower(lower);
+            }
+        } else {
+            QMessageBox::critical(this, "Invalid Score Bounds", "Invalid data.");
+        }
+    }
+}
+
+void FilterControl::on_txtScoreUpper_editingFinished() {
+    if(GlobalProjectManager::instance()->filterMan() != NULL) {
+        anno::filter::AnnoFilterManager *fm = GlobalProjectManager::instance()->filterMan();
+        bool ok = false;
+        double upper = txtScoreUpper->text().toDouble(&ok);
+        GlobalLogger::instance()->logDebug(QString("Changed upper - Actual Bounds: [%1, %2]").arg(fm->getScoreLower()).arg(fm->getScoreUpper()));
+        if (ok) {
+            GlobalLogger::instance()->logDebug(QString("New upper bound text: %1").arg(upper));
+            if(upper < fm->getScoreLower()) {
+                QMessageBox::critical(this, "Invalid Score Bounds", "Upper score bound too low.");
+            } else {
+                fm->setScoreUpper(upper);
+            }
+        } else {
+            QMessageBox::critical(this, "Invalid Score Bounds", "Invalid data.");
+        }
     }
 }
 
@@ -109,6 +181,11 @@ void FilterControl::onFM_filterRemoved(QString filterName) {
     }
 }
 
+void FilterControl::onFM_filterEnable(bool commonState, bool scoreState) {
+    actionFilterEnable->setChecked(commonState);
+    actionScoreEnable->setChecked(scoreState);
+}
+
 void FilterControl::updateFilters() {
     if(_connected) {
         resetFilters();
@@ -118,6 +195,8 @@ void FilterControl::updateFilters() {
         anno::filter::AnnoFilterManager *fm = GlobalProjectManager::instance()->filterMan();
         connect(fm, SIGNAL(filterAdded(::anno::filter::AnnoFilter *)), this, SLOT(onFM_filterAdded(::anno::filter::AnnoFilter *)));
         connect(fm, SIGNAL(filterRemoved(QString)), this, SLOT(onFM_filterRemoved(QString)));
+        connect(fm, SIGNAL(filterEnable(bool, bool)), this, SLOT(onFM_filterEnable(bool, bool)));
+        _connected = true;
 
         if(fm->filterCount() > 0) {
             QList<anno::filter::AnnoFilter *> filters = fm->getAllFilters();
@@ -134,13 +213,24 @@ void FilterControl::resetFilters() {
             anno::filter::AnnoFilterManager *fm = GlobalProjectManager::instance()->filterMan();
             disconnect(fm, SIGNAL(filterAdded(::anno::filter::AnnoFilter *)), this, SLOT(onFM_filterAdded(::anno::filter::AnnoFilter *)));
             disconnect(fm, SIGNAL(filterRemoved(QString)), this, SLOT(onFM_filterRemoved(QString)));
+            disconnect(fm, SIGNAL(filterEnable(bool, bool)), this, SLOT(onFM_filterEnable(bool, bool)));
         }
-
-        cbFilters->clear();
         _connected = false;
     }
+    cbFilters->clear();
 }
 
+void FilterControl::resetUi() {
+    actionFilterEnable->setChecked(false);
+    actionScoreEnable->setChecked(false);
+    txtScoreLower->setText("0");
+    txtScoreUpper->setText("10000");
+}
+
+void FilterControl::resetAll() {
+    resetFilters();
+    resetUi();
+}
 
 
 

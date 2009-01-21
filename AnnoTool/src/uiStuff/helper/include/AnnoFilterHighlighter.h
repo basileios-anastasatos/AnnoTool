@@ -16,7 +16,6 @@ class AnnoFilterHighlighter : public QSyntaxHighlighter {
         };
 
         QList<HighlightingRule> _rules;
-        HighlightingRule _quotRule;
 
     private:
         void initRules();

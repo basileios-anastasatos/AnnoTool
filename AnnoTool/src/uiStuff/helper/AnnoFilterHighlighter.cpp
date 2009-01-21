@@ -63,23 +63,9 @@ void AnnoFilterHighlighter::initSpecialCharRules() {
 
     rule.pattern = QRegExp("([></])");
     _rules.append(rule);
-
-    format.setForeground(QBrush(QColor(100, 100, 100, 255)));
-    format.setFontWeight(QFont::Normal);
-    rule.format = format;
-    rule.pattern = QRegExp("\".*\"");
-    _quotRule = rule;
 }
 
 void AnnoFilterHighlighter::highlightBlock(const QString &text) {
-    QRegExp expression(_quotRule.pattern);
-    int index = text.indexOf(expression);
-    while (index >= 0) {
-        int length = expression.matchedLength();
-        setFormat(index, length, _quotRule.format);
-        index = text.indexOf(expression, index + length);
-    }
-
     foreach (HighlightingRule rule, _rules) {
         QRegExp expression(rule.pattern);
         int index = text.indexOf(expression);

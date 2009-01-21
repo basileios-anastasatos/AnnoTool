@@ -5,163 +5,202 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
-    <height>142</height>
+    <width>447</width>
+    <height>167</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Default IDL-Exporter</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
-   <property name="spacing">
-    <number>10</number>
+  <widget class="QGroupBox" name="grpShapes">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>105</width>
+     <height>147</height>
+    </rect>
    </property>
-   <item>
-    <widget class="QGroupBox" name="grpShapes">
-     <property name="title">
-      <string>Export Shapes</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QCheckBox" name="chkRectangle">
-        <property name="toolTip">
-         <string>Exports Rectangle Annotations.</string>
-        </property>
-        <property name="text">
-         <string>Rectangles</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="chkEllipse">
-        <property name="toolTip">
-         <string>Exports Ellipse Annotations. Note that ellipses are converted to their bounding rectangles.</string>
-        </property>
-        <property name="text">
-         <string>Ellipses</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="chkPolygon">
-        <property name="toolTip">
-         <string>Exports Polygon Annotations. Note that polygons are converted to their bounding rectangles.</string>
-        </property>
-        <property name="text">
-         <string>Polygons</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="chkSinglePoint">
-        <property name="toolTip">
-         <string>Exports Single Point Annotations. Note that single points are converted to very small bounding rectangles.</string>
-        </property>
-        <property name="text">
-         <string>Single Points</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_4">
-     <item>
-      <widget class="QGroupBox" name="grpPathSettings">
-       <property name="title">
-        <string>Image Path Settings</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QRadioButton" name="radioPathRelative">
-          <property name="toolTip">
-           <string>Uses relative image file paths. All image paths are converted to paths that are relative to the created IDL file.</string>
-          </property>
-          <property name="text">
-           <string>Use relative paths</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="radioPathAbsolute">
-          <property name="toolTip">
-           <string>Uses absolute image file paths. All image paths are converted to paths that are absolute within the file system.</string>
-          </property>
-          <property name="text">
-           <string>Use absolute paths</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
+   <property name="title">
+    <string>Export Shapes</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QCheckBox" name="chkRectangle">
+      <property name="toolTip">
+       <string>Exports Rectangle Annotations.</string>
+      </property>
+      <property name="text">
+       <string>Rectangles</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="chkEllipse">
+      <property name="toolTip">
+       <string>Exports Ellipse Annotations. Note that ellipses are converted to their bounding rectangles.</string>
+      </property>
+      <property name="text">
+       <string>Ellipses</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="chkPolygon">
+      <property name="toolTip">
+       <string>Exports Polygon Annotations. Note that polygons are converted to their bounding rectangles.</string>
+      </property>
+      <property name="text">
+       <string>Polygons</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="chkSinglePoint">
+      <property name="toolTip">
+       <string>Exports Single Point Annotations. Note that single points are converted to very small bounding rectangles.</string>
+      </property>
+      <property name="text">
+       <string>Single Points</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>122</x>
+     <y>9</y>
+     <width>218</width>
+     <height>149</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="layPathSettings">
+    <item>
+     <widget class="QGroupBox" name="grpFilter">
+      <property name="title">
+       <string>Apply Filter</string>
+      </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
+        <widget class="QComboBox" name="cbFilters">
+         <property name="minimumSize">
           <size>
-           <width>40</width>
-           <height>20</height>
+           <width>150</width>
+           <height>0</height>
           </size>
          </property>
-        </spacer>
+        </widget>
        </item>
        <item>
-        <widget class="QDialogButtonBox" name="buttonBox">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+        <widget class="QPushButton" name="btFilterEdit">
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
          </property>
-         <property name="standardButtons">
-          <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+         <property name="text">
+          <string>Edit</string>
          </property>
         </widget>
        </item>
       </layout>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-  </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="grpPathSettings">
+      <property name="title">
+       <string>Image Path Settings</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QRadioButton" name="radioPathRelative">
+         <property name="toolTip">
+          <string>Uses relative image file paths. All image paths are converted to paths that are relative to the created IDL file.</string>
+         </property>
+         <property name="text">
+          <string>Use relative paths</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioPathAbsolute">
+         <property name="toolTip">
+          <string>Uses absolute image file paths. All image paths are converted to paths that are absolute within the file system.</string>
+         </property>
+         <property name="text">
+          <string>Use absolute paths</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+      <zorder>radioPathRelative</zorder>
+      <zorder>radioPathAbsolute</zorder>
+      <zorder>grpFilter</zorder>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>346</x>
+     <y>9</y>
+     <width>92</width>
+     <height>149</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="layButtonBoxOuter">
+    <item>
+     <layout class="QHBoxLayout" name="layButtonBoxInner">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11" />
  <resources />
