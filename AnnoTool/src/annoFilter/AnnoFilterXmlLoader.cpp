@@ -40,8 +40,15 @@ namespace anno {
         }
 
         AnnoFilter *AnnoFilterXmlLoader::loadFilter(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            //TODO implement this!
-            return NULL;
+            QString curName = reader.name().toString();
+
+            if(!reader.isStartElement() || curName != "annoFilter") {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "annoFilter", curName);
+            }
+
+            AnnoFilter *pFilter = AnnoFilter::fromXml(reader);
+
+            return pFilter;
         }
 
 

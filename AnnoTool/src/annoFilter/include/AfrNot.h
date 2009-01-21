@@ -39,7 +39,7 @@ namespace anno {
 
                 // Filtering interface
             public:
-                virtual bool eval(const dt::Annotation *anno) const
+                virtual bool evalInternal(const dt::Annotation *anno) const
                 throw(exc::IllegalStateException *);
                 // ------------------------------------------------------------------------------------
                 // end: inherited interface stuff

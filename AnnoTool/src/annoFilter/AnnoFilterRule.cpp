@@ -2,6 +2,14 @@
 
 namespace anno {
     namespace filter {
+
+        bool AnnoFilterRule::eval(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
+            if(_useConstValue) {
+                return _constValue;
+            }
+            return evalInternal(anno);
+        }
+
     }
 }
 

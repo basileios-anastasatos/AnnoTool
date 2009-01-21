@@ -41,6 +41,9 @@ namespace anno {
 
                 static AnnoShape *fromXml(QXmlStreamReader &reader)
                 throw(XmlException *);
+
+            public:
+                static AnnoShape *copyShape(const AnnoShape *shape);
         };
 
     } //end namespace dt

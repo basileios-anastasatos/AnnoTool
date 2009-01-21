@@ -52,6 +52,28 @@ namespace anno {
             return shape;
         }
 
+        AnnoShape *AnnoShape::copyShape(const AnnoShape *shape) {
+            if(shape->shapeType() == ASTypeSinglePoint) {
+                AnnoSinglePoint *cs = new AnnoSinglePoint();
+                *cs = *((AnnoSinglePoint *)shape);
+                return cs;
+            } else if(shape->shapeType() == ASTypeRectangle) {
+                AnnoRectangle *cs = new AnnoRectangle();
+                *cs = *((AnnoRectangle *)shape);
+                return cs;
+            } else if(shape->shapeType() == ASTypePolygon) {
+                AnnoPolygon *cs = new AnnoPolygon();
+                *cs = *((AnnoPolygon *)shape);
+                return cs;
+            } else if(shape->shapeType() == ASTypeEllipse) {
+                AnnoEllipse *cs = new AnnoEllipse();
+                *cs = *((AnnoEllipse *)shape);
+                return cs;
+            }
+
+            return NULL;
+        }
+
     }//end namespace dt
 } //end namespace anno
 

@@ -1,10 +1,19 @@
 #include "include/LogicFilterRule.h"
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+#include "AnnoFilterXmlLoader.h"
+#include "XmlHelper.h"
+using anno::helper::XmlHelper;
 
 namespace anno {
     namespace filter {
 
         LogicFilterRule::LogicFilterRule(bool autoDelete) :
             AnnoFilterRule(autoDelete) {
+        }
+
+        LogicFilterRule::LogicFilterRule(bool useConst, bool constValue, bool autoDelete) :
+            AnnoFilterRule(useConst, constValue, autoDelete) {
         }
 
         LogicFilterRule::~LogicFilterRule() {
@@ -106,16 +115,32 @@ namespace anno {
             _rules.clear();
         }
 
-        void LogicFilterRule::toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
+        bool LogicFilterRule::isXmlName(const QString &name, const QString &cur) {
+            return (QString::compare(name, cur, Qt::CaseInsensitive) == 0);
+        }
+
+        void LogicFilterRule::toXmlInternal(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
             foreach(AnnoFilterRule * r, _rules) {
                 r->toXml(writer);
             }
         }
 
-        void LogicFilterRule::loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            //TODO
+        void LogicFilterRule::loadFromXmlInternal(const QString &xmlName, QXmlStreamReader &reader) throw(exc::XmlException *) {
+            while(!reader.atEnd()) {
+                if(reader.isStartElement()) {
+                    AnnoFilterRule *pRule = AnnoFilterXmlLoader::loadRule(reader);
+                    if(pRule == NULL) {
+                        throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Filter Rule Tag <%1>").arg(reader.name().toString()));
+                    }
+                    addChild(pRule);
+                    continue;
+                } else if(reader.isEndElement() && isXmlName(xmlName, reader.name().toString())) {
+                    reader.readNext();
+                    break;
+                }
+                reader.readNext();
+            }
         }
-
     }
 }
 

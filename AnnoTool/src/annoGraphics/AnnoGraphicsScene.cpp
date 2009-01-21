@@ -1,6 +1,7 @@
 #include "include/AnnoGraphicsScene.h"
 #include "include/AnnoGraphicsShape.h"
 #include "AnnoGraphicsShapeCreator.h"
+#include "VisualShapeConfig.h"
 #include "importGlobals.h"
 
 namespace anno {
@@ -28,7 +29,6 @@ namespace anno {
         }
 
         void AnnoGraphicsScene::initScene() {
-//			setBackgroundBrush(Qt::red);
         }
 
         void AnnoGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
@@ -63,6 +63,9 @@ namespace anno {
         void AnnoGraphicsScene::addAnnoShape(AnnoGraphicsShape *shape) {
             GlobalLogger::instance()->logDebug("AGS: attempt of adding annotation shape.");
             if (shape != NULL && _image != NULL && shape->relatedAnno() != NULL) {
+                if(GlobalProjectManager::instance()->filterMan() != NULL && GlobalProjectManager::instance()->filterMan()->isColoringEnabled()) {
+                    shape->setShapeConfig(GlobalProjectManager::instance()->filterMan()->getColoringFor(shape->relatedAnno()));
+                }
                 _shapes.insert(shape->relatedAnno()->annoId(), shape);
                 QGraphicsItem *gi = shape->graphicsItem();
                 gi->setParentItem(_image);
@@ -88,6 +91,17 @@ namespace anno {
                     _shapes.remove(annoId);
                     delete s;
                 }
+            }
+        }
+
+        void AnnoGraphicsScene::removeAllAnnoShapes() {
+            if (_image != NULL) {
+                QList<AnnoGraphicsShape *> shapes = _shapes.values();
+                foreach(AnnoGraphicsShape * s, shapes) {
+                    s->graphicsItem()->setParentItem(NULL);
+                    delete s;
+                }
+                _shapes.clear();
             }
         }
 
@@ -162,6 +176,23 @@ namespace anno {
 
         bool AnnoGraphicsScene::hasImage() const {
             return (_image != NULL);
+        }
+
+        void AnnoGraphicsScene::applyColoring() {
+            if (_image != NULL) {
+                QList<AnnoGraphicsShape *> shapes = _shapes.values();
+                if(GlobalProjectManager::instance()->filterMan() != NULL && GlobalProjectManager::instance()->filterMan()->isColoringEnabled()) {
+                    foreach(AnnoGraphicsShape * s, shapes) {
+                        s->setShapeConfig(GlobalProjectManager::instance()->filterMan()->getColoringFor(s->relatedAnno()));
+                    }
+                } else {
+                    graphics::VisualShapeConfig defaultShapeConfig = anno::filter::AnnoFilterManager::getDefaultColoring();
+                    foreach(AnnoGraphicsShape * s, shapes) {
+                        s->setShapeConfig(defaultShapeConfig);
+                    }
+                }
+                update();
+            }
         }
 
     }

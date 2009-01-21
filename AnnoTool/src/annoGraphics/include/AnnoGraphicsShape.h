@@ -3,6 +3,7 @@
 
 #include "Annotation.h"
 #include "AnnoGraphicsControlPoint.h"
+#include "VisualShapeConfig.h"
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QList>
@@ -14,6 +15,7 @@ namespace anno {
         class AnnoGraphicsShape {
                 // Members that are managed for child classes
             protected:
+                VisualShapeConfig _shapeConfig;
                 AnnoGraphicsPixmap *_parentImage;
                 dt::Annotation *_anno;
                 QList<AnnoGraphicsControlPoint *> _cp;
@@ -31,6 +33,8 @@ namespace anno {
                 dt::Annotation *relatedAnno();
                 AnnoGraphicsPixmap *parentImage();
                 void setParentImage(AnnoGraphicsPixmap *img);
+                VisualShapeConfig shapeConfig() const;
+                void setShapeConfig(const VisualShapeConfig &shapeConfig);
 
                 // general interface including tool support
             public:

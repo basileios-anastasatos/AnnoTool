@@ -19,7 +19,7 @@ namespace anno {
                 AfrClass();
 
             public:
-                AfrClass(const QString &className, bool caseSensitive = true);
+                AfrClass(const QString &className, bool caseSensitive = true, bool autoDelete = true);
                 virtual ~AfrClass();
 
                 // Class specific methods
@@ -44,7 +44,7 @@ namespace anno {
 
                 // Filtering interface
             public:
-                virtual bool eval(const dt::Annotation *anno) const throw(exc::IllegalStateException *);
+                virtual bool evalInternal(const dt::Annotation *anno) const throw(exc::IllegalStateException *);
                 // ------------------------------------------------------------------------------------
 
         };

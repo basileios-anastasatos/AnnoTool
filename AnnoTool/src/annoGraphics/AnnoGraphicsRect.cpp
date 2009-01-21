@@ -164,15 +164,10 @@ namespace anno {
 
         QVariant AnnoGraphicsRect::itemChange(GraphicsItemChange change, const QVariant &value) {
             if(change == QGraphicsItem::ItemSelectedChange) {
-                ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("rectangle");
                 if(value.toBool()) {
                     setControlPointsVisible(true);
-                    setPen(sc.penSelected);
-                    setBrush(sc.brushSelected);
                 } else {
                     setControlPointsVisible(false);
-                    setPen(sc.penNormal);
-                    setBrush(sc.brushNormal);
                 }
             }
             return QGraphicsRectItem::itemChange(change, value);
@@ -180,15 +175,11 @@ namespace anno {
 
         void AnnoGraphicsRect::paint(QPainter *painter,
                                      const QStyleOptionGraphicsItem *option, QWidget *widget) {
-            painter->setPen(pen());
-            painter->setBrush(brush());
+            _shapeConfig.applyShapeConfig(painter, isSelected());
             painter->drawRect(rect());
         }
 
         void AnnoGraphicsRect::setupAppearance() {
-            ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("rectangle");
-            setPen(sc.penNormal);
-            setBrush(sc.brushNormal);
             setFlag(QGraphicsItem::ItemIsSelectable);
             setFlag(QGraphicsItem::ItemIsFocusable);
             setAcceptsHoverEvents(true);

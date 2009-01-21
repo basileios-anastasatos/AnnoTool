@@ -26,7 +26,7 @@ namespace anno {
                 AfrScore();
 
             public:
-                AfrScore(double score, CompOp op);
+                AfrScore(double score, CompOp op, bool autoDelete = true);
                 virtual ~AfrScore();
 
                 // Class specific methods
@@ -51,7 +51,7 @@ namespace anno {
 
                 // Filtering interface
             public:
-                virtual bool eval(const dt::Annotation *anno) const
+                virtual bool evalInternal(const dt::Annotation *anno) const
                 throw(exc::IllegalStateException *);
                 // ------------------------------------------------------------------------------------
 

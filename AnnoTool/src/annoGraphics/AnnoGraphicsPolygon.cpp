@@ -24,9 +24,6 @@ namespace anno {
         }
 
         void AnnoGraphicsPolygon::setupAppearance() {
-            ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("polygon");
-            setPen(sc.penNormal);
-            setBrush(sc.brushNormal);
             setFlag(QGraphicsItem::ItemIsSelectable);
             setFlag(QGraphicsItem::ItemIsFocusable);
             setVisible(true);
@@ -251,15 +248,10 @@ namespace anno {
         QVariant AnnoGraphicsPolygon::itemChange(GraphicsItemChange change,
                 const QVariant &value) {
             if (change == QGraphicsItem::ItemSelectedChange) {
-                ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("polygon");
                 if (value.toBool()) {
                     setControlPointsVisible(true);
-                    setPen(sc.penSelected);
-                    setBrush(sc.brushSelected);
                 } else {
                     setControlPointsVisible(false);
-                    setPen(sc.penNormal);
-                    setBrush(sc.brushNormal);
                 }
             }
             return QGraphicsPolygonItem::itemChange(change, value);
@@ -272,7 +264,7 @@ namespace anno {
         void AnnoGraphicsPolygon::shapeMoveBy(qreal deltaX, qreal deltaY) {
             QPointF delta(deltaX, deltaY);
             dt::AnnoPolygon *poly = annoPolygon();
-            QPolygonF tmpPoly = *poly; //TODO must this be mapped to parent?
+            QPolygonF tmpPoly = *poly;
             QRectF parRect = parentItem()->boundingRect();
             tmpPoly.translate(delta);
 
@@ -301,8 +293,7 @@ namespace anno {
 
         void AnnoGraphicsPolygon::paint(QPainter *painter,
                                         const QStyleOptionGraphicsItem *option, QWidget *widget) {
-            painter->setPen(pen());
-            painter->setBrush(brush());
+            _shapeConfig.applyShapeConfig(painter, isSelected());
 
             if(_drawClosed) {
                 painter->drawPolygon(polygon());

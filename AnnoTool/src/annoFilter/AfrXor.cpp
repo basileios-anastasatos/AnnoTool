@@ -14,8 +14,12 @@ namespace anno {
             // nothing to do here
         }
 
+        AfrXor::AfrXor(bool useConst, bool constValue, bool autoDelete) :
+            LogicFilterRule(useConst, constValue, autoDelete) {
+            // nothing to do here
+        }
+
         AfrXor::~AfrXor() {
-            printf("delete <xor>\n");
         }
 
         AfrXor *AfrXor::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
@@ -47,7 +51,7 @@ namespace anno {
 
         void AfrXor::toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
             writer.writeStartElement(XML_NAME);
-            LogicFilterRule::toXml(writer);
+            LogicFilterRule::toXmlInternal(writer);
             writer.writeEndElement();
         }
 
@@ -58,22 +62,10 @@ namespace anno {
             }
 
             XmlHelper::skipToNextStartElement(true, reader);
-            while(!reader.atEnd()) {
-                if(reader.isStartElement()) {
-                    AnnoFilterRule *pRule = AnnoFilterXmlLoader::loadRule(reader);
-                    if(pRule == NULL) {
-                        throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Filter Rule Tag <%1>").arg(reader.name().toString()));
-                    }
-                    addChild(pRule);
-                } else if(reader.isEndElement() && isXmlName(reader.name().toString())) {
-                    reader.readNext();
-                    break;
-                }
-                reader.readNext();
-            }
+            LogicFilterRule::loadFromXmlInternal(XML_NAME, reader);
         }
 
-        bool AfrXor::eval(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
+        bool AfrXor::evalInternal(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
             if (_rules.size() < 2) {
                 throw new exc::IllegalStateException(__FILE__, __LINE__,
                                                      "<xor>-rule has too few operands.");

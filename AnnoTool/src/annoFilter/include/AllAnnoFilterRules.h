@@ -9,6 +9,7 @@
 #include "AfrClass.h"
 #include "AfrAttributeValue.h"
 #include "AfrScore.h"
+#include "AfrScoreAdv.h"
 #include "AfrSwitch.h"
 
 #endif /* ALLANNOFILTERRULES_H_ */

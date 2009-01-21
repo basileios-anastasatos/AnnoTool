@@ -14,12 +14,11 @@ namespace anno {
             AnnoFilterRuleAtom(true) {
         }
 
-        AfrClass::AfrClass(const QString &className, bool caseSensitive) :
-            AnnoFilterRuleAtom(true), _className(className), _caseSensitive(caseSensitive) {
+        AfrClass::AfrClass(const QString &className, bool caseSensitive, bool autoDelete) :
+            AnnoFilterRuleAtom(autoDelete), _className(className), _caseSensitive(caseSensitive) {
         }
 
         AfrClass::~AfrClass() {
-            printf("delete <AfrClass>\n");
         }
 
         AfrClass *AfrClass::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
@@ -62,11 +61,11 @@ namespace anno {
                 throw new exc::XmlFormatException(__FILE__, __LINE__, "Class name must not be empty!");
             }
             _className = name;
+            XmlHelper::skipToEndElement(XML_NAME, reader);
             reader.readNext();
-            //reader.readNext();
         }
 
-        bool AfrClass::eval(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
+        bool AfrClass::evalInternal(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
             if(_className.isEmpty()) {
                 throw new exc::IllegalStateException(__FILE__, __LINE__, "<hasClass>-rule has invalid config.");
             }

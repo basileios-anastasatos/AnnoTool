@@ -91,6 +91,24 @@ namespace anno {
             setAllNotifications(false);
         }
 
+        Annotation::Annotation(const Annotation *anno, QObject *parent) :
+            QObject(parent) {
+            _modified = anno->_modified;
+            _notify = anno->_notify;
+            _notifyOnChange = anno->_notifyOnChange;
+            _notifyAttr = anno->_notifyAttr;
+
+            _annoId = anno->_annoId;
+            _score = anno->_score;
+            _zOrder = anno->_zOrder;
+            _annoParent = anno->_annoParent;
+            _annoChildren = anno->_annoChildren;
+            _comment = anno->_comment;
+            _annoClasses = anno->_annoClasses;
+            _annoAttributes = anno->_annoAttributes;
+            _shape = AnnoShape::copyShape(anno->shape());
+        }
+
         Annotation::~Annotation() {
             if (_shape != NULL) {
                 delete _shape;
@@ -231,10 +249,17 @@ namespace anno {
         }
 
         void Annotation::removeClass(const QString &val) {
-            //TODO delete associated attributes along with the class!
+            //TODO delete associated attributes along with the class!?
             int idx = _annoClasses.indexOf(val, 0);
             if(idx >= 0) {
                 _annoClasses.removeAt(idx);
+                setModified(true);
+            }
+        }
+
+        void Annotation::removeClassAll() {
+            if(_annoClasses.size() > 0) {
+                _annoClasses.clear();
                 setModified(true);
             }
         }
@@ -243,6 +268,13 @@ namespace anno {
             if(index >= 0 && index < _annoAttributes.size()) {
                 _annoAttributes[index].setParentAnno(NULL);
                 _annoAttributes.removeAt(index);
+                setModified(true);
+            }
+        }
+
+        void Annotation::removeAttributeAll() {
+            if(_annoAttributes.size() > 0) {
+                _annoAttributes.clear();
                 setModified(true);
             }
         }
@@ -304,7 +336,7 @@ namespace anno {
             if (!_annoClasses.isEmpty()) {
                 annoClassesToXml(writer);
             }
-            if (!_annoAttributes.isEmpty()) {
+            if (!_annoAttributes.isEmpty() || hasScore()) {
                 annoAttributesToXml(writer);
             }
             if (_shape != NULL) {

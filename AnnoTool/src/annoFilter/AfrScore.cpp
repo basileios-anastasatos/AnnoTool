@@ -15,12 +15,11 @@ namespace anno {
             AnnoFilterRuleAtom(true) {
         }
 
-        AfrScore::AfrScore(double score, CompOp op) :
-            AnnoFilterRuleAtom(true), _score(score), _op(op) {
+        AfrScore::AfrScore(double score, CompOp op, bool autoDelete) :
+            AnnoFilterRuleAtom(autoDelete), _score(score), _op(op) {
         }
 
         AfrScore::~AfrScore() {
-            printf("delete <AfrScore>\n");
         }
 
         AfrScore *AfrScore::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
@@ -127,11 +126,11 @@ namespace anno {
                 throw new exc::XmlFormatException(__FILE__, __LINE__, "Invalid score compare operation.");
             }
             _op = op;
+            XmlHelper::skipToEndElement(XML_NAME, reader);
             reader.readNext();
-            //reader.readNext();
         }
 
-        bool AfrScore::eval(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
+        bool AfrScore::evalInternal(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
             return opCompare(anno->score());
         }
 

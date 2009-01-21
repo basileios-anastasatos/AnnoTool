@@ -23,9 +23,9 @@ namespace anno {
                 AfrAttributeValue();
 
             public:
-                AfrAttributeValue(const QString &attrName, bool caseSensitive = true);
-                AfrAttributeValue(const QString &attrName, const QString &attrValue, bool caseSensitive = true);
-                AfrAttributeValue(const QString &attrClass, const QString &attrName, const QString &attrValue, bool caseSensitive = true);
+                AfrAttributeValue(const QString &attrName, bool caseSensitive = true, bool autoDelete = true);
+                AfrAttributeValue(const QString &attrName, const QString &attrValue, bool caseSensitive = true, bool autoDelete = true);
+                AfrAttributeValue(const QString &attrClass, const QString &attrName, const QString &attrValue, bool caseSensitive = true, bool autoDelete = true);
                 virtual ~AfrAttributeValue();
 
                 // Class specific methods
@@ -52,7 +52,7 @@ namespace anno {
 
                 // Filtering interface
             public:
-                virtual bool eval(const dt::Annotation *anno) const
+                virtual bool evalInternal(const dt::Annotation *anno) const
                 throw(exc::IllegalStateException *);
                 // ------------------------------------------------------------------------------------
 

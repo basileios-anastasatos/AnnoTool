@@ -11,13 +11,10 @@ namespace anno {
                 static const QString XML_NAME;
 
             private:
-                bool _state;
-
-            private:
                 AfrSwitch();
 
             public:
-                AfrSwitch(bool state);
+                AfrSwitch(bool state, bool autoDelete = true);
                 virtual ~AfrSwitch();
 
                 // Class specific methods
@@ -25,7 +22,6 @@ namespace anno {
                 static bool isXmlName(const QString &str);
                 static QString xmlName();
                 static AfrSwitch *fromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
-                bool getState() const;
 
                 // inherited interface stuff
                 // ------------------------------------------------------------------------------------
@@ -40,8 +36,8 @@ namespace anno {
                 virtual void loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
 
                 // Filtering interface
-            public:
-                virtual bool eval(const dt::Annotation *anno) const
+            protected:
+                virtual bool evalInternal(const dt::Annotation *anno) const
                 throw(exc::IllegalStateException *);
                 // ------------------------------------------------------------------------------------
 
@@ -55,10 +51,6 @@ namespace anno {
 
         inline QString AfrSwitch::xmlName() {
             return XML_NAME;
-        }
-
-        inline bool AfrSwitch::getState() const {
-            return _state;
         }
         // ------------------------------------------------------------------------------------
 

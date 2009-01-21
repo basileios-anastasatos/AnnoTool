@@ -134,7 +134,6 @@ namespace anno {
                 _view->setCursor(_prevCursors.pop());
             }
             if (_curShape != NULL) {
-                //TODO add validity-checks here!
                 _curShape->cpMouseReleaseEvent(2, event);
                 dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
                 dt::Annotation *anno = _curShape->relatedAnno();

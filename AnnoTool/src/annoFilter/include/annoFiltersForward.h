@@ -11,6 +11,7 @@ namespace anno {
         class AfrClass;
         class AfrAttributeValue;
         class AfrScore;
+        class AfrScoreAdv;
         class AfrSwitch;
 
         class AnnoFilterRule;

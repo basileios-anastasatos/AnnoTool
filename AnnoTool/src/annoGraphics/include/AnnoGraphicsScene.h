@@ -58,7 +58,10 @@ namespace anno {
                 void setShapeVisible(const QUuid &annoId, bool visible);
 
                 void removeAnnoShape(QUuid annoId);
+                void removeAllAnnoShapes();
                 void addAnnoShape(::anno::dt::Annotation *anno);
+
+                void applyColoring();
 
         };
 

@@ -13,6 +13,11 @@ namespace anno {
 
             protected:
                 LogicFilterRule(bool autoDelete = true);
+                LogicFilterRule(bool useConst, bool constValue, bool autoDelete = true);
+
+                static bool isXmlName(const QString &name, const QString &cur);
+                virtual void toXmlInternal(QXmlStreamWriter &writer) const throw(exc::XmlException *);
+                virtual void loadFromXmlInternal(const QString &xmlName, QXmlStreamReader &reader) throw(exc::XmlException *);
 
             public:
                 virtual ~LogicFilterRule();
@@ -40,10 +45,6 @@ namespace anno {
                 virtual bool removeDelChild(AnnoFilterRule *child);
                 virtual void removeDelAllChildren();
 
-                // XML interface
-            public:
-                virtual void toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *);
-                virtual void loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
                 // ------------------------------------------------------------------------------------
                 // end: inherited interface stuff
 

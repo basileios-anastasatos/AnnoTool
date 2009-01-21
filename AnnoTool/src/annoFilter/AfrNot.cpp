@@ -20,7 +20,6 @@ namespace anno {
         }
 
         AfrNot::~AfrNot() {
-            printf("delete <not>\n");
         }
 
         AfrNot *AfrNot::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
@@ -58,7 +57,7 @@ namespace anno {
 
         void AfrNot::toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
             writer.writeStartElement(XML_NAME);
-            LogicFilterRule::toXml(writer);
+            LogicFilterRule::toXmlInternal(writer);
             writer.writeEndElement();
         }
 
@@ -75,6 +74,7 @@ namespace anno {
             }
             addChild(pRule);
 
+            //XmlHelper::skipToEndElement(XML_NAME, reader);
             XmlHelper::skipToNextEndElement(false, reader);
             if(!reader.isEndElement() || !isXmlName(reader.name().toString())) {
                 throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered invalid tag <%1>, but expected </%2>").arg(reader.name().toString()).arg(XML_NAME));
@@ -82,7 +82,7 @@ namespace anno {
             reader.readNext();
         }
 
-        bool AfrNot::eval(const dt::Annotation *anno) const
+        bool AfrNot::evalInternal(const dt::Annotation *anno) const
         throw(exc::IllegalStateException *) {
             if (_rules.size() != 1) {
                 throw new exc::IllegalStateException(__FILE__, __LINE__,

@@ -9,6 +9,7 @@ namespace anno {
         class AnnoFilterRuleAtom: public AnnoFilterRule {
             protected:
                 AnnoFilterRuleAtom(bool autoDelete = true);
+                AnnoFilterRuleAtom(bool useConst, bool constValue, bool autoDelete = true);
 
                 // inherited interface stuff
                 // ------------------------------------------------------------------------------------
@@ -40,6 +41,10 @@ namespace anno {
         // ------------------------------------------------------------------
         inline AnnoFilterRuleAtom::AnnoFilterRuleAtom(bool autoDelete) :
             AnnoFilterRule(autoDelete) {
+        }
+
+        inline AnnoFilterRuleAtom::AnnoFilterRuleAtom(bool useConst, bool constValue, bool autoDelete) :
+            AnnoFilterRule(useConst, constValue, autoDelete) {
         }
 
         inline bool AnnoFilterRuleAtom::isAtomic() const {

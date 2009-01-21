@@ -128,6 +128,7 @@ namespace anno {
                 // public con/destructors
             public:
                 Annotation(QObject *parent = 0);
+                Annotation(const Annotation *anno, QObject *parent = 0);
                 virtual ~Annotation();
 
                 // public modify handling interface
@@ -162,9 +163,10 @@ namespace anno {
                 void insertAnnoChild(int pos, const QUuid &child);
                 void removeAnnoChild(const QUuid &child);
                 void removeAnnoChild(int child);
+                void removeAnnoChildAll();
                 QString comment() const;
                 void setComment(const QString &comment);
-                AnnoShape *shape();
+                AnnoShape *shape() const;
                 void setShape(AnnoShape *shape);
                 QList<QString> classes() const;
                 QList<AnnoAttribute> attributes() const;
@@ -178,7 +180,9 @@ namespace anno {
                 const AnnoAttribute *getAttribute(int index) const;
                 void removeClass(int index);
                 void removeClass(const QString &val);
+                void removeClassAll();
                 void removeAttribute(int index);
+                void removeAttributeAll();
 
                 // various methods
             public:
@@ -362,11 +366,18 @@ namespace anno {
             }
         }
 
+        inline void Annotation::removeAnnoChildAll() {
+            if(_annoChildren.size() > 0) {
+                _annoChildren.clear();
+                setModified(true);
+            }
+        }
+
         inline QString Annotation::comment() const {
             return _comment;
         }
 
-        inline AnnoShape *Annotation::shape() {
+        inline AnnoShape *Annotation::shape() const {
             return _shape;
         }
 

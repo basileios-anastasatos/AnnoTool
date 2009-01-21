@@ -24,9 +24,6 @@ namespace anno {
         }
 
         void AnnoGraphicsEllipse::setupAppearance() {
-            ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("ellipse");
-            setPen(sc.penNormal);
-            setBrush(sc.brushNormal);
             setFlag(QGraphicsItem::ItemIsSelectable);
             setFlag(QGraphicsItem::ItemIsFocusable);
             setVisible(true);
@@ -215,15 +212,10 @@ namespace anno {
         QVariant AnnoGraphicsEllipse::itemChange(GraphicsItemChange change,
                 const QVariant &value) {
             if (change == QGraphicsItem::ItemSelectedChange) {
-                ShapeConfig sc = GlobalConfig::instance()->getShapeConfig("ellipse");
                 if (value.toBool()) {
                     setControlPointsVisible(true);
-                    setPen(sc.penSelected);
-                    setBrush(sc.brushSelected);
                 } else {
                     setControlPointsVisible(false);
-                    setPen(sc.penNormal);
-                    setBrush(sc.brushNormal);
                 }
             }
             return QGraphicsEllipseItem::itemChange(change, value);
@@ -260,8 +252,7 @@ namespace anno {
 
         void AnnoGraphicsEllipse::paint(QPainter *painter,
                                         const QStyleOptionGraphicsItem *option, QWidget *widget) {
-            painter->setPen(pen());
-            painter->setBrush(brush());
+            _shapeConfig.applyShapeConfig(painter, isSelected());
             painter->drawEllipse(rect());
         }
 

@@ -12,6 +12,7 @@ namespace anno {
 
             public:
                 AfrXor(bool autoDelete = true);
+                AfrXor(bool useConst, bool constValue, bool autoDelete = true);
                 virtual ~AfrXor();
 
                 // Class specific methods
@@ -33,8 +34,8 @@ namespace anno {
                 virtual void loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
 
                 // Filtering interface
-            public:
-                virtual bool eval(const dt::Annotation *anno) const
+            protected:
+                virtual bool evalInternal(const dt::Annotation *anno) const
                 throw(exc::IllegalStateException *);
                 // ------------------------------------------------------------------------------------
                 // end: inherited interface stuff

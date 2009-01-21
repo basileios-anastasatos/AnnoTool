@@ -16,20 +16,19 @@ namespace anno {
             AnnoFilterRuleAtom(true) {
         }
 
-        AfrAttributeValue::AfrAttributeValue(const QString &attrName, bool caseSensitive) :
-            AnnoFilterRuleAtom(true), _attrName(attrName), _caseSensitive(caseSensitive) {
+        AfrAttributeValue::AfrAttributeValue(const QString &attrName, bool caseSensitive, bool autoDelete) :
+            AnnoFilterRuleAtom(autoDelete), _attrName(attrName), _caseSensitive(caseSensitive) {
         }
 
-        AfrAttributeValue::AfrAttributeValue(const QString &attrName, const QString &attrValue, bool caseSensitive) :
-            AnnoFilterRuleAtom(true), _attrName(attrName), _attrValue(attrValue), _caseSensitive(caseSensitive) {
+        AfrAttributeValue::AfrAttributeValue(const QString &attrName, const QString &attrValue, bool caseSensitive, bool autoDelete) :
+            AnnoFilterRuleAtom(autoDelete), _attrName(attrName), _attrValue(attrValue), _caseSensitive(caseSensitive) {
         }
 
-        AfrAttributeValue::AfrAttributeValue(const QString &attrClass, const QString &attrName, const QString &attrValue, bool caseSensitive) :
-            AnnoFilterRuleAtom(true), _attrClass(attrClass), _attrName(attrName), _attrValue(attrValue), _caseSensitive(caseSensitive) {
+        AfrAttributeValue::AfrAttributeValue(const QString &attrClass, const QString &attrName, const QString &attrValue, bool caseSensitive, bool autoDelete) :
+            AnnoFilterRuleAtom(autoDelete), _attrClass(attrClass), _attrName(attrName), _attrValue(attrValue), _caseSensitive(caseSensitive) {
         }
 
         AfrAttributeValue::~AfrAttributeValue() {
-            printf("delete <AfrAttributeValue>\n");
         }
 
         AfrAttributeValue *AfrAttributeValue::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
@@ -106,11 +105,11 @@ namespace anno {
                 }
                 _caseSensitive = (bool)csn;
             }
+            XmlHelper::skipToEndElement(XML_NAME, reader);
             reader.readNext();
-            //reader.readNext();
         }
 
-        bool AfrAttributeValue::eval(const dt::Annotation *anno) const
+        bool AfrAttributeValue::evalInternal(const dt::Annotation *anno) const
         throw(exc::IllegalStateException *) {
             if(_attrName.isEmpty()) {
                 throw new exc::IllegalStateException(__FILE__, __LINE__, "<HasAttribute>-rule has invalid config.");

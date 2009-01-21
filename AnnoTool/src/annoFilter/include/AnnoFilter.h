@@ -42,7 +42,7 @@ namespace anno {
             private slots:
                 void onAnnoAdded(::anno::dt::Annotation *anno);
                 void onAnnoRemoved(QUuid uuid);
-                void onAnnoUpdated(::anno::dt::Annotation *anno);
+                void onAnnoUpdated(::anno::dt::AnnoFileData *annoFile, ::anno::dt::Annotation *anno);
 
                 // internal helpers
             private:
@@ -97,6 +97,8 @@ namespace anno {
                 static AnnoFilter *fromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
 
             signals:
+                void filterBegin(int preAnnoCount);
+                void filterEnd(int preAnnoCount, int postAnnoCount);
                 void filterSetChanged(bool update);
                 void filterAnnoAdded(::anno::dt::Annotation *anno);
                 void filterAnnoRemoved(QUuid uuid);

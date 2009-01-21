@@ -27,6 +27,14 @@ namespace anno {
             _parentImage = img;
         }
 
+        VisualShapeConfig AnnoGraphicsShape::shapeConfig() const {
+            return _shapeConfig;
+        }
+
+        void AnnoGraphicsShape::setShapeConfig(const VisualShapeConfig &shapeConfig) {
+            _shapeConfig = shapeConfig;
+        }
+
         void AnnoGraphicsShape::initControlPoints() {
             //nothing to be done here!
         }

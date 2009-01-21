@@ -12,15 +12,14 @@ namespace anno {
         const QString AfrSwitch::XML_NAME("switch");
 
         AfrSwitch::AfrSwitch() :
-            AnnoFilterRuleAtom(true) {
+            AnnoFilterRuleAtom(true, true, true) {
         }
 
-        AfrSwitch::AfrSwitch(bool state) :
-            AnnoFilterRuleAtom(true), _state(state) {
+        AfrSwitch::AfrSwitch(bool state, bool autoDelete) :
+            AnnoFilterRuleAtom(true, state, autoDelete) {
         }
 
         AfrSwitch::~AfrSwitch() {
-            printf("delete <AfrSwitch>\n");
         }
 
         AfrSwitch *AfrSwitch::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
@@ -42,13 +41,13 @@ namespace anno {
 
         QString AfrSwitch::toString() const {
             QString str("<Switch [%1]>");
-            str = str.arg(_state ? "true" : "false");
+            str = str.arg(_constValue ? "true" : "false");
             return str;
         }
 
         void AfrSwitch::toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
             writer.writeEmptyElement(XML_NAME);
-            writer.writeAttribute("state", _state ? "1" : "0");
+            writer.writeAttribute("state", _constValue ? "1" : "0");
         }
 
         void AfrSwitch::loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
@@ -67,13 +66,13 @@ namespace anno {
             if (!ok) {
                 throw new exc::XmlFormatException(__FILE__, __LINE__, "Invalid switch state data.");
             }
-            _state = (bool)sw;
+            _constValue = (bool)sw;
+            XmlHelper::skipToEndElement(XML_NAME, reader);
             reader.readNext();
-            //reader.readNext();
         }
 
-        bool AfrSwitch::eval(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
-            return _state;
+        bool AfrSwitch::evalInternal(const dt::Annotation *anno) const throw(exc::IllegalStateException *) {
+            return _constValue;
         }
 
 

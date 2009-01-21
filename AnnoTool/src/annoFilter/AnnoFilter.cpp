@@ -1,9 +1,13 @@
 #include "include/AnnoFilter.h"
 #include "Annotation.h"
 #include "AnnoFileData.h"
+#include "XmlHelper.h"
+#include "AnnoFilterXmlLoader.h"
 
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
+
+using anno::helper::XmlHelper;
 
 namespace anno {
     namespace filter {
@@ -52,7 +56,7 @@ namespace anno {
             bool conOk = true;
             conOk = conOk && connect(_fileData, SIGNAL(annoAdded(::anno::dt::Annotation *)), this, SLOT(onAnnoAdded(::anno::dt::Annotation *)));
             conOk = conOk && connect(_fileData, SIGNAL(annoRemoved(QUuid)), this, SLOT(onAnnoRemoved(QUuid)));
-            conOk = conOk && connect(_fileData, SIGNAL(modified(::anno::dt::AnnoFileData *)), this, SLOT(onAnnoUpdated(::anno::dt::Annotation *)));
+            conOk = conOk && connect(_fileData, SIGNAL(annoModified(::anno::dt::AnnoFileData *, ::anno::dt::Annotation *)), this, SLOT(onAnnoUpdated(::anno::dt::AnnoFileData *, ::anno::dt::Annotation *)));
             return conOk;
         }
 
@@ -64,7 +68,7 @@ namespace anno {
             bool conOk = true;
             conOk = conOk && disconnect(_fileData, SIGNAL(annoAdded(::anno::dt::Annotation *)), this, SLOT(onAnnoAdded(::anno::dt::Annotation *)));
             conOk = conOk && disconnect(_fileData, SIGNAL(annoRemoved(QUuid)), this, SLOT(onAnnoRemoved(QUuid)));
-            conOk = conOk && disconnect(_fileData, SIGNAL(modified(::anno::dt::AnnoFileData *)), this, SLOT(onAnnoUpdated(::anno::dt::Annotation *)));
+            conOk = conOk && disconnect(_fileData, SIGNAL(annoModified(::anno::dt::AnnoFileData *, ::anno::dt::Annotation *)), this, SLOT(onAnnoUpdated(::anno::dt::AnnoFileData *, ::anno::dt::Annotation *)));
             return conOk;
         }
 
@@ -88,7 +92,7 @@ namespace anno {
             }
         }
 
-        void AnnoFilter::onAnnoUpdated(anno::dt::Annotation *anno) {
+        void AnnoFilter::onAnnoUpdated(::anno::dt::AnnoFileData *annoFile, ::anno::dt::Annotation *anno) {
             if (_active && _rule != NULL) {
                 if (_rule->eval(anno)) {
                     if(!_filteredAnnoMap.contains(anno->annoId())) {
@@ -110,8 +114,11 @@ namespace anno {
                 return false;
             }
 
+            deactivate();
+            int preCount = _fileData->annoCount();
+            emit filterBegin(preCount);
+
             if(partial) {
-                _active = false;
                 QList<dt::Annotation *> annoList = _filteredAnnoMap.values();
                 _filteredAnnoMap.clear();
                 QListIterator<dt::Annotation *> it = QListIterator<dt::Annotation *>(annoList);
@@ -127,6 +134,7 @@ namespace anno {
                 } catch(exc::AnnoException *e) {
                     delete e;
                     _filteredAnnoMap.clear();
+                    emit filterEnd(preCount, -1);
                     return false;
                 }
                 _active = true;
@@ -134,9 +142,9 @@ namespace anno {
                 if(changed) {
                     emit filterSetChanged(false);
                 }
+                emit filterEnd(preCount, _filteredAnnoMap.size());
                 return true;
             } else {
-                _active = false;
                 _filteredAnnoMap.clear();
                 QListIterator<dt::Annotation *> it = _fileData->getAnnoIterator();
                 bool changed = false;
@@ -151,6 +159,7 @@ namespace anno {
                 } catch(exc::AnnoException *e) {
                     delete e;
                     _filteredAnnoMap.clear();
+                    emit filterEnd(preCount, -1);
                     return false;
                 }
                 _active = true;
@@ -158,16 +167,17 @@ namespace anno {
                 if(changed) {
                     emit filterSetChanged(false);
                 }
+                emit filterEnd(preCount, _filteredAnnoMap.size());
                 return true;
             }
         }
 
         void AnnoFilter::resetFilter() {
-            _filteredAnnoMap.clear();
             if(_active) {
                 disconnectSignals();
                 _active = false;
             }
+            _filteredAnnoMap.clear();
             _fileData = NULL;
         }
 
@@ -220,12 +230,39 @@ namespace anno {
         }
 
         void AnnoFilter::loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            //TODO implement this!
+            QString curParent = reader.name().toString();
+            if(!reader.isStartElement() || curParent != "annoFilter") {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "annoFilter", curParent);
+            }
+
+            QString filterName = reader.attributes().value("name").toString();
+            if(filterName.isEmpty()) {
+                throw new exc::XmlFormatException(__FILE__, __LINE__, "Invalid filter, filter name must not be empty!");
+            }
+            _name = filterName;
+
+            XmlHelper::skipToNextStartElement(true, reader);
+            if(reader.isStartElement() && reader.name() == "comment") {
+                _comment = reader.readElementText();
+                XmlHelper::skipToNextStartElement(true, reader);
+            }
+            if(reader.isStartElement() && reader.name() == "filterRule") {
+                XmlHelper::skipToNextStartElement(true, reader);
+                AnnoFilterRule *pRule = AnnoFilterXmlLoader::loadRule(reader);
+                if(pRule == NULL) {
+                    throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Filter Rule Tag <%1>").arg(reader.name().toString()));
+                }
+                _rule = pRule;
+            }
+
+            XmlHelper::skipToEndElement("annoFilter", reader);
+            reader.readNext();
         }
 
         AnnoFilter *AnnoFilter::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            //TODO implement this!
-            return NULL;
+            AnnoFilter *filter = new AnnoFilter();
+            filter->loadFromXml(reader);
+            return filter;
         }
 
 
