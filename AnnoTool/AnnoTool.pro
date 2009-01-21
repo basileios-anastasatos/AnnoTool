@@ -25,142 +25,127 @@ QT += core \
     gui \
     opengl \
     xml
-HEADERS += ./src/annoFilter/include/annoFiltersForward.h \
-    ./src/uiStuff/include/AnnoGraphicsView.h \
-    ./src/uiStuff/include/FilterControl.h \
-    ./src/uiStuff/helper/include/AnnoGLView.h \
-    ./src/uiStuff/helper/include/AnnoFilterHighlighter.h \
-    ./src/uiStuff/helper/include/AnnoFiltersModelAdapter.h \
-    ./src/annoFilter/include/AnnoFilterManager.h \
-    ./src/uiStuff/include/DlgFilterEdit.h \
-    ./src/annoFilter/include/AfrSwitch.h \
-    ./src/annoFilter/include/AllAnnoFilterRules.h \
-    ./src/annoFilter/include/AnnoFilterXmlLoader.h \
-    ./src/annoFilter/include/AfrScore.h \
-    ./src/annoFilter/include/AfrClass.h \
-    ./src/annoFilter/include/AfrAttributeValue.h \
-    ./src/annoFilter/include/LogicFilterRule.h \
-    ./src/annoFilter/include/AnnoFilterRuleAtom.h \
-    ./src/annoFilter/include/AfrXor.h \
-    ./src/annoFilter/include/AfrNot.h \
-    ./src/annoFilter/include/AfrOr.h \
-    ./src/annoFilter/include/AfrAnd.h \
-    ./src/annoFilter/include/AnnoFilter.h \
-    ./src/annoFilter/include/AnnoFilterRule.h \
-    ./src/annoDataTypes/include/AnnoFileListSorter.h \
-    ./src/utils/include/PriorityList.h \
-    ./src/utils/include/SortedList.h \
-    ./src/uiStuff/helper/include/RecentAttrValues.h \
-    ./src/uiStuff/include/DlgEditAttributeShort.h \
-    ./src/uiStuff/include/ShapeContextMenu.h \
-    ./src/uiStuff/include/DlgEditClass.h \
-    ./src/annoExceptions/include/NullPointerException.h \
-    ./src/annoDataTypes/include/AnnoOperationHelper.h \
-    ./src/uiStuff/include/DlgIdlExporter.h \
+HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/general/include/GlobalInfo.h \
-    ./src/annoExceptions/include/FormatException.h \
-    ./src/annoGraphics/include/ToolPolygon.h \
-    ./src/annoDataTypes/include/AnnoPolygon.h \
-    ./src/uiStuff/include/AnnoToolMainWindow.h \
-    ./src/uiStuff/include/ZoomControl.h \
-    ./src/annoGraphics/include/ToolEllipse.h \
-    ./src/annoGraphics/include/AnnoGraphicsEllipse.h \
-    ./src/annoDataTypes/include/AnnoEllipse.h \
-    ./src/annoGraphics/include/ToolSinglePoint.h \
-    ./src/uiStuff/include/DlgAbout.h \
-    ./src/annoDataTypes/include/AnnoSinglePoint.h \
-    ./src/annoGraphics/include/AnnoGraphicsSinglePoint.h \
-    ./src/uiStuff/include/DlgEditAttribute.h \
-    ./src/annoDataTypes/include/annoTypesForward.h \
-    ./src/uiStuff/include/DlgImporter.h \
-    ./src/uiStuff/include/DlgExporter.h \
-    ./src/uiStuff/helper/include/AnnoDataClassesModelAdapter.h \
-    ./src/uiStuff/helper/include/AnnoDataModelAdapter.h \
-    ./src/general/imexporter/include/IdlExporterPlugin.h \
-    ./src/general/imexporter/include/IdlImporterPlugin.h \
-    ./src/uiStuff/include/DlgNewProject.h \
-    ./src/libAnnotationDeprecated/include/libAn_Annotation.h \
-    ./src/libAnnotationDeprecated/include/libAn_AnnotationList.h \
-    ./src/libAnnotationDeprecated/include/libAn_AnnoRect.h \
-    ./src/libAnnotationDeprecated/include/libAn_XmlHelpers.h \
-    ./src/general/include/ExporterPlugin.h \
-    ./src/general/include/ImporterPlugin.h \
-    ./src/general/include/GlobalImExportManager.h \
-    ./src/annoGraphics/include/AllGraphicsTools.h \
-    ./src/annoGraphics/include/AllAnnoGraphics.h \
-    ./src/general/include/importGlobals.h \
-    ./src/general/include/GlobalToolManager.h \
-    ./src/annoGraphics/include/ToolRect.h \
-    ./src/annoGraphics/include/ToolHand.h \
-    ./src/annoGraphics/include/ToolPointer.h \
-    ./src/annoGraphics/include/GraphicsTool.h \
-    ./src/annoGraphics/include/MapperHelper.h \
-    ./src/general/include/GlobalConfig.h \
-    ./src/annoGraphics/include/AnnoGraphicsScene.h \
-    ./src/annoGraphics/include/AnnoGraphicsRect.h \
-    ./src/uiStuff/include/AnnoDataWidget.h \
-    ./src/uiStuff/helper/include/AnnoListModelAdapter.h \
-    ./src/uiStuff/helper/include/AnnoFileListModelAdapter.h \
-    ./src/uiStuff/include/AnnoListWidget.h \
-    ./src/uiStuff/include/DlgLoaderDetails.h \
-    ./src/uiStuff/include/DlgAddImage.h \
-    ./src/general/include/ImageLoaderPlugin.h \
-    ./src/general/include/GlobalImageLoader.h \
-    ./src/uiStuff/include/AnnoFileListWidget.h \
-    ./src/uiStuff/include/DlgFileChooser.h \
-    ./src/uiStuff/include/DlgProjectDetails.h \
-    ./src/annoExceptions/include/IllegalStateException.h \
-    ./src/annoDataTypes/include/AnnoAvClassList.h \
-    ./src/general/include/GlobalProjectManager.h \
-    ./src/annoDataTypes/include/AnnoFileData.h \
-    ./src/annoDataTypes/include/AnnoRectangle.h \
-    ./src/annoGraphics/include/AnnoGraphicsShapeCreator.h \
-    ./src/annoGraphics/include/AnnoGraphicsShape.h \
-    ./src/annoDataTypes/include/AnnoShape.h \
-    ./src/annoDataTypes/include/AnnoInfo.h \
-    ./src/annoDataTypes/include/AnnoImageInfo.h \
-    ./src/annoDataTypes/include/Annotation.h \
-    ./src/annoHelper/include/XmlHelper.h \
-    ./src/annoDataTypes/include/AnnoProject.h \
-    ./src/annoHelper/logging/include/GlobalLogger.h \
-    ./src/annoHelper/logging/include/SingleFileLogger.h \
-    ./src/annoHelper/logging/include/MultiLogger.h \
-    ./src/annoHelper/logging/include/DummyLogger.h \
-    ./src/annoHelper/logging/include/ConsoleLogger.h \
-    ./src/annoHelper/logging/include/Logger.h \
-    ./src/annoExceptions/include/AllAnnoExceptions.h \
-    ./src/annoGraphics/include/AnnoGraphicsControlPoint.h \
-    ./src/annoGraphics/include/AnnoGraphicsPixmap.h \
-    ./src/annoGraphics/include/AnnoGraphicsPolygon.h \
-    ./src/annoDataTypes/include/AnnoClassDefinition.h \
-    ./src/annoDataTypes/include/AnnoClassList.h \
     ./src/annoExceptions/include/AnnoException.h \
+    ./src/annoExceptions/include/NullPointerException.h \
+    ./src/annoExceptions/include/FormatException.h \
     ./src/annoExceptions/include/IOException.h \
     ./src/annoExceptions/include/NameConflictException.h \
     ./src/annoExceptions/include/NoSuchElementException.h \
     ./src/annoExceptions/include/OutOfRangeException.h \
+    ./src/annoExceptions/include/IllegalStateException.h \
     ./src/annoExceptions/include/XmlException.h \
-    ./src/annoExceptions/include/XmlFormatException.h
-SOURCES += ./src/uiStuff/AnnoGraphicsView.cpp \
-    ./src/uiStuff/FilterControl.cpp \
-    ./src/uiStuff/helper/AnnoGLView.cpp \
-    ./src/uiStuff/helper/AnnoFilterHighlighter.cpp \
-    ./src/uiStuff/helper/AnnoFiltersModelAdapter.cpp \
-    ./src/annoFilter/AnnoFilterManager.cpp \
-    ./src/uiStuff/DlgFilterEdit.cpp \
-    ./src/annoFilter/AfrSwitch.cpp \
-    ./src/annoFilter/AnnoFilterXmlLoader.cpp \
-    ./src/annoFilter/AfrScore.cpp \
-    ./src/annoFilter/AfrClass.cpp \
-    ./src/annoFilter/AfrAttributeValue.cpp \
-    ./src/annoFilter/LogicFilterRule.cpp \
-    ./src/annoFilter/AnnoFilterRuleAtom.cpp \
-    ./src/annoFilter/AfrXor.cpp \
-    ./src/annoFilter/AfrNot.cpp \
-    ./src/annoFilter/AfrOr.cpp \
-    ./src/annoFilter/AfrAnd.cpp \
-    ./src/annoFilter/AnnoFilter.cpp \
-    ./src/annoFilter/AnnoFilterRule.cpp \
+    ./src/annoExceptions/include/XmlFormatException.h \
+    ./src/annoDataTypes/include/annoTypesForward.h \
+    ./src/annoDataTypes/include/AnnoClassDefinition.h \
+    ./src/annoDataTypes/include/AnnoClassList.h \
+    ./src/annoDataTypes/include/AnnoAvClassList.h \
+    ./src/annoDataTypes/include/AnnoImageInfo.h \
+    ./src/annoDataTypes/include/AnnoInfo.h \
+    ./src/annoDataTypes/include/Annotation.h \
+    ./src/annoDataTypes/include/AnnoFileData.h \
+    ./src/annoDataTypes/include/AnnoProject.h \
+    ./src/annoDataTypes/include/AnnoOperationHelper.h \
+    ./src/annoDataTypes/include/AnnoFileListSorter.h \
+    ./src/annoDataTypes/include/AnnoShape.h \
+    ./src/annoDataTypes/include/AnnoRectangle.h \
+    ./src/annoDataTypes/include/AnnoEllipse.h \
+    ./src/annoDataTypes/include/AnnoSinglePoint.h \
+    ./src/annoDataTypes/include/AnnoPolygon.h \
+    ./src/annoFilter/include/annoFiltersForward.h \
+    ./src/annoFilter/include/AllAnnoFilterRules.h \
+    ./src/annoFilter/include/AnnoFilterRule.h \
+    ./src/annoFilter/include/LogicFilterRule.h \
+    ./src/annoFilter/include/AnnoFilterRuleAtom.h \
+    ./src/annoFilter/include/AnnoFilter.h \
+    ./src/annoFilter/include/AnnoFilterManager.h \
+    ./src/annoFilter/include/AfrNot.h \
+    ./src/annoFilter/include/AfrOr.h \
+    ./src/annoFilter/include/AfrAnd.h \
+    ./src/annoFilter/include/AfrXor.h \
+    ./src/annoFilter/include/AfrSwitch.h \
+    ./src/annoFilter/include/AfrScore.h \
+    ./src/annoFilter/include/AfrScoreAdv.h \
+    ./src/annoFilter/include/AfrClass.h \
+    ./src/annoFilter/include/AfrAttributeValue.h \
+    ./src/annoFilter/include/AnnoFilterXmlLoader.h \
+    ./src/annoFilter/include/ColorFilterEntry.h \
+    ./src/annoGraphics/include/AllGraphicsTools.h \
+    ./src/annoGraphics/include/AllAnnoGraphics.h \
+    ./src/annoGraphics/include/VisualShapeConfig.h \
+    ./src/annoGraphics/include/AnnoGraphicsShape.h \
+    ./src/annoGraphics/include/AnnoGraphicsShapeCreator.h \
+    ./src/annoGraphics/include/AnnoGraphicsControlPoint.h \
+    ./src/annoGraphics/include/AnnoGraphicsRect.h \
+    ./src/annoGraphics/include/AnnoGraphicsEllipse.h \
+    ./src/annoGraphics/include/AnnoGraphicsSinglePoint.h \
+    ./src/annoGraphics/include/AnnoGraphicsPolygon.h \
+    ./src/annoGraphics/include/AnnoGraphicsPixmap.h \
+    ./src/annoGraphics/include/AnnoGraphicsScene.h \
+    ./src/annoGraphics/include/GraphicsTool.h \
+    ./src/annoGraphics/include/ToolHand.h \
+    ./src/annoGraphics/include/ToolPointer.h \
+    ./src/annoGraphics/include/ToolSinglePoint.h \
+    ./src/annoGraphics/include/ToolRect.h \
+    ./src/annoGraphics/include/ToolEllipse.h \
+    ./src/annoGraphics/include/ToolPolygon.h \
+    ./src/annoGraphics/include/MapperHelper.h \
+    ./src/utils/include/PriorityList.h \
+    ./src/utils/include/SortedList.h \
+    ./src/general/include/importGlobals.h \
+    ./src/general/include/GlobalToolManager.h \
+    ./src/general/include/GlobalConfig.h \
+    ./src/general/include/GlobalImageLoader.h \
+    ./src/general/include/GlobalProjectManager.h \
+    ./src/general/include/GlobalImExportManager.h \
+    ./src/general/imexporter/include/IdlExporterPlugin.h \
+    ./src/general/imexporter/include/IdlImporterPlugin.h \
+    ./src/annoHelper/include/XmlHelper.h \
+    ./src/annoHelper/logging/include/GlobalLogger.h \
+    ./src/annoHelper/logging/include/Logger.h \
+    ./src/annoHelper/logging/include/SingleFileLogger.h \
+    ./src/annoHelper/logging/include/MultiLogger.h \
+    ./src/annoHelper/logging/include/DummyLogger.h \
+    ./src/annoHelper/logging/include/ConsoleLogger.h \
+    ./src/libAnnotationDeprecated/include/libAn_XmlHelpers.h \
+    ./src/libAnnotationDeprecated/include/libAn_Annotation.h \
+    ./src/libAnnotationDeprecated/include/libAn_AnnotationList.h \
+    ./src/libAnnotationDeprecated/include/libAn_AnnoRect.h \
+    ./src/uiStuff/helper/include/CopyManager.h \
+    ./src/uiStuff/helper/include/RecentAttrValues.h \
+    ./src/uiStuff/helper/include/AnnoDataClassesModelAdapter.h \
+    ./src/uiStuff/helper/include/AnnoDataModelAdapter.h \
+    ./src/uiStuff/helper/include/AnnoListModelAdapter.h \
+    ./src/uiStuff/helper/include/AnnoFileListModelAdapter.h \
+    ./src/uiStuff/helper/include/AnnoGLView.h \
+    ./src/uiStuff/helper/include/AnnoFilterHighlighter.h \
+    ./src/uiStuff/helper/include/AnnoFiltersModelAdapter.h \
+    ./src/uiStuff/helper/include/ColorFilterListModelAdapter.h \
+    ./src/uiStuff/include/DlgFileChooser.h \
+    ./src/uiStuff/include/DlgLoaderDetails.h \
+    ./src/uiStuff/include/DlgImporter.h \
+    ./src/uiStuff/include/DlgExporter.h \
+    ./src/uiStuff/include/DlgIdlExporter.h \
+    ./src/uiStuff/include/DlgAbout.h \
+    ./src/uiStuff/include/DlgProjectDetails.h \
+    ./src/uiStuff/include/DlgAddImage.h \
+    ./src/uiStuff/include/DlgEditAttribute.h \
+    ./src/uiStuff/include/DlgEditAttributeShort.h \
+    ./src/uiStuff/include/DlgEditClass.h \
+    ./src/uiStuff/include/DlgNewProject.h \
+    ./src/uiStuff/include/ColorDisplay.h \
+    ./src/uiStuff/include/ColorEdit.h \
+    ./src/uiStuff/include/DlgFilterEdit.h \
+    ./src/uiStuff/include/AnnoDataWidget.h \
+    ./src/uiStuff/include/AnnoFileListWidget.h \
+    ./src/uiStuff/include/AnnoListWidget.h \
+    ./src/uiStuff/include/ZoomControl.h \
+    ./src/uiStuff/include/AnnoGraphicsView.h \
+    ./src/uiStuff/include/FilterControl.h \
+    ./src/uiStuff/include/ShapeContextMenu.h \
+    ./src/uiStuff/include/AnnoToolMainWindow.h
+SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/general/GlobalInfo.cpp \
     ./src/annoExceptions/AnnoException.cpp \
     ./src/annoExceptions/NullPointerException.cpp \
@@ -187,6 +172,23 @@ SOURCES += ./src/uiStuff/AnnoGraphicsView.cpp \
     ./src/annoDataTypes/AnnoEllipse.cpp \
     ./src/annoDataTypes/AnnoSinglePoint.cpp \
     ./src/annoDataTypes/AnnoPolygon.cpp \
+    ./src/annoFilter/AnnoFilterRule.cpp \
+    ./src/annoFilter/LogicFilterRule.cpp \
+    ./src/annoFilter/AnnoFilterRuleAtom.cpp \
+    ./src/annoFilter/AnnoFilter.cpp \
+    ./src/annoFilter/AnnoFilterManager.cpp \
+    ./src/annoFilter/AfrNot.cpp \
+    ./src/annoFilter/AfrOr.cpp \
+    ./src/annoFilter/AfrAnd.cpp \
+    ./src/annoFilter/AfrXor.cpp \
+    ./src/annoFilter/AfrSwitch.cpp \
+    ./src/annoFilter/AfrScore.cpp \
+    ./src/annoFilter/AfrScoreAdv.cpp \
+    ./src/annoFilter/AfrClass.cpp \
+    ./src/annoFilter/AfrAttributeValue.cpp \
+    ./src/annoFilter/AnnoFilterXmlLoader.cpp \
+    ./src/annoFilter/ColorFilterEntry.cpp \
+    ./src/annoGraphics/VisualShapeConfig.cpp \
     ./src/annoGraphics/AnnoGraphicsShape.cpp \
     ./src/annoGraphics/AnnoGraphicsShapeCreator.cpp \
     ./src/annoGraphics/AnnoGraphicsControlPoint.cpp \
@@ -224,6 +226,16 @@ SOURCES += ./src/uiStuff/AnnoGraphicsView.cpp \
     ./src/libAnnotationDeprecated/libAn_Annotation.cpp \
     ./src/libAnnotationDeprecated/libAn_AnnotationList.cpp \
     ./src/libAnnotationDeprecated/libAn_AnnoRect.cpp \
+    ./src/uiStuff/helper/CopyManager.cpp \
+    ./src/uiStuff/helper/RecentAttrValues.cpp \
+    ./src/uiStuff/helper/AnnoDataClassesModelAdapter.cpp \
+    ./src/uiStuff/helper/AnnoDataModelAdapter.cpp \
+    ./src/uiStuff/helper/AnnoListModelAdapter.cpp \
+    ./src/uiStuff/helper/AnnoFileListModelAdapter.cpp \
+    ./src/uiStuff/helper/AnnoGLView.cpp \
+    ./src/uiStuff/helper/AnnoFilterHighlighter.cpp \
+    ./src/uiStuff/helper/AnnoFiltersModelAdapter.cpp \
+    ./src/uiStuff/helper/ColorFilterListModelAdapter.cpp \
     ./src/uiStuff/DlgFileChooser.cpp \
     ./src/uiStuff/DlgLoaderDetails.cpp \
     ./src/uiStuff/DlgImporter.cpp \
@@ -236,19 +248,21 @@ SOURCES += ./src/uiStuff/AnnoGraphicsView.cpp \
     ./src/uiStuff/DlgEditAttributeShort.cpp \
     ./src/uiStuff/DlgEditClass.cpp \
     ./src/uiStuff/DlgNewProject.cpp \
-    ./src/uiStuff/helper/RecentAttrValues.cpp \
-    ./src/uiStuff/helper/AnnoDataClassesModelAdapter.cpp \
-    ./src/uiStuff/helper/AnnoDataModelAdapter.cpp \
-    ./src/uiStuff/helper/AnnoListModelAdapter.cpp \
-    ./src/uiStuff/helper/AnnoFileListModelAdapter.cpp \
+    ./src/uiStuff/ColorDisplay.cpp \
+    ./src/uiStuff/ColorEdit.cpp \
+    ./src/uiStuff/DlgFilterEdit.cpp \
     ./src/uiStuff/AnnoDataWidget.cpp \
     ./src/uiStuff/AnnoFileListWidget.cpp \
     ./src/uiStuff/AnnoListWidget.cpp \
     ./src/uiStuff/ZoomControl.cpp \
+    ./src/uiStuff/AnnoGraphicsView.cpp \
+    ./src/uiStuff/FilterControl.cpp \
     ./src/uiStuff/ShapeContextMenu.cpp \
     ./src/uiStuff/AnnoToolMainWindow.cpp \
     ./src/main.cpp
-FORMS += ./src/uiStuff/forms/DlgFilterEdit.ui \
+FORMS += ./src/uiStuff/forms/DlgInterpolate.ui \
+    ./src/uiStuff/forms/ColorEdit.ui \
+    ./src/uiStuff/forms/DlgFilterEdit.ui \
     ./src/uiStuff/forms/DlgEditAttributeShort.ui \
     ./src/uiStuff/forms/DlgEditClass.ui \
     ./src/uiStuff/forms/AnnoToolMainWindow.ui \
