@@ -160,6 +160,7 @@ namespace anno {
             void curAnnoSelChanged(int curIndex, QUuid annoId, ::anno::dt::Annotation *curAnno);
 
             void projectOpened(::anno::dt::AnnoProject *project);
+            void projectNew();
             void projectClosed();
 
             void curAnnoFileModified(::anno::dt::AnnoFileData *annoFile);

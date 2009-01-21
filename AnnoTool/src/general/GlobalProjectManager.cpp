@@ -94,12 +94,14 @@ namespace anno {
         }
 
         _project = new dt::AnnoProject(projectPath, projectUuid);
-        _filterMan = new filter::AnnoFilterManager();
+        _filterMan = new filter::AnnoFilterManager(_project);
         _classList = new dt::AnnoAvClassList();
         _fileList = new QList<dt::AnnoFileData *>();
         _fileListMod = new QList<dt::AnnoFileData *>();
         _curSelFile = -1;
         _curSelAnno = -1;
+
+        emit projectNew();
     }
 
     void GlobalProjectManager::setupAllSignals() {
@@ -487,7 +489,7 @@ namespace anno {
         }
 
         _project = dt::AnnoProject::fromFile(path);
-        _filterMan = new filter::AnnoFilterManager();
+        _filterMan = new filter::AnnoFilterManager(_project);
         _classList = new dt::AnnoAvClassList();
         _fileList = new QList<dt::AnnoFileData *>();
         _fileListMod = new QList<dt::AnnoFileData *>();

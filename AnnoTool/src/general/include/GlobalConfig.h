@@ -2,9 +2,7 @@
 #define GLOBALCONFIG_H_
 
 #include "AllAnnoExceptions.h"
-#include <QPen>
-#include <QBrush>
-#include <QColor>
+#include "VisualShapeConfig.h"
 #include <QFileInfo>
 #include <QMap>
 
@@ -28,26 +26,27 @@ namespace anno {
         static QString asFilter(const QString &ext);
     };
 
-    class ShapeConfig {
-            // public members
-        public:
-            QPen penNormal;
-            QPen penSelected;
-            QBrush brushNormal;
-            QBrush brushSelected;
-
-            // Constructors
-        public:
-            ShapeConfig();
-            ShapeConfig(const QPen &pN, const QPen &pS, const QBrush &bN, const QBrush &bS);
-            ShapeConfig(const QPen &pN, int widthN, const QPen &pS, int widthS, const QBrush &bN, const QBrush &bS);
-
-            // Xml Interface
-        public:
-            void toXml(QXmlStreamWriter &writer) const;
-            void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
-            static ShapeConfig fromXml(QXmlStreamReader &reader) throw(XmlException *);
-    };
+//	class ShapeConfig
+//	{
+//			// public members
+//		public:
+//			QPen penNormal;
+//			QPen penSelected;
+//			QBrush brushNormal;
+//			QBrush brushSelected;
+//
+//			// Constructors
+//		public:
+//			ShapeConfig();
+//			ShapeConfig(const QPen& pN, const QPen& pS, const QBrush& bN, const QBrush& bS);
+//			ShapeConfig(const QPen& pN, int widthN, const QPen& pS, int widthS, const QBrush& bN, const QBrush& bS);
+//
+//			// Xml Interface
+//		public:
+//			void toXml(QXmlStreamWriter& writer) const;
+//			void loadFromXml(QXmlStreamReader& reader) throw(XmlException*);
+//			static ShapeConfig fromXml(QXmlStreamReader& reader) throw(XmlException*);
+//	};
 
     class GlobalConfig {
         private:
@@ -59,7 +58,7 @@ namespace anno {
             QMap<QString, double> _settingsDouble;
             QMap<QString, QString> _settingsString;
             QMap<QString, QFileInfo> _settingsFile;
-            QMap<QString, ShapeConfig> _settingsShapeConfig;
+            QMap<QString, graphics::VisualShapeConfig> _settingsShapeConfig;
 
             // static settings that are not stored in file
         public:
@@ -92,13 +91,13 @@ namespace anno {
             double getDouble(QString s) const throw(NoSuchElementException *);
             QString getString(QString s) const throw(NoSuchElementException *);
             QFileInfo getFile(QString s) const throw(NoSuchElementException *);
-            ShapeConfig getShapeConfig(QString s) const
+            graphics::VisualShapeConfig getShapeConfig(QString s) const
             throw(NoSuchElementException *);
             int getInt(QString s, int defaultValue) const;
             double getDouble(QString s, double defaultValue) const;
             QString getString(QString s, QString defaultValue) const;
             QFileInfo getFile(QString s, QFileInfo defaultValue) const;
-            ShapeConfig getShapeConfig(QString s, ShapeConfig defaultValue) const;
+            graphics::VisualShapeConfig getShapeConfig(QString s, graphics::VisualShapeConfig defaultValue) const;
 
             // Load & Save interface
         public:
@@ -124,28 +123,31 @@ namespace anno {
 
     // inlining: ShapeConfig
     //-----------------------------------------------------------
-    inline ShapeConfig::ShapeConfig() :
-        penNormal(Qt::SolidLine), penSelected(Qt::SolidLine), brushNormal(Qt::SolidPattern),
-        brushSelected(Qt::SolidPattern) {
-        penNormal.setColor(QColor(0, 0, 200, 255));
-        penNormal.setWidth(1);
-        penSelected.setColor(QColor(0, 0, 255, 255));
-        penSelected.setWidth(2);
-        brushNormal.setColor(QColor(255, 255, 255, 0));
-        brushSelected.setColor(QColor(255, 255, 255, 50));
-    }
-
-    inline ShapeConfig::ShapeConfig(const QPen &pN, const QPen &pS, const QBrush &bN,
-                                    const QBrush &bS) :
-        penNormal(pN), penSelected(pS), brushNormal(bN), brushSelected(bS) {
-    }
-
-    inline ShapeConfig::ShapeConfig(const QPen &pN, int widthN, const QPen &pS, int widthS,
-                                    const QBrush &bN, const QBrush &bS) :
-        penNormal(pN), penSelected(pS), brushNormal(bN), brushSelected(bS) {
-        penNormal.setWidth(widthN);
-        penSelected.setWidth(widthS);
-    }
+//	inline ShapeConfig::ShapeConfig() :
+//		penNormal(Qt::SolidLine), penSelected(Qt::SolidLine), brushNormal(Qt::SolidPattern),
+//				brushSelected(Qt::SolidPattern)
+//	{
+//		penNormal.setColor(QColor(0, 0, 200, 255));
+//		penNormal.setWidth(1);
+//		penSelected.setColor(QColor(0, 0, 255, 255));
+//		penSelected.setWidth(2);
+//		brushNormal.setColor(QColor(255, 255, 255, 0));
+//		brushSelected.setColor(QColor(255, 255, 255, 50));
+//	}
+//
+//	inline ShapeConfig::ShapeConfig(const QPen& pN, const QPen& pS, const QBrush& bN,
+//			const QBrush& bS) :
+//		penNormal(pN), penSelected(pS), brushNormal(bN), brushSelected(bS)
+//	{
+//	}
+//
+//	inline ShapeConfig::ShapeConfig(const QPen& pN, int widthN, const QPen& pS, int widthS,
+//			const QBrush& bN, const QBrush& bS) :
+//		penNormal(pN), penSelected(pS), brushNormal(bN), brushSelected(bS)
+//	{
+//		penNormal.setWidth(widthN);
+//		penSelected.setWidth(widthS);
+//	}
     //-----------------------------------------------------------
 
     // inlining: GlobalConfig

@@ -10,7 +10,7 @@
 namespace anno {
 
     IdlExporterPlugin::IdlExporterPlugin() :
-        _rectangle(true), _ellipse(false), _polygon(false), _singlePoint(false), _relativPaths(true), _idlDir(".") {
+        _rectangle(true), _ellipse(false), _polygon(false), _singlePoint(false), _relativPaths(true), _filterRule(NULL), _idlDir(".") {
     }
 
     IdlExporterPlugin::~IdlExporterPlugin() {
@@ -44,6 +44,9 @@ namespace anno {
             _polygon = dlg->expPolygons();
             _singlePoint = dlg->expSinglePoints();
             _relativPaths = dlg->pathsRelative();
+            if(dlg->hasFilter() && dlg->selectedFilter()->hasRule()) {
+                _filterRule = dlg->selectedFilter()->getFilterRule();
+            }
             delete dlg;
         } else {
             delete dlg;
@@ -106,16 +109,26 @@ namespace anno {
         dt::AnnoShapeType type = anno->shape()->shapeType();
         switch(type) {
             case dt::ASTypeSinglePoint:
-                return _singlePoint;
+                return checkExport(_singlePoint, anno);
             case dt::ASTypeRectangle:
-                return _rectangle;
+                return checkExport(_rectangle, anno);
             case dt::ASTypePolygon:
-                return _polygon;
+                return checkExport(_polygon, anno);
             case dt::ASTypeEllipse:
-                return _ellipse;
+                return checkExport(_ellipse, anno);
             default:
                 return false;
         }
+    }
+
+    bool IdlExporterPlugin::checkExport(bool shapeType, dt::Annotation *anno) const {
+        if (shapeType) {
+            if (_filterRule != NULL) {
+                return _filterRule->eval(anno);
+            }
+            return true;
+        }
+        return false;
     }
 
     QString IdlExporterPlugin::processImagePath(const QFileInfo &imgPath) const {

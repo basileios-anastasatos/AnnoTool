@@ -4,6 +4,7 @@
 #include "ExporterPlugin.h"
 #include "Annotation.h"
 #include "libAn_AnnoRect.h"
+#include "annoFiltersForward.h"
 
 #include <QDir>
 
@@ -16,6 +17,7 @@ namespace anno {
             bool _polygon;
             bool _singlePoint;
             bool _relativPaths;
+            filter::AnnoFilterRule *_filterRule;
 
             QDir _idlDir;
 
@@ -23,6 +25,7 @@ namespace anno {
             libAn::AnnoRect convRect(dt::Annotation *anno);
             bool isExportShape(dt::Annotation *anno);
             QString processImagePath(const QFileInfo &imgPath) const;
+            bool checkExport(bool shapeType, dt::Annotation *anno) const;
 
         public:
             IdlExporterPlugin();
