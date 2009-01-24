@@ -171,7 +171,16 @@ namespace anno {
 
         QRectF AnnoGraphicsSinglePoint::boundingRect() const {
             const dt::AnnoSinglePoint *asp = annoSinglePoint();
-            return QRectF(asp->x() - 25, asp->y() - 25, 50, 50);
+
+            /* MA: make markers smaller  */
+            //return QRectF(asp->x() - 25, asp->y() - 25, 50, 50);
+            int marker_width = 10;
+            int marker_height = 10;
+
+            return QRectF(asp->x() - marker_width / 2, asp->y() - marker_height / 2,
+                          marker_width, marker_height);
+
+
         }
 
         void AnnoGraphicsSinglePoint::paint(QPainter *painter,

@@ -26,6 +26,14 @@
    <set>QMainWindow::AllowNestedDocks|QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="AnnoGraphicsView" name="graphicsView">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>68</y>
+     <width>784</width>
+     <height>510</height>
+    </rect>
+   </property>
    <property name="renderHints">
     <set>QPainter::Antialiasing</set>
    </property>
@@ -43,6 +51,14 @@
    </property>
   </widget>
   <widget class="AnnoFileListWidget" name="annoFileListWidget">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>68</y>
+     <width>70</width>
+     <height>166</height>
+    </rect>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -51,6 +67,14 @@
    </attribute>
   </widget>
   <widget class="AnnoListWidget" name="annoListWidget">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>240</y>
+     <width>70</width>
+     <height>166</height>
+    </rect>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -59,6 +83,14 @@
    </attribute>
   </widget>
   <widget class="AnnoDataWidget" name="annoDataWidget">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>412</y>
+     <width>70</width>
+     <height>166</height>
+    </rect>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -72,7 +104,7 @@
      <x>0</x>
      <y>0</y>
      <width>860</width>
-     <height>22</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -129,8 +161,25 @@
    <addaction name="menu_Settings" />
    <addaction name="menu_Help" />
   </widget>
-  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QStatusBar" name="statusbar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>578</y>
+     <width>860</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QToolBar" name="tbGeneral">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>29</y>
+     <width>225</width>
+     <height>39</height>
+    </rect>
+   </property>
    <property name="windowTitle">
     <string>General</string>
    </property>
@@ -148,6 +197,14 @@
    <addaction name="actionProjectAddImage" />
   </widget>
   <widget class="QToolBar" name="tbView">
+   <property name="geometry">
+    <rect>
+     <x>225</x>
+     <y>29</y>
+     <width>85</width>
+     <height>39</height>
+    </rect>
+   </property>
    <property name="windowTitle">
     <string>View</string>
    </property>
@@ -161,6 +218,14 @@
    <addaction name="actionFitImage" />
   </widget>
   <widget class="QToolBar" name="tbTools">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>29</y>
+     <width>263</width>
+     <height>39</height>
+    </rect>
+   </property>
    <property name="windowTitle">
     <string>Tools</string>
    </property>
@@ -171,6 +236,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionLockParentAnno" />
+   <addaction name="actionPoseMode" />
    <addaction name="separator" />
    <addaction name="actionToolPointer" />
    <addaction name="actionToolSinglePoint" />
@@ -179,6 +245,14 @@
    <addaction name="actionToolEllipse" />
   </widget>
   <widget class="QToolBar" name="tbAnnotation">
+   <property name="geometry">
+    <rect>
+     <x>573</x>
+     <y>29</y>
+     <width>287</width>
+     <height>39</height>
+    </rect>
+   </property>
    <property name="windowTitle">
     <string>Annotation Actions</string>
    </property>
@@ -556,6 +630,15 @@
   <action name="actionInterpolate">
    <property name="text">
     <string>Interpolate</string>
+   </property>
+  </action>
+  <action name="actionPoseMode">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+    <normaloff>:/res/pose_mode</normaloff>:/res/pose_mode</iconset>
+   </property>
+   <property name="text">
+    <string>Pose Mode</string>
    </property>
   </action>
  </widget>
