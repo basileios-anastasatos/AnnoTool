@@ -61,13 +61,27 @@ namespace anno {
 
             dt::AnnoFileData *annoFile = GlobalProjectManager::instance()->selectedFile();
             if (annoFile != NULL) {
+                /* create annotation object */
+
                 dt::AnnoSinglePoint *asp = new dt::AnnoSinglePoint();
                 *asp = img->mapFromScene(event->scenePos());
+
                 dt::Annotation *anno = new dt::Annotation();
                 anno->setAnnoId(QUuid::createUuid());
                 anno->setShape(asp);
+
+                /* handle "Lock Parent" mode */
+
+                QUuid parentId = GlobalToolManager::instance()->getLockedAnno();
+
+                if(!parentId.isNull()) {
+                    dt::Annotation *_curParentAnno = GlobalProjectManager::instance()->selectedFile()->getAnnotation(parentId);
+                    anno->setAnnoParent(parentId);
+                }
+
                 annoFile->addAnnotation(anno);
 
+                /* add graphics to the scene */
                 AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
                 if (s != NULL) {
                     _scene->addAnnoShape(s);
