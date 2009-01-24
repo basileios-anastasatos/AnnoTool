@@ -633,6 +633,9 @@
    </property>
   </action>
   <action name="actionPoseMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">
     <normaloff>:/res/pose_mode</normaloff>:/res/pose_mode</iconset>

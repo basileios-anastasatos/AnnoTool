@@ -44,7 +44,6 @@ namespace anno {
             QUuid _lastAnnoAdded;
             QUuid _lockedParentAnno;
 
-
             // private singleton stuff
         private:
             /**
@@ -111,7 +110,6 @@ namespace anno {
             void setLastAnno(const QUuid &uuid);
             void resetLockedAnno();
             void resetLastAnno();
-
 
         signals:
             void toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset);

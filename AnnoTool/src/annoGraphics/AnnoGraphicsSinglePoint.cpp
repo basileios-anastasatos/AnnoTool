@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "include/AnnoGraphicsSinglePoint.h"
 #include "importGlobals.h"
 
@@ -256,6 +258,27 @@ namespace anno {
                 painter->drawEllipse((int)np.x() - 2, (int)np.y() - 2, 4, 4);
 
             }
+
+            /* MA: draw the marker id in "Pose Mode"
+
+               FIXME: extend bounding rect to include the text
+            */
+            int textOffset = 3;
+
+            QPoint textPos( floor(brect.left() + brect.width()) + textOffset,
+                            floor(brect.top() + brect.height()));
+
+            if (_anno != NULL) {
+                QString qsId;
+
+                if (_anno->getClassAttributeValue(NATIVE_CLASS_POSEPOINT,
+                                                  NATIVE_POSEPOINT_ID_ATTR, qsId)) {
+                    painter->drawText(textPos, qsId);
+                } else {
+                    painter->drawText(textPos, "?");
+                }
+            }
+
         }
 
         void AnnoGraphicsSinglePoint::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {

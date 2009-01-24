@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "include/AnnoToolMainWindow.h"
 #include "include/ZoomControl.h"
 #include "include/FilterControl.h"
@@ -254,6 +256,8 @@ void AnnoToolMainWindow::uncheckTools() {
 void AnnoToolMainWindow::setToolEnabled(bool enabled) {
     GlobalLogger::instance()->logDebug(QString("MW: setting graphics tools to %1").arg(enabled ? "enabled" : "disabled"));
     ui.actionLockParentAnno->setEnabled(enabled);
+    ui.actionPoseMode->setEnabled(enabled);
+
     ui.actionToolPointer->setEnabled(enabled);
     ui.actionToolSinglePoint->setEnabled(enabled);
     ui.actionToolRectangle->setEnabled(enabled);
@@ -817,6 +821,15 @@ void AnnoToolMainWindow::on_actionLockParentAnno_triggered() {
     } else {
         lockParentAnno(false);
     }
+}
+
+void AnnoToolMainWindow::on_actionPoseMode_triggered() {
+
+    bool bIsChecked = ui.actionPoseMode->isChecked();
+    std::cout << "AnnoToolMainWindow::on_actionPoseMode_triggered, "
+              <<  bIsChecked << std::endl;
+
+    GlobalProjectManager::instance()->setPoseMode(bIsChecked);
 }
 
 void AnnoToolMainWindow::on_actionToolPointer_triggered() {

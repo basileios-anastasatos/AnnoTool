@@ -21,6 +21,14 @@ using logging::GlobalLogger;
 #define NATIVE_ZORDER_ATTR QString("__zorder")
 #endif
 
+#ifndef NATIVE_CLASS_POSEPOINT
+#define NATIVE_CLASS_POSEPOINT QString("PosePoint")
+#endif
+
+#ifndef NATIVE_POSEPOINT_ID_ATTR
+#define NATIVE_POSEPOINT_ID_ATTR QString("id")
+#endif
+
 class QXmlStreamWriter;
 class QXmlStreamReader;
 
@@ -183,6 +191,9 @@ namespace anno {
                 void removeClassAll();
                 void removeAttribute(int index);
                 void removeAttributeAll();
+
+                /** MA: helpers */
+                bool getClassAttributeValue(QString qsClass, QString qsAttribute, QString &qsValue);
 
                 // various methods
             public:

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "include/ToolSinglePoint.h"
 #include "importGlobals.h"
 
@@ -70,13 +72,80 @@ namespace anno {
                 anno->setAnnoId(QUuid::createUuid());
                 anno->setShape(asp);
 
-                /* handle "Lock Parent" mode */
+                std::cout << "ToolSinglePoint, PoseMode: " << GlobalProjectManager::instance()->isPoseMode() << std::endl;
 
-                QUuid parentId = GlobalToolManager::instance()->getLockedAnno();
+                /* MA: "Pose Mode" */
+                if (GlobalProjectManager::instance()->isPoseMode()) {
 
-                if(!parentId.isNull()) {
-                    dt::Annotation *_curParentAnno = GlobalProjectManager::instance()->selectedFile()->getAnnotation(parentId);
-                    anno->setAnnoParent(parentId);
+                    GlobalProjectManager *pm = GlobalProjectManager::instance();
+                    QUuid parentAnnoId = pm->lastSelNotPointAnno();
+
+                    if (!parentAnnoId.isNull()) {
+                        std::cout << "Pose Mode: set parent to " <<
+                                  parentAnnoId.toString().toStdString() << std::endl;
+
+                        anno->setAnnoParent(parentAnnoId);
+
+                        /* find max id of other children */
+
+                        anno::dt::Annotation *parentAnno = pm->selectedFile()->getAnnotation(parentAnnoId);
+                        assert(parentAnno != NULL);
+
+                        QList<QUuid> children_list = parentAnno->annoChildren();
+                        QListIterator<QUuid> it(children_list);
+                        int max_child_id = -1;
+
+                        //std::cout << "parent: " <<
+                        //  parentAnno->annoId().toString().toStdString() << std::endl;
+
+                        //std::cout << "\tno children: " << children_list.isEmpty() << std::endl;
+
+                        while(it.hasNext()) {
+                            QUuid childUuid = it.next();
+                            //std::cout << "\tchild: " << childUuid.toString().toStdString() << std::endl;
+
+                            Annotation *childAnno = pm->selectedFile()->getAnnotation(childUuid);
+
+                            QString qsId;
+                            if (childAnno->getClassAttributeValue(NATIVE_CLASS_POSEPOINT,
+                                                                  NATIVE_POSEPOINT_ID_ATTR,
+                                                                  qsId)) {
+                                bool ok = false;
+                                int cur_id = qsId.toInt(&ok);
+                                assert(ok);
+
+                                if (cur_id > max_child_id) {
+                                    max_child_id = cur_id;
+                                }
+                            }
+                        }// children
+
+                        anno->addClass(NATIVE_CLASS_POSEPOINT);
+                        anno::dt::AnnoAttribute atr(anno,
+                                                    NATIVE_POSEPOINT_ID_ATTR,
+                                                    NATIVE_CLASS_POSEPOINT,
+                                                    QString::number(max_child_id + 1));
+                        anno->addAttribute(atr);
+
+                        std::cout << "new pose point: " << max_child_id + 1 << std::endl;
+
+                        /* update parent's children list, is this the right place to do it? */
+                        parentAnno->addAnnoChild(anno->annoId());
+
+                    } else {
+                        std::cout << "Pose Mode: no selected annotation" << std::endl;
+                    }
+
+                } else {
+
+                    /* handle "Lock Parent" mode */
+
+                    QUuid parentId = GlobalToolManager::instance()->getLockedAnno();
+
+                    if(!parentId.isNull()) {
+                        //dt::Annotation* _curParentAnno = GlobalProjectManager::instance()->selectedFile()->getAnnotation(parentId);
+                        anno->setAnnoParent(parentId);
+                    }
                 }
 
                 annoFile->addAnnotation(anno);

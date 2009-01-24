@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "include/GlobalProjectManager.h"
 #include "importGlobals.h"
 #include "AnnoFileListSorter.h"
@@ -214,6 +216,22 @@ namespace anno {
                 }
 
                 _curSelAnno = index;
+
+
+                /* MA BEGIN: keep track of potential parents for Pose Mode */
+
+                if (anno->shape()) {
+                    if (anno->shape()->shapeType() != anno::dt::ASTypeSinglePoint) {
+                        _lastSelNotPointAnno = index;
+                        std::cout << "_lastSelNotPointAnno: " << _lastSelNotPointAnno << std::endl;
+                    }
+                } else {
+                    assert(false && "no shape?");
+                }
+                /* MA END */
+
+
+
                 emit curAnnoSelChanged(index, anno->annoId(), anno);
             }
         } else if (index == -1) {
@@ -528,6 +546,14 @@ namespace anno {
         }
     }
 
+}
+
+void GlobalProjectManager::setPoseMode(bool poseMode) {
+    _poseMode = poseMode;
+}
+
+bool GlobalProjectManager::isPoseMode() {
+    return _poseMode;
 }
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

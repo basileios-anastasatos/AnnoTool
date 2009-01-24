@@ -467,6 +467,21 @@ namespace anno {
             return data;
         }
 
+        /* MA: */
+        bool Annotation::getClassAttributeValue(QString qsClass, QString qsAttribute, QString &qsValue) {
+
+            for (int idx = 0; idx < _annoAttributes.size(); ++idx) {
+                if (_annoAttributes[idx].className() == qsClass &&
+                        _annoAttributes[idx].name() == qsAttribute ) {
+                    qsValue = _annoAttributes[idx].value();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
     } //end namespace dt
 }
 //end namespace anno

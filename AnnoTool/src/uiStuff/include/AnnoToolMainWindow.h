@@ -100,6 +100,8 @@ class AnnoToolMainWindow : public QMainWindow {
 
         // Tool support
         void on_actionLockParentAnno_triggered();
+        void on_actionPoseMode_triggered();
+
         void on_actionToolPointer_triggered();
         void on_actionToolSinglePoint_triggered();
         void on_actionToolRectangle_triggered();

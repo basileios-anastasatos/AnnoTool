@@ -1,6 +1,8 @@
 #ifndef GLOBALPROJECTMANAGER_H_
 #define GLOBALPROJECTMANAGER_H_
 
+#include <cassert>
+
 #include <QObject>
 #include "AllAnnoExceptions.h"
 #include "AnnoProject.h"
@@ -37,6 +39,13 @@ namespace anno {
             QList<dt::AnnoFileData *> *_fileListMod;
             int _curSelFile;
             int _curSelAnno;
+
+
+            /** MA: this is arguably needed in the "Pose Mode" */
+
+            bool _poseMode;
+            int _lastSelNotPointAnno;
+
 
             // private singleton stuff
         private:
@@ -140,6 +149,14 @@ namespace anno {
             bool isAnnoSelected(const QUuid &uuid) const;
             bool isAnnoSelected(const dt::Annotation *anno) const;
 
+
+            /* MA: */
+            void setPoseMode(bool poseMode);
+            bool isPoseMode();
+
+            QUuid lastSelNotPointAnno() const;
+
+
         public:
             QFileInfo relToAbs(const QFileInfo &file) const throw(IllegalStateException *);
             QFileInfo relToAbs(const QDir &dir) const throw(IllegalStateException *);
@@ -180,7 +197,7 @@ namespace anno {
     //-----------------------------------------------------------
     inline GlobalProjectManager::GlobalProjectManager() :
         QObject(NULL), _project(NULL), _filterMan(NULL), _classList(NULL), _fileList(NULL), _fileListMod(NULL),
-        _curSelFile(-1), _curSelAnno(-1) {
+        _curSelFile(-1), _curSelAnno(-1), _poseMode(false), _lastSelNotPointAnno(-1) {
     }
 
     inline GlobalProjectManager::~GlobalProjectManager() {
@@ -276,6 +293,20 @@ namespace anno {
         if (selectedAnno() != NULL) {
             return selectedAnno()->annoId();
         }
+        return QUuid();
+    }
+
+    inline QUuid GlobalProjectManager::lastSelNotPointAnno() const {
+        if (_lastSelNotPointAnno >= 0 && _curSelFile >= 0 && _curSelFile < _fileList->size()) {
+            const Annotation *a = selectedFile()->getAnnotation(_lastSelNotPointAnno);
+
+            if (a != NULL) {
+                return a->annoId();
+            }
+
+            assert(false && "invalid annotation index");
+        }
+
         return QUuid();
     }
 
