@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "include/libAn_AnnoRect.h"
 #include "include/libAn_XmlHelpers.h"
 #include <cmath>
@@ -7,40 +9,69 @@ using namespace std;
 
 namespace libAn {
 
-    //////////////////////////////////////////////////////////////////////////////
     ///
-    ///
-    ///   AnnoRect
-    ///
-    ///
-    //////////////////////////////////////////////////////////////////////////////
+///
+///   AnnoRect
+///
+///
+//////////////////////////////////////////////////////////////////////////////
 
-    // AnnoRect::AnnoRect(const AnnoRect& other)
-    // {
-    //   m_x1 = other.m_x1;
-    //   m_y1 = other.m_y1;
-    //   m_x2 = other.m_x2;
-    //   m_y2 = other.m_y2;
-    //
-    //   m_dScore = other.m_dScore;
-    //   m_nSilhouetteID = other.m_nSilhouetteID;
-    //
-    //   m_vArticulations.clear();
-    //   for (unsigned i=0; i<other.noArticulations(); i++)
-    //   {
-    //     this->addArticulation(other.articulation(i));
-    //   }
-    //   m_vViewPoints.clear();
-    //   for (unsigned i=0; i<other.noViewPoints(); i++)
-    //   {
-    //     this->addViewPoint(other.viewPoint(i));
-    //   }
-    //
-    // }
+// AnnoRect::AnnoRect(const AnnoRect& other)
+// {
+//   m_x1 = other.m_x1;
+//   m_y1 = other.m_y1;
+//   m_x2 = other.m_x2;
+//   m_y2 = other.m_y2;
 
+//   m_dScore = other.m_dScore;
+//   m_nSilhouetteID = other.m_nSilhouetteID;
+//   m_dScale = other.m_dScale;
+//   m_nObjPosX = other.m_nObjPosX;
+//   m_nObjPosY = other.m_nObjPosY;
+
+//   m_vArticulations.insert(m_vArticulations.begin(),
+//                           other.m_vArticulations.begin(),
+//                           other.m_vArticulations.end());
+
+//   m_vViewPoints.insert(m_vViewPoints.begin(),
+//                        other.m_vViewPoints.begin(),
+//                        other.m_vViewPoints.end());
+
+//   m_vAnnoPoints.insert(m_vAnnoPoints.begin(),
+//                        other.m_vAnnoPoints.begin(),
+//                        other.m_vAnnoPoints.end());
+
+
+//   m_x1 = other.m_x1;
+//   m_y1 = other.m_y1;
+//   m_x2 = other.m_x2;
+//   m_y2 = other.m_y2;
+
+//   m_dScore = other.m_dScore;
+//   m_nSilhouetteID = other.m_nSilhouetteID;
+
+//   m_vArticulations.clear();
+//   for (unsigned i=0; i<other.noArticulations(); i++)
+//   {
+//     this->addArticulation(other.articulation(i));
+//   }
+//   m_vViewPoints.clear();
+//   for (unsigned i=0; i<other.noViewPoints(); i++)
+//   {
+//     this->addViewPoint(other.viewPoint(i));
+//   }
+
+//}
+
+    const AnnoPoint &AnnoRect::getAnnoPoint(int nAnnoPointIdx) const {
+        assert(nAnnoPointIdx >= 0 && (unsigned)nAnnoPointIdx < m_vAnnoPoints.size());
+        assert(nAnnoPointIdx + 1 == m_vAnnoPoints[nAnnoPointIdx].id ||
+               nAnnoPointIdx == m_vAnnoPoints[nAnnoPointIdx].id);
+        return m_vAnnoPoints[nAnnoPointIdx];
+    }
 
     void AnnoRect::parseXML(const string &rectString) {
-        cerr << "AnnoRect::parse()" << endl;
+        //cerr << "AnnoRect::parse()"<< endl;
         vector<string> tmp;
         tmp = getElements("x1", rectString);
         if (tmp.size() > 0) {
@@ -67,7 +98,7 @@ namespace libAn {
         tmp = getElements("silhouette", rectString);
         if (tmp.size() > 0) {
             tmp = getElements("id", tmp[0]);
-            for (unsigned i = 0; i < tmp.size(); i++) {
+            for(unsigned i = 0; i < tmp.size(); i++) {
                 m_nSilhouetteID = getElementDataInt("id", tmp[0]);
             }
         }
@@ -75,7 +106,7 @@ namespace libAn {
         tmp = getElements("articulation", rectString);
         if (tmp.size() > 0) {
             tmp = getElements("id", tmp[0]);
-            for (unsigned i = 0; i < tmp.size(); i++) {
+            for(unsigned i = 0; i < tmp.size(); i++) {
                 m_vArticulations.push_back(getElementDataInt("id", tmp[i]));
             }
         }
@@ -83,13 +114,68 @@ namespace libAn {
         tmp = getElements("viewpoint", rectString);
         if (tmp.size() > 0) {
             tmp = getElements("id", tmp[0]);
-            for (unsigned i = 0; i < tmp.size(); i++) {
+            for(unsigned i = 0; i < tmp.size(); i++) {
                 m_vViewPoints.push_back(getElementDataInt("id", tmp[i]));
             }
         }
 
-        //printXML();
+        vector <string> tmp2;
 
+        tmp = getElements("annopoints", rectString);
+        if (tmp.size() > 0) {
+            tmp = getElements("point", tmp[0]);
+            for(unsigned i = 0; i < tmp.size(); i++) {
+                AnnoPoint p;
+
+                tmp2 = getElements("id", tmp[i]);
+                if (tmp2.size() > 0) {
+                    p.id = getElementDataInt("id", tmp2[0]);
+                }
+
+                tmp2 = getElements("x", tmp[i]);
+                if (tmp2.size() > 0) {
+                    p.x = getElementDataInt("x", tmp2[0]);
+                }
+
+                tmp2 = getElements("y", tmp[i]);
+                if (tmp2.size() > 0) {
+                    p.y = getElementDataInt("y", tmp2[0]);
+                }
+
+                //       if (!(p.id > 0 && p.x > 0 && p.y > 0))
+                //         cout << p.id << " " << p.x << " " << p.y << endl;
+
+                //      assert(p.id >= 0 && p.x >= 0 && p.y >= 0);
+                assert(p.id >= 0);
+
+                m_vAnnoPoints.push_back(p);
+            }
+        }
+
+        tmp = getElements("objpos", rectString);
+        if (tmp.size() > 0) {
+            tmp2 = getElements("x", tmp[0]);
+            if (tmp2.size() > 0) {
+                m_nObjPosX = getElementDataInt("x", tmp2[0]);
+            }
+
+            tmp2 = getElements("y", tmp[0]);
+            if (tmp2.size() > 0) {
+                m_nObjPosY = getElementDataInt("y", tmp2[0]);
+            }
+        }
+
+        tmp = getElements("object_id", rectString);
+        if (tmp.size() > 0) {
+            m_nObjectId = getElementDataInt("object_id", tmp[0]);
+        }
+
+        tmp = getElements("motion_phase", rectString);
+        if (tmp.size() > 0) {
+            m_dMotionPhase = getElementDataFloat("motion_phase", tmp[0]);
+        }
+
+        //printXML();
     }
 
     void AnnoRect::parseIDL(const string &rectString) {
@@ -143,7 +229,7 @@ namespace libAn {
         if (m_vArticulations.size() > 0) {
             out << "        <articulation>\n";
             vector<int>::const_iterator it;
-            for (it = m_vArticulations.begin(); it != m_vArticulations.end(); it++) {
+            for(it = m_vArticulations.begin(); it != m_vArticulations.end(); it++) {
                 out << "            <id>" << *it << "</id>\n";
             }
             out << "        </articulation>\n";
@@ -151,13 +237,43 @@ namespace libAn {
         if (m_vViewPoints.size() > 0) {
             out << "        <viewpoint>\n";
             vector<int>::const_iterator it;
-            for (it = m_vViewPoints.begin(); it != m_vViewPoints.end(); it++) {
+            for(it = m_vViewPoints.begin(); it != m_vViewPoints.end(); it++) {
                 out << "            <id>" << *it << "</id>\n";
             }
             out << "        </viewpoint>\n";
         }
+
+        if (m_vAnnoPoints.size() > 0) {
+            out << "        <annopoints>\n";
+            vector<AnnoPoint>::const_iterator it;
+            for (it = m_vAnnoPoints.begin(); it != m_vAnnoPoints.end(); it++) {
+                out << "          <point>\n";
+                out << "          <id>" << (*it).id << "</id>\n";
+                out << "          <x>" << (*it).x << "</x>\n";
+                out << "          <y>" << (*it).y << "</y>\n";
+                out << "          </point>\n";
+            }
+            out << "        </annopoints>\n";
+        }
+
+        if (m_nObjPosX > 0 && m_nObjPosY > 0) {
+            out << "        <objpos>\n";
+            out << "        <x>" << m_nObjPosX << "</x>\n";
+            out << "        <y>" << m_nObjPosY << "</y>\n";
+            out << "        </objpos>\n";
+        }
+
+        if (m_nObjectId >= 0) {
+            out << "        <object_id>" << m_nObjectId << "</object_id>\n";
+        }
+
+        if (m_dMotionPhase >= 0) {
+            out << "        <motion_phase>" << m_dMotionPhase << "</motion_phase>\n";
+        }
+
         out << "    </annorect>\n";
     }
+
 
     void AnnoRect::printXML() const {
         cout << "    <annorect>\n";
@@ -176,7 +292,7 @@ namespace libAn {
         if (m_vArticulations.size() > 0) {
             cout << "        <articulation>\n";
             vector<int>::const_iterator it;
-            for (it = m_vArticulations.begin(); it != m_vArticulations.end(); it++) {
+            for(it = m_vArticulations.begin(); it != m_vArticulations.end(); it++) {
                 cout << "            <id>" << *it << "</id>\n";
             }
             cout << "        </articulation>\n";
@@ -184,30 +300,37 @@ namespace libAn {
         if (m_vViewPoints.size() > 0) {
             cout << "        <viewpoint>\n";
             vector<int>::const_iterator it;
-            for (it = m_vViewPoints.begin(); it != m_vViewPoints.end(); it++) {
+            for(it = m_vViewPoints.begin(); it != m_vViewPoints.end(); it++) {
                 cout << "            <id>" << *it << "</id>\n";
             }
             cout << "        </viewpoint>\n";
         }
+
+        if (m_nObjectId >= 0) {
+            cout << "        <object_id>" << m_nObjectId << "</objpos>\n";
+        }
+
+        if (m_dMotionPhase >= 0) {
+            cout << "        <motion_phase>" << m_dMotionPhase << "</motion_phase>\n";
+        }
+
         cout << "    </annorect>\n";
     }
 
     void AnnoRect::writeIDL(ofstream &out) const {
-        if (m_nSilhouetteID == -1)
-            out << "(" << m_x1 << ", " << m_y1 << ", " << m_x2 << ", " << m_y2 << "):"
-                << m_dScore;
-        else
-            out << "(" << m_x1 << ", " << m_y1 << ", " << m_x2 << ", " << m_y2 << "):"
-                << m_dScore << "/" << m_nSilhouetteID;
+        if (m_nSilhouetteID == -1) {
+            out << "(" << m_x1 << ", " << m_y1 << ", " << m_x2 << ", " << m_y2 << "):" << m_dScore;
+        } else {
+            out << "(" << m_x1 << ", " << m_y1 << ", " << m_x2 << ", " << m_y2 << "):" << m_dScore << "/" << m_nSilhouetteID;
+        }
     }
 
     void AnnoRect::printIDL() const {
-        if (m_nSilhouetteID == -1)
-            cout << "(" << m_x1 << ", " << m_y1 << ", " << m_x2 << ", " << m_y2 << "):"
-                 << m_dScore;
-        else
-            cout << "(" << m_x1 << ", " << m_y1 << ", " << m_x2 << ", " << m_y2 << "):"
-                 << m_dScore << "/" << m_nSilhouetteID;
+        if (m_nSilhouetteID == -1) {
+            cout << "(" << m_x1 << ", " << m_y1 << ", " << m_x2 << ", " << m_y2 << "):" << m_dScore;
+        } else {
+            cout << "(" << m_x1 << ", " << m_y1 << ", " << m_x2 << ", " << m_y2 << "):" << m_dScore << "/" << m_nSilhouetteID;
+        }
     }
 
     void AnnoRect::sortCoords() {
@@ -224,32 +347,31 @@ namespace libAn {
         }
     }
 
-    double AnnoRect::compCover(const AnnoRect &other) const {
+    double AnnoRect::compCover( const AnnoRect &other ) const {
         AnnoRect r1 = *this;
         AnnoRect r2 = other;
         r1.sortCoords();
         r2.sortCoords();
 
-        int nWidth = r1.x2() - r1.x1();
+        int nWidth  = r1.x2() - r1.x1();
         int nHeight = r1.y2() - r1.y1();
-        int iWidth = max(0, min(max(0, r2.x2() - r1.x1()), nWidth) - max(0, r2.x1() - r1.x1()));
+        int iWidth  = max(0, min(max(0, r2.x2() - r1.x1()), nWidth ) - max(0, r2.x1() - r1.x1()));
         int iHeight = max(0, min(max(0, r2.y2() - r1.y1()), nHeight) - max(0, r2.y1() - r1.y1()));
         return ((double)iWidth * (double)iHeight) / ((double)nWidth * (double)nHeight);
     }
 
-    double AnnoRect::compRelDist(const AnnoRect &other, float dAspectRatio,
-                                 FixDimType eFixObjDim) const {
+    double AnnoRect::compRelDist( const AnnoRect &other, float dAspectRatio, FixDimType eFixObjDim ) const {
         double dWidth, dHeight;
 
-        switch (eFixObjDim) {
+        switch( eFixObjDim ) {
             case FIX_OBJWIDTH:
-                dWidth = m_x2 - m_x1;
+                dWidth  = m_x2 - m_x1;
                 dHeight = dWidth / dAspectRatio;
                 break;
 
             case FIX_OBJHEIGHT:
                 dHeight = m_y2 - m_y1;
-                dWidth = dHeight * dAspectRatio;
+                dWidth  = dHeight * dAspectRatio;
                 break;
 
             default:
@@ -264,13 +386,15 @@ namespace libAn {
         return sqrt(xdist * xdist + ydist * ydist);
     }
 
-    double AnnoRect::compRelDist(const AnnoRect &other) const {
-        double dWidth = m_x2 - m_x1;
+
+    double AnnoRect::compRelDist( const AnnoRect &other ) const {
+        double dWidth  = m_x2 - m_x1;
         double dHeight = m_y2 - m_y1;
-        double xdist = (double)(m_x1 + m_x2 - other.x1() - other.x2()) / dWidth;
-        double ydist = (double)(m_y1 + m_y2 - other.y1() - other.y2()) / dHeight;
+        double xdist   = (double)(m_x1 + m_x2 - other.x1() - other.x2()) / dWidth;
+        double ydist   = (double)(m_y1 + m_y2 - other.y1() - other.y2()) / dHeight;
         return sqrt(xdist * xdist + ydist * ydist);
     }
+
 
     // bool AnnoRect::isMatching( const AnnoRect& other, double dTDist, double dTCover, double dTOverlap, float dAspectRatio, FixDimType eFixObjDim )
     // {
@@ -300,11 +424,12 @@ namespace libAn {
     // }
 
 
-    bool AnnoRect::isMatching(const AnnoRect &other, double dTDist, double dTCover,
-                              double dTOverlap) const {
-        return ( (compRelDist(other) <= dTDist) && (compCover(other) >= dTCover)
-                 && (other.compCover(*this) >= dTOverlap) );
+    bool AnnoRect::isMatching( const AnnoRect &other, double dTDist, double dTCover, double dTOverlap) const {
+        return ( (compRelDist(other) <= dTDist) &&
+                 (compCover(other) >= dTCover) &&
+                 (other.compCover(*this) >= dTOverlap) );
     }
+
 
 } //end namespace
 

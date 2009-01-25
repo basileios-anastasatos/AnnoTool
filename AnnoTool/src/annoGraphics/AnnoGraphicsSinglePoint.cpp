@@ -269,14 +269,16 @@ namespace anno {
                             floor(brect.top() + brect.height()));
 
             if (_anno != NULL) {
+                painter->setPen(Qt::yellow);
+
                 QString qsId;
 
                 if (_anno->getClassAttributeValue(NATIVE_CLASS_POSEPOINT,
                                                   NATIVE_POSEPOINT_ID_ATTR, qsId)) {
                     painter->drawText(textPos, qsId);
-                } else {
-                    painter->drawText(textPos, "?");
                 }
+//                           else
+//                             painter->drawText(textPos, "?");
             }
 
         }

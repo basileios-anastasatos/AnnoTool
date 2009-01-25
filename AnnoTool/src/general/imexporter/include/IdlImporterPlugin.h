@@ -3,6 +3,8 @@
 
 #include "ImporterPlugin.h"
 #include "AnnoRectangle.h"
+#include "AnnoSinglePoint.h"
+
 #include "libAn_AnnoRect.h"
 
 namespace anno {
@@ -24,7 +26,7 @@ namespace anno {
             virtual QString description() const;
             virtual bool singleFileImport() const;
             virtual bool singleAnnotationImport() const;
-            virtual bool exec(const QFileInfo &startDir);
+            virtual bool exec(const QFileInfo &startDir, bool silent = true);
     };
 
 }

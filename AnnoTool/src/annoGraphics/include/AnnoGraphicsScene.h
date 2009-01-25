@@ -49,6 +49,10 @@ namespace anno {
                 bool isEmpty() const;
                 bool hasImage() const;
 
+                /* MA: */
+                AnnoGraphicsShape *getShapeByAnnoId(const QUuid &annoId) const;
+
+
             public slots:
                 void selectShape(const QUuid &annoId);
                 void bringToFront(const QUuid &annoId);

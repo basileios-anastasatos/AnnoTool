@@ -20,7 +20,7 @@ namespace anno {
             virtual QString description() const = 0;
             virtual bool singleFileImport() const = 0;
             virtual bool singleAnnotationImport() const = 0;
-            virtual bool exec(const QFileInfo &startDir) = 0;
+            virtual bool exec(const QFileInfo &startDir, bool silent = true) = 0;
     };
 }
 

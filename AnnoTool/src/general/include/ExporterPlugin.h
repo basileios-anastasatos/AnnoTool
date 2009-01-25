@@ -18,7 +18,8 @@ namespace anno {
             virtual QString name() const = 0;
             virtual QString author() const = 0;
             virtual QString description() const = 0;
-            virtual bool exec(const QFileInfo &startDir) = 0;
+            virtual bool exec(const QFileInfo &startDir, bool silent = false) = 0;
+
     };
 }
 

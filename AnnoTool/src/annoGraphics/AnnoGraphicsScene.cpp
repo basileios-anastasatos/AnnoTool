@@ -195,6 +195,12 @@ namespace anno {
             }
         }
 
+        AnnoGraphicsShape *AnnoGraphicsScene::getShapeByAnnoId(const QUuid &annoId) const {
+            AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
+            return s;
+        }
+
+
     }
 }
 

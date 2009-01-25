@@ -4,7 +4,6 @@
 using namespace std;
 
 namespace libAn {
-
     //////////////////////////////////////////////////////////////////////////////
     ///
     ///
@@ -103,7 +102,6 @@ namespace libAn {
         }
 
         return elementStrings;
-
     }
 
 } //end namespace

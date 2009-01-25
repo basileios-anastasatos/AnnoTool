@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "include/libAn_AnnotationList.h"
 #include "include/libAn_XmlHelpers.h"
 
@@ -5,26 +7,27 @@ using namespace std;
 
 namespace libAn {
 
-    //////////////////////////////////////////////////////////////////////////////
-    ///
-    ///
-    ///   AnnotationList
-    ///
-    ///
-    //////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+///
+///
+///   AnnotationList
+///
+///
+//////////////////////////////////////////////////////////////////////////////
 
-    // AnnotationList::AnnotationList(const AnnotationList& other)
-    // {
-    //   m_vAnnotations.clear();
-    //   for (unsigned i=0; i<other.size(); i++)
-    //   {
-    //     this->addAnnotation(other.annotation(i));
-    //   }
-    // }
+// AnnotationList::AnnotationList(const AnnotationList& other)
+// {
+//   m_vAnnotations.clear();
+//   for (unsigned i=0; i<other.size(); i++)
+//   {
+//     this->addAnnotation(other.annotation(i));
+//   }
+// }
+
 
     vector<string> AnnotationList::fileList() const {
         vector<string> files;
-        for (unsigned i = 0; i < m_vAnnotations.size(); i++) {
+        for(unsigned i = 0; i < m_vAnnotations.size(); i++) {
             files.push_back(m_vAnnotations[i].imageName());
         }
 
@@ -32,59 +35,56 @@ namespace libAn {
     }
 
     void AnnotationList::getFileList(vector<string> &files) const {
-        for (unsigned i = 0; i < m_vAnnotations.size(); i++) {
+        for(unsigned i = 0; i < m_vAnnotations.size(); i++) {
             files.push_back(m_vAnnotations[i].imageName());
         }
     }
 
     void AnnotationList::printXML() const {
         cout << "<annotationlist>\n";
-        for (vector<Annotation>::const_iterator it = m_vAnnotations.begin(); it
-                != m_vAnnotations.end(); it++) {
+        for(vector<Annotation>::const_iterator it = m_vAnnotations.begin(); it != m_vAnnotations.end(); it++) {
             it->printXML();
         }
         cout << "</annotationlist>\n";
     }
 
     void AnnotationList::printIDL() const {
-        for (vector<Annotation>::const_iterator it = m_vAnnotations.begin(); it
-                != m_vAnnotations.end(); it++) {
+        for(vector<Annotation>::const_iterator it = m_vAnnotations.begin(); it != m_vAnnotations.end(); it++) {
             it->printIDL();
         }
     }
 
-    void AnnotationList::save(const string &filename) const {
+    void AnnotationList::save(const string &filename, bool bSaveRelativeToHome) const {
         string::size_type pos = filename.rfind(".");
         if (pos == string::npos) {
             return;
-        } else if (filename.substr(pos, string::npos).compare(".al") == 0) {
-            saveXML(filename);
+        }
+
+        else if (filename.substr(pos, string::npos).compare(".al") == 0) {
+            saveXML(filename, bSaveRelativeToHome);
         } else {
-            saveIDL(filename);
+            saveIDL(filename, bSaveRelativeToHome);
         }
     }
 
-    void AnnotationList::saveXML(const string &filename) const {
+    void AnnotationList::saveXML(const string &filename, bool bSaveRelativeToHome) const {
         cerr << "AnnotationList::saveXML( " << filename << " )\n";
 
         ofstream f(filename.c_str());
         f << "<annotationlist>\n";
-        for (vector<Annotation>::const_iterator it = m_vAnnotations.begin(); it
-                != m_vAnnotations.end(); it++) {
-            it->writeXML(f);
+        for(vector<Annotation>::const_iterator it = m_vAnnotations.begin(); it != m_vAnnotations.end(); it++) {
+            it->writeXML(f, bSaveRelativeToHome);
         }
         f << "</annotationlist>\n";
 
         cerr << "Finished AnnotationList::save( " << filename << " )\n";
     }
 
-    //TODO fix ofstream to non-textmode to avoid \r\n conversion
-    void AnnotationList::saveIDL(const string &filename) const {
+    void AnnotationList::saveIDL(const string &filename, bool bSaveRelativeToHome) const {
         cerr << "AnnotationList::saveIDL( " << filename << " )\n";
         ofstream f(filename.c_str());
-        for (vector<Annotation>::const_iterator it = m_vAnnotations.begin(); it
-                != m_vAnnotations.end(); it++) {
-            it->writeIDL(f);
+        for(vector<Annotation>::const_iterator it = m_vAnnotations.begin(); it != m_vAnnotations.end(); it++) {
+            it->writeIDL(f, bSaveRelativeToHome);
             if (it + 1 != m_vAnnotations.end()) {
                 f << ";\n";
             } else {
@@ -112,11 +112,28 @@ namespace libAn {
         } else if (ext.compare(".al") == 0) {
             loadXML(filename);
         } else {
-            printf(" WARNING: No valid file extension provided: %s!!!\n", ext.c_str());
+            printf (" WARNING: No valid file extension provided: %s!!!\n", ext.c_str());
+        }
+
+        //--- expand HOME if needed ---//
+
+        if (m_vAnnotations.size() > 0) {
+            string strHome = getenv("HOME");
+            assert(strHome.length() > 0);
+
+            for (int aidx = 0; aidx < (int)m_vAnnotations.size(); ++aidx) {
+                if (m_vAnnotations[aidx].imageName()[0] == '~') {
+                    string strOldName = m_vAnnotations[aidx].imageName();
+
+                    string strNewName = strHome + strOldName.substr(1);
+                    m_vAnnotations[aidx].setImageName(strNewName);
+                }
+            }
         }
 
         return;
     }
+
 
     void AnnotationList::loadXML(const string &filename) {
         cerr << "AnnotationList::loadXML( " << filename << " )\n";
@@ -132,7 +149,7 @@ namespace libAn {
         //--- chop in Annotations ---//
         vector<string> annoStrings = getElements("annotation", content);
         vector<string>::const_iterator it;
-        for (it = annoStrings.begin(); it != annoStrings.end(); it++) {
+        for(it = annoStrings.begin(); it != annoStrings.end(); it++) {
             Annotation a;
             a.parseXML(*it);
             m_vAnnotations.push_back(a);
@@ -174,7 +191,7 @@ namespace libAn {
         cerr << "Number of images: " << annoStrings.size() << endl;
 
         vector<string>::const_iterator it;
-        for (it = annoStrings.begin(); it != annoStrings.end(); it++) {
+        for(it = annoStrings.begin(); it != annoStrings.end(); it++) {
             Annotation a;
             a.parseIDL(*it, m_sPath);
             m_vAnnotations.push_back(a);
@@ -183,16 +200,10 @@ namespace libAn {
         cerr << "Finished AnnotationList::loadIDL( " << filename << " )\n";
     }
 
-    const Annotation &AnnotationList::findByName(const string &name, int frameNr,
-            bool useAbsPath) const {
+    const Annotation &AnnotationList::findByName(const string &name, int frameNr) const {
         vector<Annotation>::const_iterator it;
-        for (it = m_vAnnotations.begin(); it != m_vAnnotations.end(); it++) {
-            string curName;
-            if (useAbsPath) {
-                curName = it->imageName();
-            } else {
-                curName = it->fileName();
-            }
+        for(it = m_vAnnotations.begin(); it != m_vAnnotations.end(); it++) {
+            string curName = it->imageName();
             int curFrameNr = it->frameNr();
 
             if (curName.compare(name) == 0)
@@ -205,16 +216,10 @@ namespace libAn {
         return m_emptyAnnotation;
     }
 
-    Annotation &AnnotationList::findByName(const string &name, int frameNr, bool useAbsPath) {
+    Annotation &AnnotationList::findByName(const string &name, int frameNr) {
         vector<Annotation>::iterator it;
-        for (it = m_vAnnotations.begin(); it != m_vAnnotations.end(); it++) {
-            string curName;
-            if (useAbsPath) {
-                curName = it->imageName();
-            } else {
-                curName = it->fileName();
-            }
-
+        for(it = m_vAnnotations.begin(); it != m_vAnnotations.end(); it++) {
+            string curName = it->imageName();
             int curFrameNr = it->frameNr();
 
             if (curName.compare(name) == 0)
@@ -227,15 +232,9 @@ namespace libAn {
         return m_emptyAnnotation;
     }
 
-    int AnnotationList::getIndexByName(const string &name, int frameNr, bool useAbsPath) const {
-        for (unsigned i = 0; i != m_vAnnotations.size(); i++) {
-            string curName;
-            if (useAbsPath) {
-                curName = m_vAnnotations[i].imageName();
-            } else {
-                curName = m_vAnnotations[i].fileName();
-            }
-
+    int AnnotationList::getIndexByName(const string &name, int frameNr) const {
+        for(unsigned i = 0; i != m_vAnnotations.size(); i++) {
+            string curName = m_vAnnotations[i].imageName();
             int curFrameNr = m_vAnnotations[i].frameNr();
 
             if (curName.compare(name) == 0)
@@ -267,11 +266,13 @@ namespace libAn {
     }
 
     void AnnotationList::mergeAnnotationList(const AnnotationList &list) {
-        for (unsigned i = 0; i < list.size(); i++) {
+        for(unsigned i = 0; i < list.size(); i++) {
             m_vAnnotations.push_back(list.annotation(i));
         }
         //m_vAnnotations.insert(annos.begin(),annos.end());
     }
+
+
 
 } //end namespace
 

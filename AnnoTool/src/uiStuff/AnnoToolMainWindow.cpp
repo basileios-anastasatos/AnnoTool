@@ -166,12 +166,30 @@ void AnnoToolMainWindow::loadGraphicsAnnoRaw() {
                 anno::dt::Annotation *cur = i.next();
                 anno::graphics::AnnoGraphicsShape *s =
                     anno::graphics::AnnoGraphicsShapeCreator::toGraphicsShape(cur);
+
+                /* MA BEGIN: make sure child items are drawn over the parents */
+                QUuid parentId = cur->annoParent();
+                if (!parentId.isNull()) {
+                    anno::graphics::AnnoGraphicsShape *parentShape = _graphicsScene->getShapeByAnnoId(parentId);
+                    assert(parentShape != 0 && "assume parents are created before children");
+
+                    assert(s->graphicsItem() != 0);
+                    assert(parentShape->graphicsItem() != 0);
+
+                    s->graphicsItem()->setParentItem(parentShape->graphicsItem());
+
+                    qreal parentZ = parentShape->graphicsItem()->zValue();
+                    s->graphicsItem()->setZValue(parentZ + 1);
+                }
+                /* MA END */
+
                 if (s != NULL) {
                     //GlobalLogger::instance()->logDebug(QString("MW: Adding annotation shape %1").arg(s->relatedAnno()->annoIdAsString()));
                     _graphicsScene->addAnnoShape(s);
                     ++j;
                 }
-            }
+            } // annotaion objects
+
             GlobalLogger::instance()->logDebug(QString("Loaded %1 annotation shapes.").arg(j));
         }
     }
@@ -389,11 +407,18 @@ void AnnoToolMainWindow::on_actionFileOpen_triggered() {
     using ::anno::dt::AnnoFileData;
 
     if (checkProjectToClose()) {
+        /* MA BEGIN: here we could accumulate extensions supported by the plug-ins */
+        QString qsExtensions = anno::FileExtensions::asFilter(::anno::GlobalConfig::fileExt.projects);
+
+        qsExtensions += " *.al *.idl";
+        /* MA END */
+
+
         QString fileName = QFileDialog::getOpenFileName(
                                this,
                                QString("Open AnnoTool Project File"),
                                QString("."),
-                               QString("AnnoTool Project (%1)").arg(anno::FileExtensions::asFilter(::anno::GlobalConfig::fileExt.projects)));
+                               QString("AnnoTool Project (%1)").arg(qsExtensions));
         if (!fileName.isEmpty()) {
             try {
                 GlobalProjectManager *pm = GlobalProjectManager::instance();

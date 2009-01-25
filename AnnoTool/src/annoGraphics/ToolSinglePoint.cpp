@@ -72,25 +72,28 @@ namespace anno {
                 anno->setAnnoId(QUuid::createUuid());
                 anno->setShape(asp);
 
-                std::cout << "ToolSinglePoint, PoseMode: " << GlobalProjectManager::instance()->isPoseMode() << std::endl;
+                std::cout << "ToolSinglePoint, PoseMode: " <<
+                          GlobalProjectManager::instance()->isPoseMode() << std::endl;
 
                 /* MA: "Pose Mode" */
+                QUuid parentId;
+                anno::dt::Annotation *parentAnno = NULL;
+
                 if (GlobalProjectManager::instance()->isPoseMode()) {
 
                     GlobalProjectManager *pm = GlobalProjectManager::instance();
-                    QUuid parentAnnoId = pm->lastSelNotPointAnno();
+                    parentId = pm->lastSelNotPointAnno();
 
-                    if (!parentAnnoId.isNull()) {
-                        std::cout << "Pose Mode: set parent to " <<
-                                  parentAnnoId.toString().toStdString() << std::endl;
-
-                        anno->setAnnoParent(parentAnnoId);
-
-                        /* find max id of other children */
-
-                        anno::dt::Annotation *parentAnno = pm->selectedFile()->getAnnotation(parentAnnoId);
+                    if (!parentId.isNull()) {
+                        parentAnno = pm->selectedFile()->getAnnotation(parentId);
                         assert(parentAnno != NULL);
 
+                        std::cout << "Pose Mode: set parent to " <<
+                                  parentId.toString().toStdString() << std::endl;
+
+                        anno->setAnnoParent(parentId);
+
+                        /* find max id of other children */
                         QList<QUuid> children_list = parentAnno->annoChildren();
                         QListIterator<QUuid> it(children_list);
                         int max_child_id = -1;
@@ -140,10 +143,10 @@ namespace anno {
 
                     /* handle "Lock Parent" mode */
 
-                    QUuid parentId = GlobalToolManager::instance()->getLockedAnno();
+                    parentId = GlobalToolManager::instance()->getLockedAnno();
 
                     if(!parentId.isNull()) {
-                        //dt::Annotation* _curParentAnno = GlobalProjectManager::instance()->selectedFile()->getAnnotation(parentId);
+                        parentAnno = GlobalProjectManager::instance()->selectedFile()->getAnnotation(parentId);
                         anno->setAnnoParent(parentId);
                     }
                 }
@@ -154,6 +157,24 @@ namespace anno {
                 AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
                 if (s != NULL) {
                     _scene->addAnnoShape(s);
+
+                    /* MA BEGIN: make sure child items are drawn over the parents */
+                    if (!parentId.isNull()) {
+                        AnnoGraphicsShape *parentShape = _scene->getShapeByAnnoId(parentId);
+
+                        assert(parentShape != 0);
+                        assert(parentShape->graphicsItem() != 0);
+                        assert(s->graphicsItem() != 0);
+
+                        s->graphicsItem()->setParentItem(parentShape->graphicsItem());
+                        qreal parentZ = parentShape->graphicsItem()->zValue();
+                        s->graphicsItem()->setZValue(parentZ + 1);
+                    }
+
+//                                         if (GlobalProjectManager::instance()->isPoseMode())
+//                                           _scene->bringToFront(anno->annoId());
+                    /* MA END */
+
                     GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
                 }
                 //AnnoToolMainWindow::updateUI();

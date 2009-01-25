@@ -506,18 +506,60 @@ namespace anno {
             throw new IllegalStateException(__FILE__, __LINE__, "Cannot load from given file. Current data is already valid.");
         }
 
-        _project = dt::AnnoProject::fromFile(path);
-        _filterMan = new filter::AnnoFilterManager(_project);
-        _classList = new dt::AnnoAvClassList();
-        _fileList = new QList<dt::AnnoFileData *>();
-        _fileListMod = new QList<dt::AnnoFileData *>();
+        /* MA: either use native format, or use importer to load idl/al */
 
-        if (loadSub) {
-            loadClassDefs();
-            loadAnnoFiles();
+        if (path.endsWith(".idl", Qt::CaseInsensitive) ||
+                path.endsWith(".al", Qt::CaseInsensitive)) {
+
+            /* MA: how do we choose the right plugin? */
+            GlobalImExportManager *im = GlobalImExportManager::instance();
+
+            assert(im->importerCount() == 1 &&
+                   "how to choose the right plugin?");
+
+            ImporterPlugin *importer = im->getImporter(0);
+            assert(importer != 0);
+
+            bool silent = true;
+
+            /* MA: init project */
+
+            QFileInfo fi_path(path);
+            _project = new AnnoProject(path);
+            _project->setUuid(QUuid::createUuid());
+            _project->setProjectName(fi_path.fileName());
+            _project->setFilePath(path);
+            _project->addToSearchPath(fi_path.absolutePath());
+
+            /* MA: init others */
+
+            _filterMan = new filter::AnnoFilterManager(_project);
+            _classList = new dt::AnnoAvClassList();
+            _fileList = new QList<dt::AnnoFileData *>();
+            _fileListMod = new QList<dt::AnnoFileData *>();
+
+            std::cout << "GlobalProjectManager::loadFromFile, importer start" << std::endl;
+            importer->exec(QFileInfo(path), silent);
+            std::cout << "GlobalProjectManager::loadFromFile, importer end" << std::endl;
+
             sortAnnoFiles();
             setupAllSignals();
+        } else {
+
+            _project = dt::AnnoProject::fromFile(path);
+            _filterMan = new filter::AnnoFilterManager(_project);
+            _classList = new dt::AnnoAvClassList();
+            _fileList = new QList<dt::AnnoFileData *>();
+            _fileListMod = new QList<dt::AnnoFileData *>();
+
+            if (loadSub) {
+                loadClassDefs();
+                loadAnnoFiles();
+                sortAnnoFiles();
+                setupAllSignals();
+            }
         }
+
         emit projectOpened(_project);
     }
 
@@ -527,22 +569,44 @@ namespace anno {
             throw new IllegalStateException(__FILE__, __LINE__, "Cannot save current data. Invalid data.");
         }
 
-        _project->writeToFile();
-        if (saveSub) {
-            if(_fileListMod->isEmpty()) {
-                GlobalLogger::instance()->logWarning("Request to save data files, but list of modified data files is empty!");
-            }
 
-            QListIterator<dt::AnnoFileData *> i(*_fileListMod);
-            while (i.hasNext()) {
-                dt::AnnoFileData *cur = i.next();
-                cur->writeToFile();
-                cur->resetModifiedState(false);
+        /* MA: need way to decide which plugin supports which format */
+        if (_project->filePath().endsWith(".al", Qt::CaseInsensitive) ||
+                _project->filePath().endsWith(".idl", Qt::CaseInsensitive)) {
+
+            GlobalImExportManager *im = GlobalImExportManager::instance();
+
+            assert(im->exporterCount() == 1 &&
+                   "how to choose the right plugin?");
+
+            ExporterPlugin *exporter = im->getExporter(0);
+            assert(exporter != 0);
+
+            bool silent = true;
+
+            std::cout << "GlobalProjectManager::saveToFile, exporter start" << std::endl;
+            exporter->exec(QFileInfo(_project->filePath()), silent);
+            std::cout << "GlobalProjectManager::saveToFile, exporter end" << std::endl;
+        } else {
+            /* MA: use native format */
+
+            _project->writeToFile();
+            if (saveSub) {
+                if(_fileListMod->isEmpty()) {
+                    GlobalLogger::instance()->logWarning("Request to save data files, but list of modified data files is empty!");
+                }
+
+                QListIterator<dt::AnnoFileData *> i(*_fileListMod);
+                while (i.hasNext()) {
+                    dt::AnnoFileData *cur = i.next();
+                    cur->writeToFile();
+                    cur->resetModifiedState(false);
+                }
+                if(_fileListMod->size() != 0) {
+                    GlobalLogger::instance()->logWarning("Modified File List not empty despite of reset!");
+                }
+                _fileListMod->clear();
             }
-            if(_fileListMod->size() != 0) {
-                GlobalLogger::instance()->logWarning("Modified File List not empty despite of reset!");
-            }
-            _fileListMod->clear();
         }
     }
 
