@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "include/AnnoGraphicsView.h"
 #include "AnnoGLView.h"
 #include "importGlobals.h"
@@ -56,6 +58,19 @@ void AnnoGraphicsView::wheelEvent(QWheelEvent *event) {
     event->ignore();
 }
 
+void AnnoGraphicsView::keyReleaseEvent(QKeyEvent *event) {
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+    assert(pm != NULL);
+
+    if (event->key() == Qt::Key_Up) {
+        pm->setSelectedFileRow(pm->selectedFileRow() - 1);
+    } else if (event->key() == Qt::Key_Down) {
+        pm->setSelectedFileRow(pm->selectedFileRow() + 1);
+    } else {
+        QGraphicsView::keyReleaseEvent(event);
+    }
+
+}
 
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

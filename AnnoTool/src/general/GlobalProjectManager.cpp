@@ -193,6 +193,9 @@ namespace anno {
 
                 _curSelFile = index;
                 emit curAnnoFileSelChanged(index, file->imageUuid(), file);
+
+                /* MA: select the first annotation */
+                setSelectedAnnoRow(0);
             }
         } else if(index == -1) {
             resetSelectedFile();

@@ -16,6 +16,9 @@ class AnnoGraphicsView : public QGraphicsView {
     protected:
         virtual void drawBackground(QPainter *painter, const QRectF &rect);
         virtual void wheelEvent(QWheelEvent *event);
+        virtual void keyReleaseEvent(QKeyEvent *event);
+
+
 
     public:
         AnnoGraphicsView(QWidget *parent = 0);
