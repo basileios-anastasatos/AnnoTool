@@ -34,9 +34,8 @@ namespace anno {
         QFileInfo idlFile;
 
         if (!silent) {
+            idlPath = QFileDialog::getSaveFileName(NULL, "Select a location where to export", startDir.filePath());
 
-            QString idlPath = QFileDialog::getSaveFileName(NULL,
-                              "Select a location where to export", startDir.filePath());
             //QFileInfo idlFile(idlPath);
             idlFile.setFile(idlPath);
 
@@ -76,8 +75,11 @@ namespace anno {
         _idlDir = idlFile.absoluteDir();
 
         /* MA, save in al/idl depending on the extension */
-        assert(idlPath.endsWith(".al", Qt::CaseInsensitive) ||
-               idlPath.endsWith(".idl", Qt::CaseInsensitive) && "unsupported format");
+        if (!idlPath.endsWith(".al", Qt::CaseInsensitive) &&
+                !idlPath.endsWith(".idl", Qt::CaseInsensitive)) {
+            std::cout << "unsupported format, idlPath: " << idlPath.toStdString() << std::endl;
+            assert(false && "unsupported format");
+        }
 
         int imgCount = 0;
         int annoCount = 0;

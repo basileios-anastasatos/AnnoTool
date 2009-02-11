@@ -63,9 +63,17 @@ void AnnoGraphicsView::keyReleaseEvent(QKeyEvent *event) {
     assert(pm != NULL);
 
     if (event->key() == Qt::Key_Up) {
-        pm->setSelectedFileRow(pm->selectedFileRow() - 1);
+        int selectedRow = pm->selectedFileRow();
+
+        if (selectedRow > 0) {
+            pm->setSelectedFileRow(selectedRow - 1);
+        }
     } else if (event->key() == Qt::Key_Down) {
-        pm->setSelectedFileRow(pm->selectedFileRow() + 1);
+        int selectedRow = pm->selectedFileRow();
+
+        if (selectedRow < pm->fileCount() - 1) {
+            pm->setSelectedFileRow(selectedRow + 1);
+        }
     } else {
         QGraphicsView::keyReleaseEvent(event);
     }

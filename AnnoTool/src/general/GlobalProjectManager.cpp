@@ -226,7 +226,7 @@ namespace anno {
                 if (anno->shape()) {
                     if (anno->shape()->shapeType() != anno::dt::ASTypeSinglePoint) {
                         _lastSelNotPointAnno = index;
-                        std::cout << "_lastSelNotPointAnno: " << _lastSelNotPointAnno << std::endl;
+                        //std::cout << "_lastSelNotPointAnno: " << _lastSelNotPointAnno << std::endl;
                     }
                 } else {
                     assert(false && "no shape?");
