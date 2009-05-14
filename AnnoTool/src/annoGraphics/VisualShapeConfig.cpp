@@ -14,7 +14,9 @@ namespace anno {
 
         VisualShapeConfig::VisualShapeConfig() :
             _borderNormal(QColor(230, 230, 230)), _borderSelected(QColor(255, 255, 255)),
-            _fillNormal(QColor(255, 255, 255, 0)), _fillSelected(QColor(255, 255, 255, 30)) {
+    /* MA: better colors in VNC */
+            //_fillNormal(QColor(255, 255, 255, 0)), _fillSelected(QColor(255, 255, 255, 30))
+            _fillNormal(QColor(255, 255, 255, 0)), _fillSelected(QColor(255, 255, 255, 0)) {
             _borderNormal.setWidth(1);
             _borderSelected.setWidth(2);
         }

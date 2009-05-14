@@ -1,13 +1,19 @@
 TEMPLATE += app
 TARGET = AnnoTool
-CONFIG += release
+
 CONFIG -= exceptions_off \
     rtti_off \
     stl_off \
     debug
+
+#CONFIG -= release
+#CONFIG += debug
+CONFIG += release
+
 UI_DIR = ./src/uiStuff/gen
 MOC_DIR = ./tmp/moc
 RCC_DIR = ./tmp
+
 INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/annoFilter/include \
     ./src/annoExceptions/include \
@@ -21,10 +27,24 @@ INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/uiStuff/gen \
     ./src/uiStuff/helper/include \
     ./src/libAnnotationDeprecated/include
+
 QT += core \
     gui \
     opengl \
     xml
+
+message($$CONFIG)
+
+CONFIG(debug) {
+  message(Debug build)
+}
+CONFIG(release) {
+  message(Release build)
+}
+
+
+
+
 HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/general/include/GlobalInfo.h \
     ./src/annoExceptions/include/AnnoException.h \

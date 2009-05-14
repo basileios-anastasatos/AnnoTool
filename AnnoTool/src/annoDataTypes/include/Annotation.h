@@ -11,6 +11,7 @@
 #include "XmlHelper.h"
 
 #include "GlobalLogger.h"
+
 using logging::GlobalLogger;
 
 #ifndef NATIVE_SCORE_ATTR

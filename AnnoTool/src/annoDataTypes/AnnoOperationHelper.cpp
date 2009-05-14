@@ -139,10 +139,13 @@ namespace anno {
             }
 
             QList<Annotation *> childList = getChildren(anno);
+
             foreach(Annotation * curChild, childList) {
+
                 if(deep) {
                     deleteChildren(curChild, deep);
                 }
+
                 _fileData->removeAnnotation(curChild->annoId());
             }
             return true;

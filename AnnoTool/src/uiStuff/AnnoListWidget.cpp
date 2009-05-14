@@ -74,10 +74,13 @@ void AnnoListWidget::on_actionDeleteAnnotation_triggered() {
 }
 
 void AnnoListWidget::on_actionDeleteAnnotationDeep_triggered() {
+    printf("AnnoListWidget::on_actionDeleteAnnotationDeep_triggered\n");
     if (GlobalProjectManager::instance()->isValid()) {
         anno::dt::AnnoFileData *annoFile = GlobalProjectManager::instance()->selectedFile();
+
         if(annoFile != NULL) {
             anno::dt::Annotation *selAnno = GlobalProjectManager::instance()->selectedAnno();
+
             if(selAnno != NULL) {
                 anno::dt::AnnoOperationHelper annoOp(annoFile);
                 annoOp.deleteAnnotation(selAnno, true);

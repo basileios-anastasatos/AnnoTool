@@ -173,14 +173,21 @@ namespace anno {
 
         void AnnoFileData::removeAnnotation(const QUuid &uuid) {
             Annotation *anno = _annoMap.value(uuid, NULL);
+
             if (anno != NULL) {
                 int index = _annoList.indexOf(anno, 0);
                 if (index >= 0) {
                     _annoMap.remove(uuid);
                     _annoList.removeAt(index);
-                    delete anno;
+
+                    // MA: results in segmentation fault
+                    // delete anno;
+
                     setModified(true);
                     emit annoRemoved(uuid);
+
+                    // MA: delete after everyone has processed the signal
+                    delete anno;
                 }
             }
         }
