@@ -180,8 +180,8 @@ namespace anno {
                     _annoMap.remove(uuid);
                     _annoList.removeAt(index);
 
-                    // MA: results in segmentation fault
-                    // delete anno;
+                    // MA: results in segmentation fault (onle seems to be relevant if children are AnnoPoints)
+                    //delete anno;
 
                     setModified(true);
                     emit annoRemoved(uuid);

@@ -194,8 +194,24 @@ namespace anno {
                 _curSelFile = index;
                 emit curAnnoFileSelChanged(index, file->imageUuid(), file);
 
+                int lastAnnoRectIdx = -1;
+                /* MA: select the last annotated rectangle (useful when annotating sequences) */
+
+                for (int aidx = 0; aidx < file->annoCount(); ++aidx) {
+                    dt::Annotation *anno = file->getAnnotation(aidx);
+
+                    if (anno->shape()->shapeType() == anno::dt::ASTypeRectangle) {
+                        lastAnnoRectIdx = aidx;
+                    }
+                }
+
+                if (lastAnnoRectIdx != -1) {
+                    setSelectedAnnoRow(lastAnnoRectIdx);
+                }
+
                 /* MA: select the first annotation */
-                setSelectedAnnoRow(0);
+                //setSelectedAnnoRow(0);
+
             }
         } else if(index == -1) {
             resetSelectedFile();

@@ -2,6 +2,7 @@
 #include "importGlobals.h"
 #include "libAn_AnnotationList.h"
 #include "AnnoRectangle.h"
+#include "AnnoPolygon.h"
 #include "AnnoSinglePoint.h"
 #include "DlgIdlExporter.h"
 
@@ -67,14 +68,15 @@ namespace anno {
 
             _rectangle = true;
             _ellipse = false;
-            _polygon = false;
+            //_polygon = false;
+            _polygon = true; // MA: we use polygons with 4 corners as rotated rectangles
             _singlePoint = false;
             _relativPaths = false;
         }
 
         _idlDir = idlFile.absoluteDir();
 
-        /* MA, save in al/idl depending on the extension */
+        /* Ma, save in al/idl depending on the extension */
         if (!idlPath.endsWith(".al", Qt::CaseInsensitive) &&
                 !idlPath.endsWith(".idl", Qt::CaseInsensitive)) {
             std::cout << "unsupported format, idlPath: " << idlPath.toStdString() << std::endl;
@@ -97,6 +99,7 @@ namespace anno {
             QListIterator<dt::Annotation *> iShape = curFile->getAnnoIterator();
             while (iShape.hasNext()) {
                 dt::Annotation *curShape = iShape.next();
+
                 if(isExportShape(curShape)) {
                     libAn::AnnoRect r = convRect(curShape);
                     if (curShape->hasScore()) {
@@ -161,13 +164,36 @@ namespace anno {
 
     libAn::AnnoRect IdlExporterPlugin::convRect(dt::Annotation *anno) {
         libAn::AnnoRect arect;
-        qreal x1 = 0.0;
-        qreal y1 = 0.0;
-        qreal x2 = 0.0;
-        qreal y2 = 0.0;
-        QRectF boundingRect = anno->shape()->boundingRect();
-        boundingRect.getCoords(&x1, &y1, &x2, &y2);
-        arect.setCoords(qRound(x1), qRound(y1), qRound(x2), qRound(y2));
+
+        if (anno->shape()->shapeType() == dt::ASTypeRectangle) {
+            qreal x1 = 0.0;
+            qreal y1 = 0.0;
+            qreal x2 = 0.0;
+            qreal y2 = 0.0;
+            QRectF boundingRect = anno->shape()->boundingRect();
+            boundingRect.getCoords(&x1, &y1, &x2, &y2);
+            arect.setCoords(qRound(x1), qRound(y1), qRound(x2), qRound(y2));
+        } else if (anno->shape()->shapeType() == dt::ASTypePolygon) {
+
+            dt::AnnoPolygon *annoPolygon = dynamic_cast<dt::AnnoPolygon *>(anno->shape());
+            assert(annoPolygon != NULL);
+            assert(annoPolygon->size() == 4); // this should have been checked in isExportShape
+
+            arect.setX1((*annoPolygon)[0].x());
+            arect.setY1((*annoPolygon)[0].y());
+
+            arect.setX2((*annoPolygon)[1].x());
+            arect.setY2((*annoPolygon)[1].y());
+
+            arect.setX3((*annoPolygon)[2].x());
+            arect.setY3((*annoPolygon)[2].y());
+
+            arect.setX4((*annoPolygon)[3].x());
+            arect.setY4((*annoPolygon)[3].y());
+        } else {
+            assert(false && "unsupported shape type");
+        }
+
         return arect;
     }
 
@@ -182,8 +208,18 @@ namespace anno {
                 return checkExport(_singlePoint, anno);
             case dt::ASTypeRectangle:
                 return checkExport(_rectangle, anno);
-            case dt::ASTypePolygon:
-                return checkExport(_polygon, anno);
+
+            case dt::ASTypePolygon: {
+                    // MA:
+                    dt::AnnoPolygon *annoPoly = dynamic_cast<dt::AnnoPolygon *>(anno->shape());
+                    if (annoPoly != NULL) {
+                        if (annoPoly->size() == 4) {
+                            return checkExport(_polygon, anno);
+                        }
+                    }
+
+                    return false;
+                }
             case dt::ASTypeEllipse:
                 return checkExport(_ellipse, anno);
             default:

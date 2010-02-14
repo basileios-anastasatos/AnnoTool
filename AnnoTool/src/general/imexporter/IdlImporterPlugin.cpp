@@ -2,6 +2,8 @@
 #include "importGlobals.h"
 #include <QFileDialog>
 
+#include "AnnoPolygon.h"
+
 #include "libAn_AnnotationList.h"
 
 namespace anno {
@@ -131,10 +133,21 @@ namespace anno {
         return true;
     }
 
-    dt::AnnoRectangle *IdlImporterPlugin::convRect(libAn::AnnoRect &rect) {
-        dt::AnnoRectangle *arect = new dt::AnnoRectangle();
-        arect->setCoords(rect.x1(), rect.y1(), rect.x2(), rect.y2());
-        return arect;
+    dt::AnnoShape *IdlImporterPlugin::convRect(libAn::AnnoRect &rect) {
+        if (rect.x3() > 0) {
+            dt::AnnoPolygon *arect = new dt::AnnoPolygon();
+
+            arect->push_back(QPointF(rect.x1(), rect.y1()));
+            arect->push_back(QPointF(rect.x2(), rect.y2()));
+            arect->push_back(QPointF(rect.x3(), rect.y3()));
+            arect->push_back(QPointF(rect.x4(), rect.y4()));
+
+            return arect;
+        } else {
+            dt::AnnoRectangle *arect = new dt::AnnoRectangle();
+            arect->setCoords(rect.x1(), rect.y1(), rect.x2(), rect.y2());
+            return arect;
+        }
     }
 
 }

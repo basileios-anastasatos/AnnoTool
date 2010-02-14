@@ -11,7 +11,8 @@ namespace anno {
 
     class IdlImporterPlugin : public anno::ImporterPlugin {
         private:
-            dt::AnnoRectangle *convRect(libAn::AnnoRect &rect);
+            //dt::AnnoRectangle* convRect(libAn::AnnoRect& rect);
+            dt::AnnoShape *convRect(libAn::AnnoRect &rect);
 
         public:
             IdlImporterPlugin() {

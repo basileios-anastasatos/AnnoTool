@@ -304,7 +304,7 @@ namespace anno {
                 return a->annoId();
             }
 
-            assert(false && "invalid annotation index");
+            //assert(false && "invalid annotation index");
         }
 
         return QUuid();

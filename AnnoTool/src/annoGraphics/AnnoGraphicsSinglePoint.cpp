@@ -176,8 +176,11 @@ namespace anno {
 
             /* MA: make markers smaller  */
             //return QRectF(asp->x() - 25, asp->y() - 25, 50, 50);
-            int marker_width = 10;
-            int marker_height = 10;
+//                         int marker_width = 10;
+//                         int marker_height = 10;
+
+            int marker_width = 12;
+            int marker_height = 12;
 
             return QRectF(asp->x() - marker_width / 2, asp->y() - marker_height / 2,
                           marker_width, marker_height);
@@ -189,8 +192,7 @@ namespace anno {
                                             const QStyleOptionGraphicsItem *option, QWidget *widget) {
             //TODO nice painting!!
             QRectF brect = boundingRect();
-            QRectF
-            ibrect(brect.x() + 5.5, brect.y() + 5.5, brect.width() - 11.0, brect.height() - 11.0);
+            QRectF ibrect(brect.x() + 5.5, brect.y() + 5.5, brect.width() - 11.0, brect.height() - 11.0);
             QPointF np = *annoSinglePoint();
             GlobalLogger::instance()->logDebug(QString("AG_SPOINT: paint (%1,%2, %3,%4)").arg(brect.x()).arg(brect.y()).arg(brect.width()).arg(brect.height()));
             if (isSelected()) {
@@ -215,11 +217,22 @@ namespace anno {
                 painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
                 painter->setBrush(brushColor);
                 painter->setPen(penNormal);
-                painter->drawEllipse(brect);
+
+                // MA: make points even smaller
+                //painter->drawEllipse(brect);
+
+// 				painter->setPen(penInner);
+// 				painter->drawEllipse((int)np.x()-1, (int)np.y()-1, 2, 2);
+
+// 				painter->setPen(penOuter);
+// 				painter->drawEllipse((int)np.x()-2, (int)np.y()-2, 4, 4);
+
                 painter->setPen(penInner);
-                painter->drawEllipse((int)np.x() - 1, (int)np.y() - 1, 2, 2);
+                painter->drawEllipse((int)np.x() - 2, (int)np.y() - 3, 5, 5);
+
                 painter->setPen(penOuter);
-                painter->drawEllipse((int)np.x() - 2, (int)np.y() - 2, 4, 4);
+                painter->drawEllipse((int)np.x() - 4, (int)np.y() - 4, 9, 9);
+
             } else {
                 QPen penNone(QColor(0, 0, 0, 0));
                 penNone.setWidth(0);
@@ -242,7 +255,10 @@ namespace anno {
                 painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
                 painter->setBrush(brushColor);
                 painter->setPen(penNormal);
-                painter->drawEllipse(brect);
+
+                // MA: make points even smaller
+                // painter->drawEllipse(brect);
+
 
                 //				painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
                 //				painter->setBrush(brushNone);
@@ -252,10 +268,17 @@ namespace anno {
                 //
 
 
+// 				painter->setPen(penInner);
+// 				painter->drawEllipse((int)np.x()-1, (int)np.y()-1, 2, 2);
+// 				painter->setPen(penOuter);
+// 				painter->drawEllipse((int)np.x()-2, (int)np.y()-2, 4, 4);
+
                 painter->setPen(penInner);
-                painter->drawEllipse((int)np.x() - 1, (int)np.y() - 1, 2, 2);
+                painter->drawEllipse((int)np.x() - 2, (int)np.y() - 3, 5, 5);
+
                 painter->setPen(penOuter);
-                painter->drawEllipse((int)np.x() - 2, (int)np.y() - 2, 4, 4);
+                painter->drawEllipse((int)np.x() - 4, (int)np.y() - 4, 9, 9);
+
 
             }
 

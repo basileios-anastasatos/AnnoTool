@@ -6,6 +6,8 @@
 #include <fstream>
 #include <math.h>
 
+#include <cstdlib>
+
 namespace libAn {
 
     enum FixDimType { FIX_OBJWIDTH = 0, FIX_OBJHEIGHT = 1};
@@ -31,20 +33,30 @@ namespace libAn {
     class AnnoRect {
         public:
             AnnoRect(): m_x1(-1), m_x2(-1), m_y1(-1), m_y2(-1),
+                m_x3(-1), m_x4(-1), m_y3(-1), m_y4(-1),
                 m_dScore(-1), m_nSilhouetteID(-1), m_dScale(1),
                 m_nObjPosX(-1), m_nObjPosY(-1),
                 m_nObjectId(-1), m_dMotionPhase(-1) {};
 
             AnnoRect(int x1, int y1, int x2, int y2, double score = -1, int sil = -1, float scale = 1): m_x1(x1), m_x2(x2), m_y1(y1), m_y2(y2),
+                m_x3(-1), m_x4(-1), m_y3(-1), m_y4(-1),
                 m_dScore(score), m_nSilhouetteID(sil), m_dScale(scale),
                 m_nObjPosX(-1), m_nObjPosY(-1),
                 m_nObjectId(-1), m_dMotionPhase(-1) {};
+
+            /*       AnnoRect(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, double score=-1, int sil=-1, float scale = 1):m_x1(x1),m_x2(x2),m_y1(y1),m_y2(y2), */
+            /* 	m_x3(x3),m_x4(x4),m_y3(y3),m_y4(y4), */
+            /* 	m_dScore(score),m_nSilhouetteID(sil), m_dScale(scale),  */
+            /* 	m_nObjPosX(-1), m_nObjPosY(-1),  */
+            /* 	m_nObjectId(-1), m_dMotionPhase(-1){}; */
 
             //explicit AnnoRect(const AnnoRect& other);
             ~AnnoRect() {};
 
         protected:
             int m_x1, m_x2, m_y1, m_y2;
+            int m_x3, m_x4, m_y3, m_y4;
+
             double m_dScore;
             int m_nSilhouetteID;
 
@@ -78,6 +90,20 @@ namespace libAn {
             void setY2(int y2) {
                 m_y2 = y2;
             };
+
+            void setX3(int x3) {
+                m_x3 = x3;
+            };
+            void setX4(int x4) {
+                m_x4 = x4;
+            };
+            void setY3(int y3) {
+                m_y3 = y3;
+            };
+            void setY4(int y4) {
+                m_y4 = y4;
+            };
+
             int x1() const {
                 return m_x1;
             };
@@ -90,6 +116,20 @@ namespace libAn {
             int y2() const {
                 return m_y2;
             };
+
+            int x3() const {
+                return m_x3;
+            };
+            int x4() const {
+                return m_x4;
+            };
+            int y3() const {
+                return m_y3;
+            };
+            int y4() const {
+                return m_y4;
+            };
+
             int centerX() const {
                 return (m_x1 + m_x2) / 2;
             };

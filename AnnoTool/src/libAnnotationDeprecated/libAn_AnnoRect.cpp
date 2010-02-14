@@ -90,6 +90,26 @@ namespace libAn {
             m_y2 = getElementDataInt("y2", tmp[0]);
         }
 
+        tmp = getElements("x3", rectString);
+        if (tmp.size() > 0) {
+            m_x3 = getElementDataInt("x3", tmp[0]);
+        }
+
+        tmp = getElements("y3", rectString);
+        if (tmp.size() > 0) {
+            m_y3 = getElementDataInt("y3", tmp[0]);
+        }
+
+        tmp = getElements("x4", rectString);
+        if (tmp.size() > 0) {
+            m_x4 = getElementDataInt("x4", tmp[0]);
+        }
+
+        tmp = getElements("y4", rectString);
+        if (tmp.size() > 0) {
+            m_y4 = getElementDataInt("y4", tmp[0]);
+        }
+
         tmp = getElements("score", rectString);
         if (tmp.size() > 0) {
             m_dScore = getElementDataFloat("score", tmp[0]);
@@ -218,6 +238,14 @@ namespace libAn {
         out << "        <y1>" << m_y1 << "</y1>\n";
         out << "        <x2>" << m_x2 << "</x2>\n";
         out << "        <y2>" << m_y2 << "</y2>\n";
+
+        if (m_x3 >= 0) {
+            out << "        <x3>" << m_x3 << "</x3>\n";
+            out << "        <y3>" << m_y3 << "</y3>\n";
+            out << "        <x4>" << m_x4 << "</x4>\n";
+            out << "        <y4>" << m_y4 << "</y4>\n";
+        }
+
         if (m_dScore != -1) {
             out << "        <score>" << m_dScore << "</score>\n";
         }
