@@ -101,6 +101,7 @@ namespace anno {
             if (GlobalProjectManager::instance()->isAnnoSelected(shape->relatedAnno())) {
                 qreal deltaX = event->pos().x() - event->lastPos().x();
                 qreal deltaY = event->pos().y() - event->lastPos().y();
+
                 shape->shapeMoveBy(deltaX, deltaY);
             }
         }

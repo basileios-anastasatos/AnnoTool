@@ -11,6 +11,8 @@
 #include "AnnoGraphicsShapeCreator.h"
 #include <QGraphicsView>
 
+#include <iostream>
+
 namespace anno {
     namespace graphics {
 
@@ -124,11 +126,18 @@ namespace anno {
                         }// children
 
                         anno->addClass(NATIVE_CLASS_POSEPOINT);
-                        anno::dt::AnnoAttribute atr(anno,
-                                                    NATIVE_POSEPOINT_ID_ATTR,
-                                                    NATIVE_CLASS_POSEPOINT,
-                                                    QString::number(max_child_id + 1));
-                        anno->addAttribute(atr);
+                        anno::dt::AnnoAttribute atr_id(anno,
+                                                       NATIVE_POSEPOINT_ID_ATTR,
+                                                       NATIVE_CLASS_POSEPOINT,
+                                                       QString::number(max_child_id + 1));
+
+                        anno::dt::AnnoAttribute atr_vis(anno,
+                                                        NATIVE_POSEPOINT_VISIBLE_ATTR,
+                                                        NATIVE_CLASS_POSEPOINT,
+                                                        QString::number(1));
+
+                        anno->addAttribute(atr_id);
+                        anno->addAttribute(atr_vis);
 
                         std::cout << "new pose point: " << max_child_id + 1 << std::endl;
 
@@ -157,6 +166,10 @@ namespace anno {
                 AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
                 if (s != NULL) {
                     _scene->addAnnoShape(s);
+
+                    /** MA, set focus to enable keyboard events */
+                    assert(s->graphicsItem() != 0);
+                    _scene->setFocusItem(s->graphicsItem());
 
                     /* MA BEGIN: make sure child items are drawn over the parents */
                     if (!parentId.isNull()) {
@@ -206,6 +219,7 @@ namespace anno {
                 _view->setCursor(Qt::ArrowCursor);
             }
         }
+
 
     }
 }

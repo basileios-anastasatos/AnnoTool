@@ -46,8 +46,8 @@ namespace anno {
             return false;
         }
 
-        assert(idlPath.endsWith(".al", Qt::CaseInsensitive) ||
-               idlPath.endsWith(".idl", Qt::CaseInsensitive) && "unsupported format");
+        assert((idlPath.endsWith(".al", Qt::CaseInsensitive) ||
+                idlPath.endsWith(".idl", Qt::CaseInsensitive)) && "unsupported format");
 
 
         GlobalLogger::instance()->logInfo(QString("Loading IDL annotation datasets from [%1].").arg(idlPath));
@@ -115,6 +115,20 @@ namespace anno {
                                                 QString::number(curRect.m_vAnnoPoints[apidx].id));
 
                     newPosePoint->addAttribute(atr);
+
+                    if (curRect.m_vAnnoPoints[apidx].is_visible != -1) {
+                        QString qsIsVis;
+                        if (curRect.m_vAnnoPoints[apidx].is_visible == 0) {
+                            qsIsVis = "0";
+                        } else {
+                            qsIsVis = "1";
+                        }
+
+                        anno::dt::AnnoAttribute is_vis_atr(newPosePoint,
+                                                           NATIVE_POSEPOINT_VISIBLE_ATTR,
+                                                           NATIVE_CLASS_POSEPOINT, qsIsVis);
+                        newPosePoint->addAttribute(is_vis_atr);
+                    }
 
                     /* set parent/child links */
                     newAnno->addAnnoChild(newPosePoint->annoId());

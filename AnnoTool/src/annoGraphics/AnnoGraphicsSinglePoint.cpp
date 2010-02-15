@@ -8,6 +8,8 @@
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 
+#include <iostream>
+
 namespace anno {
     namespace graphics {
 
@@ -38,6 +40,10 @@ namespace anno {
 
         void AnnoGraphicsSinglePoint::setupAppearance() {
             setFlag(QGraphicsItem::ItemIsSelectable);
+
+            /** MA: use keyboard to label occluded annopoints */
+            setFlag(QGraphicsItem::ItemIsFocusable);
+
             setAcceptsHoverEvents(true);
             setVisible(true);
             setToolTip(_anno->annoInfo());
@@ -91,6 +97,7 @@ namespace anno {
         void AnnoGraphicsSinglePoint::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_SPOINT: mouseMoveEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
+
             if (tm->hasTool()) {
                 tm->curTool()->mouseMoveEvent(this, event);
             }
@@ -131,10 +138,74 @@ namespace anno {
         void AnnoGraphicsSinglePoint::keyReleaseEvent(QKeyEvent *event) {
             GlobalLogger::instance()->logDebug("AG_SPOINT: keyReleaseEvent");
             GlobalToolManager *tm = GlobalToolManager::instance();
+
             if (tm->hasTool()) {
                 tm->curTool()->keyReleaseEvent(this, event);
             }
+
+            /** MA: this should probably be implemented in the ToolPointer */
+
+            //std::cout << "keyReleaseEvent: " << event->text().toStdString() << std::endl;
+
+            bool bNeedRedraw = false;
+
+            if (event->text() == "n") {
+                assert(_anno != 0);
+
+                QString qsIsVis;
+                _anno->getClassAttributeValue(NATIVE_CLASS_POSEPOINT,
+                                              NATIVE_POSEPOINT_VISIBLE_ATTR,
+                                              qsIsVis);
+
+                //std::cout << "is_visible: " << qsIsVis.toStdString() << std::endl;
+
+                bool ok;
+                int is_vis = qsIsVis.toInt(&ok);
+                if (!ok) {
+                    is_vis = 1;
+                } else {
+                    is_vis = (is_vis == 1) ? 0 : 1;
+                }
+
+                _anno->setClassAttributeValue(NATIVE_CLASS_POSEPOINT,
+                                              NATIVE_POSEPOINT_VISIBLE_ATTR,
+                                              QString::number(is_vis));
+                bNeedRedraw = true;
+            }
+            if (event->text() == "+" || event->text() == "-") {
+                assert(_anno != 0);
+
+                QString qsId;
+                _anno->getClassAttributeValue(NATIVE_CLASS_POSEPOINT,
+                                              NATIVE_POSEPOINT_ID_ATTR,
+                                              qsId);
+
+                bool ok;
+                int id = qsId.toInt(&ok);
+                assert(ok);
+
+                if (event->text() == "+") {
+                    ++id;
+                } else {
+                    --id;
+                }
+
+                _anno->setClassAttributeValue(NATIVE_CLASS_POSEPOINT,
+                                              NATIVE_POSEPOINT_ID_ATTR,
+                                              QString::number(id));
+
+                bNeedRedraw = true;
+            }
+
+            /** redraw */
+            if (bNeedRedraw) {
+                prepareGeometryChange();
+                _anno->setModified(true);
+                setToolTip(_anno->annoInfo());
+            }
+
         }
+
 
         QVariant AnnoGraphicsSinglePoint::itemChange(GraphicsItemChange change, const QVariant &value) {
             if (change == QGraphicsItem::ItemSelectedChange) {
@@ -154,7 +225,21 @@ namespace anno {
                 tmpPoint += delta;
 
                 QRectF parRect = parentItem()->boundingRect();
-                if (parRect.contains(tmpPoint)) {
+
+//                                 std::cout << "bounding rect, left: " << parRect.left() <<
+//                                   ", top: " << parRect.top() <<
+//                                   ", right: " << parRect.right() <<
+//                                   ", bottom: " << parRect.bottom() << std::endl;
+
+                /** MA: annopoint are not necessarily contained in the bounding rect
+
+                    interestingly boundingRect is set to image size after loading
+                    annotation from file and to correct bounding rect after drawing
+                    the rectangle
+                */
+
+                //if (parRect.contains(tmpPoint))
+                {
                     prepareGeometryChange();
                     *asp = tmpPoint;
                     _anno->setModified(true);
@@ -179,13 +264,16 @@ namespace anno {
 //                         int marker_width = 10;
 //                         int marker_height = 10;
 
-            int marker_width = 12;
-            int marker_height = 12;
+            /** compensate for annopoints label */
+
+//                         int marker_width = 12;
+//                         int marker_height = 12;
+
+            int marker_width = 25;
+            int marker_height = 20;
 
             return QRectF(asp->x() - marker_width / 2, asp->y() - marker_height / 2,
                           marker_width, marker_height);
-
-
         }
 
         void AnnoGraphicsSinglePoint::paint(QPainter *painter,
@@ -195,6 +283,13 @@ namespace anno {
             QRectF ibrect(brect.x() + 5.5, brect.y() + 5.5, brect.width() - 11.0, brect.height() - 11.0);
             QPointF np = *annoSinglePoint();
             GlobalLogger::instance()->logDebug(QString("AG_SPOINT: paint (%1,%2, %3,%4)").arg(brect.x()).arg(brect.y()).arg(brect.width()).arg(brect.height()));
+
+
+            assert(_anno != 0);
+            QString qsIsVis;
+            _anno->getClassAttributeValue(NATIVE_CLASS_POSEPOINT,
+                                          NATIVE_POSEPOINT_VISIBLE_ATTR, qsIsVis);
+
             if (isSelected()) {
                 QPen penNone(QColor(0, 0, 0, 0));
                 penNone.setWidth(0);
@@ -212,23 +307,27 @@ namespace anno {
                 penFat.setWidth(10);
 
                 QBrush brushNone(QColor(0, 0, 0, 255));
-                QBrush brushColor(QColor(255, 255, 0, 200));
+                QBrush brushColorYellow(QColor(255, 255, 0, 200));
+                QBrush brushColorGreen(QColor(0, 255, 0, 200));
 
                 painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-                painter->setBrush(brushColor);
+
+                if (qsIsVis != "0") {
+                    painter->setBrush(brushColorYellow);
+                } else {
+                    painter->setBrush(brushColorGreen);
+                }
+
                 painter->setPen(penNormal);
 
                 // MA: make points even smaller
                 //painter->drawEllipse(brect);
 
-// 				painter->setPen(penInner);
-// 				painter->drawEllipse((int)np.x()-1, (int)np.y()-1, 2, 2);
+                //painter->setPen(penInner);
+                painter->setPen(penOuter);
+                painter->drawEllipse((int)np.x() - 2, (int)np.y() - 2, 5, 5);
 
-// 				painter->setPen(penOuter);
-// 				painter->drawEllipse((int)np.x()-2, (int)np.y()-2, 4, 4);
-
-                painter->setPen(penInner);
-                painter->drawEllipse((int)np.x() - 2, (int)np.y() - 3, 5, 5);
+                painter->setBrush(Qt::NoBrush);
 
                 painter->setPen(penOuter);
                 painter->drawEllipse((int)np.x() - 4, (int)np.y() - 4, 9, 9);
@@ -250,10 +349,17 @@ namespace anno {
                 penFat.setWidth(10);
 
                 QBrush brushNone(QColor(0, 0, 0, 255));
-                QBrush brushColor(QColor(255, 255, 0, 128));
+                QBrush brushColorYellow(QColor(255, 255, 0, 128));
+                QBrush brushColorGreen(QColor(0, 255, 0, 128));
 
                 painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-                painter->setBrush(brushColor);
+
+                if (qsIsVis != "0") {
+                    painter->setBrush(brushColorYellow);
+                } else {
+                    painter->setBrush(brushColorGreen);
+                }
+
                 painter->setPen(penNormal);
 
                 // MA: make points even smaller
@@ -267,42 +373,47 @@ namespace anno {
                 //				painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
                 //
 
-
-// 				painter->setPen(penInner);
-// 				painter->drawEllipse((int)np.x()-1, (int)np.y()-1, 2, 2);
-// 				painter->setPen(penOuter);
-// 				painter->drawEllipse((int)np.x()-2, (int)np.y()-2, 4, 4);
-
-                painter->setPen(penInner);
-                painter->drawEllipse((int)np.x() - 2, (int)np.y() - 3, 5, 5);
-
+                //painter->setPen(penInner);
                 painter->setPen(penOuter);
-                painter->drawEllipse((int)np.x() - 4, (int)np.y() - 4, 9, 9);
+                painter->drawEllipse((int)np.x() - 2, (int)np.y() - 2, 5, 5);
+
+                //painter->setBrush(Qt::NoBrush);
+
+                //painter->setPen(penOuter);
+                //painter->drawEllipse((int)np.x()-4, (int)np.y()-4, 9, 9);
 
 
             }
 
-            /* MA: draw the marker id in "Pose Mode"
-
-               FIXME: extend bounding rect to include the text
-            */
-            int textOffset = 3;
-
-            QPoint textPos( floor(brect.left() + brect.width()) + textOffset,
-                            floor(brect.top() + brect.height()));
-
+            /** MA: draw the marker id in "Pose Mode" */
             if (_anno != NULL) {
-                painter->setPen(Qt::yellow);
-
                 QString qsId;
+                if (_anno->getClassAttributeValue(NATIVE_CLASS_POSEPOINT, NATIVE_POSEPOINT_ID_ATTR, qsId)) {
 
-                if (_anno->getClassAttributeValue(NATIVE_CLASS_POSEPOINT,
-                                                  NATIVE_POSEPOINT_ID_ATTR, qsId)) {
-                    painter->drawText(textPos, qsId);
+                    /** get the text extent */
+                    QFont font = painter->font();
+                    font.setPointSize(7);
+                    //painter->setFont(QFont("Arial", 7));
+                    painter->setFont(font);
+
+                    QRectF textRect(brect.right(), brect.bottom(), 0, 0);
+                    QRectF requiredRect = painter->boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop,
+                                          qsId);
+
+                    requiredRect.setHeight(0.8 * requiredRect.height());
+
+                    int textOffset = 0;
+                    textRect.setLeft(brect.right() - requiredRect.width() - textOffset);
+                    textRect.setTop(brect.bottom() - requiredRect.height() - textOffset);
+                    textRect.setWidth(requiredRect.width() + textOffset);
+                    textRect.setHeight(requiredRect.height() + textOffset);
+
+                    painter->setPen(Qt::yellow);
+                    painter->drawText(textRect, qsId);
                 }
-//                           else
-//                             painter->drawText(textPos, "?");
             }
+
+            //painter->drawRect(brect);
 
         }
 

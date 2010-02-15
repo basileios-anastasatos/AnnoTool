@@ -30,6 +30,10 @@ using logging::GlobalLogger;
 #define NATIVE_POSEPOINT_ID_ATTR QString("id")
 #endif
 
+#ifndef NATIVE_POSEPOINT_VISIBLE_ATTR
+#define NATIVE_POSEPOINT_VISIBLE_ATTR QString("is_visible")
+#endif
+
 class QXmlStreamWriter;
 class QXmlStreamReader;
 
@@ -194,6 +198,7 @@ namespace anno {
                 void removeAttributeAll();
 
                 /** MA: helpers */
+                bool setClassAttributeValue(QString qsClass, QString qsAttribute, QString qsValue);
                 bool getClassAttributeValue(QString qsClass, QString qsAttribute, QString &qsValue);
 
                 // various methods

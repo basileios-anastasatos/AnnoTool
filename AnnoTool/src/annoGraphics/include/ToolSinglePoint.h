@@ -51,6 +51,7 @@ namespace anno {
                                              QGraphicsSceneHoverEvent *event);
                 virtual void hoverLeaveEvent(AnnoGraphicsPixmap *img,
                                              QGraphicsSceneHoverEvent *event);
+
         };
 
     }

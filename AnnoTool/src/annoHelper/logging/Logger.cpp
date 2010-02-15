@@ -1,6 +1,8 @@
 #include "include/Logger.h"
 #include <QDateTime>
 
+#include <iostream>
+
 namespace logging {
     /**
      * Constructor. A Logger can only be created if a name is given.
@@ -120,6 +122,8 @@ namespace logging {
      * @see Logger#log(LogLevel, String)
      */
     void Logger::logDebug(const QString &msg) {
+        //std::cout << "logDebug: " << msg.toStdString() << std::endl;
+
         log(Debug, msg);
     }
 

@@ -133,6 +133,14 @@ namespace anno {
                             ap.y = (int)(childSinglePoint->y());
                             ap.id = ap_id;
 
+                            QString qsIsVis;
+                            if (childAnno->getClassAttributeValue(NATIVE_CLASS_POSEPOINT,
+                                                                  NATIVE_POSEPOINT_VISIBLE_ATTR,
+                                                                  qsIsVis)) {
+                                ap.is_visible = qsIsVis.toInt(&ok);
+                                assert(ok);
+                            }
+
                             r.m_vAnnoPoints.push_back(ap);
                         }
 

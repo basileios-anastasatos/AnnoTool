@@ -2,6 +2,8 @@
 #include "AllAnnoGraphics.h"
 #include <QGraphicsView>
 
+#include <iostream>
+
 namespace anno {
     namespace graphics {
 

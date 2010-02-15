@@ -15,12 +15,15 @@ namespace libAn {
 
 
     struct AnnoPoint {
-        AnnoPoint(): id(-1), x(0), y(0) {}
-        AnnoPoint(int _id, int _x, int _y): id(_id), x(_x), y(_y) {}
+        AnnoPoint(): id(-1), x(0), y(0), is_visible(-1) {}
+        AnnoPoint(int _id, int _x, int _y) : id(_id), x(_x), y(_y), is_visible(-1) {}
+        AnnoPoint(int _id, int _x, int _y, int _is_visible) : id(_id), x(_x), y(_y), is_visible(_is_visible) {}
 
         int id;
         int x;
         int y;
+        int is_visible; /** -1 = unspecified, 0 = not visible, 1 = visible */
+
     };
 
     struct compAnnoPointById {

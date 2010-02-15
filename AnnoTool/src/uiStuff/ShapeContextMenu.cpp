@@ -6,7 +6,7 @@
 #include <QAction>
 #include "AnnoToolMainWindow.h"
 
-
+#include <iostream>
 
 ShapeContextMenu::ShapeContextMenu(QWidget *parent) :
     _curAnno(NULL), _menuContext(parent), _actionAttrAdd(NULL), _actionAttrRem(NULL), _actionAttrValue(NULL), _lastAttrAction(NULL), _recentValues(NULL) {
@@ -162,9 +162,13 @@ void ShapeContextMenu::updateAttributes(anno::dt::Annotation *anno) {
         foreach(QString str, curClasses) {
             anno::dt::AnnoClassDefinition *curClassDef = allClasses->getClass(str);
             QList<QString> curAttributes;
-            curClassDef->allAttributes(curAttributes);
-            foreach(QString attr, curAttributes) {
-                allClassAttrValues.insert(QString("%1::%2").arg(curClassDef->name()).arg(attr), QPair<int, anno::dt::AnnoAttribute>(-1, anno::dt::AnnoAttribute(attr, curClassDef->name(), QString())));
+
+            /** MA, check for 0, no classdef exists for build in classes like POSEPOINT */
+            if (curClassDef != NULL) {
+                curClassDef->allAttributes(curAttributes);
+                foreach(QString attr, curAttributes) {
+                    allClassAttrValues.insert(QString("%1::%2").arg(curClassDef->name()).arg(attr), QPair<int, anno::dt::AnnoAttribute>(-1, anno::dt::AnnoAttribute(attr, curClassDef->name(), QString())));
+                }
             }
         }
 

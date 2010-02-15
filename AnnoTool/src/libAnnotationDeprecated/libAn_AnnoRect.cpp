@@ -162,6 +162,11 @@ namespace libAn {
                     p.y = getElementDataInt("y", tmp2[0]);
                 }
 
+                tmp2 = getElements("is_visible", tmp[i]);
+                if (tmp2.size() > 0) {
+                    p.is_visible = getElementDataInt("is_visible", tmp2[0]);
+                }
+
                 //       if (!(p.id > 0 && p.x > 0 && p.y > 0))
                 //         cout << p.id << " " << p.x << " " << p.y << endl;
 
@@ -279,6 +284,11 @@ namespace libAn {
                 out << "          <id>" << (*it).id << "</id>\n";
                 out << "          <x>" << (*it).x << "</x>\n";
                 out << "          <y>" << (*it).y << "</y>\n";
+
+                if ((*it).is_visible != -1) {
+                    out << "          <is_visible>" << (*it).is_visible << "</is_visible>\n";
+                }
+
                 out << "          </point>\n";
             }
             out << "        </annopoints>\n";
