@@ -269,11 +269,21 @@ namespace anno {
 //                         int marker_width = 12;
 //                         int marker_height = 12;
 
-            int marker_width = 25;
-            int marker_height = 20;
+            int offset_left = 7;
+            int offset_top = 7;
+            int offset_right = offset_left + 15;
+            int offset_bottom = offset_top + 10;
 
-            return QRectF(asp->x() - marker_width / 2, asp->y() - marker_height / 2,
-                          marker_width, marker_height);
+            return QRectF(asp->x() - offset_left, asp->y() - offset_top,
+                          offset_right + offset_left + 1, offset_bottom + offset_top + 1);
+
+
+//                         int marker_width = 25;
+//                         int marker_height = 20;
+
+//                         return QRectF(asp->x() - marker_width/2, asp->y() - marker_height/2,
+//                                       marker_width, marker_height);
+
         }
 
         void AnnoGraphicsSinglePoint::paint(QPainter *painter,
