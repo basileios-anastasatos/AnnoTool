@@ -46,6 +46,8 @@ namespace anno {
             bool _poseMode;
             int _lastSelNotPointAnno;
 
+            QPointF _lastSelRectCenter;
+
 
             // private singleton stuff
         private:
@@ -197,7 +199,7 @@ namespace anno {
     //-----------------------------------------------------------
     inline GlobalProjectManager::GlobalProjectManager() :
         QObject(NULL), _project(NULL), _filterMan(NULL), _classList(NULL), _fileList(NULL), _fileListMod(NULL),
-        _curSelFile(-1), _curSelAnno(-1), _poseMode(false), _lastSelNotPointAnno(-1) {
+        _curSelFile(-1), _curSelAnno(-1), _poseMode(false), _lastSelNotPointAnno(-1), _lastSelRectCenter(-1, -1) {
     }
 
     inline GlobalProjectManager::~GlobalProjectManager() {

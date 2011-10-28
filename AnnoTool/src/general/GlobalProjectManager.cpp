@@ -8,6 +8,9 @@
 #include <QDir>
 #include <QThread>
 
+// MA
+#include <AnnoRectangle.h>
+
 namespace anno {
     GlobalProjectManager *GlobalProjectManager::_me = NULL;
 
@@ -176,6 +179,8 @@ namespace anno {
     }
 
     void GlobalProjectManager::setSelectedFileRow(int index) {
+        std::cout << "GlobalProjectManager::setSelectedFileRow" << std::endl;
+
         if (_fileList != NULL && index >= 0 && index < _fileList->size()) {
             dt::AnnoFileData *file = _fileList->at(index);
             if (file != NULL) {
@@ -194,14 +199,33 @@ namespace anno {
                 _curSelFile = index;
                 emit curAnnoFileSelChanged(index, file->imageUuid(), file);
 
+
+                /* MA: select the annotation closest to the last selection in the previous image
+                   (useful when annotating sequences) */
+
                 int lastAnnoRectIdx = -1;
-                /* MA: select the last annotated rectangle (useful when annotating sequences) */
+                double bestDist = 1e6;
 
                 for (int aidx = 0; aidx < file->annoCount(); ++aidx) {
                     dt::Annotation *anno = file->getAnnotation(aidx);
 
                     if (anno->shape()->shapeType() == anno::dt::ASTypeRectangle) {
-                        lastAnnoRectIdx = aidx;
+                        //lastAnnoRectIdx = aidx;
+                        anno::dt::AnnoRectangle *rect = (anno::dt::AnnoRectangle *)anno->shape();
+                        QRectF boundingRect = rect->boundingRect();
+
+                        QPointF curCenter = boundingRect.center();
+
+                        QPointF curOffset = curCenter - _lastSelRectCenter;
+
+                        double curDist = sqrt(curOffset.x() * curOffset.x() + curOffset.y() * curOffset.y());
+
+                        if (curDist <  bestDist) {
+                            lastAnnoRectIdx = aidx;
+                            bestDist = curDist;
+                        }
+
+
                     }
                 }
 
@@ -246,6 +270,18 @@ namespace anno {
                         _lastSelNotPointAnno = index;
                         //std::cout << "_lastSelNotPointAnno: " << _lastSelNotPointAnno << std::endl;
                     }
+
+                    /* */
+                    if (anno->shape()->shapeType() == anno::dt::ASTypeRectangle) {
+                        anno::dt::AnnoRectangle *rect = (anno::dt::AnnoRectangle *)anno->shape();
+                        QRectF boundingRect = rect->boundingRect();
+
+                        _lastSelRectCenter = boundingRect.center();
+
+                        std::cout << _lastSelRectCenter.x() <<  " " << _lastSelRectCenter.y() << std::endl;
+                    }
+                    /* */
+
                 } else {
                     assert(false && "no shape?");
                 }
