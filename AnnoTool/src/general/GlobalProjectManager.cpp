@@ -221,6 +221,8 @@ namespace anno {
     }
 
     void GlobalProjectManager::setSelectedAnnoRow(int index) {
+        std::cout << "GlobalProjectManager::setSelectedAnnoRow" << std::endl;
+
         if (index >= 0 && selectedFile() != NULL && index < selectedFile()->annoCount()) {
             dt::Annotation *anno = selectedFile()->getAnnotation(index);
             if (anno != NULL) {
@@ -561,7 +563,7 @@ namespace anno {
             importer->exec(QFileInfo(path), silent);
             std::cout << "GlobalProjectManager::loadFromFile, importer end" << std::endl;
 
-            sortAnnoFiles();
+            //sortAnnoFiles();
             setupAllSignals();
         } else {
 
@@ -574,7 +576,7 @@ namespace anno {
             if (loadSub) {
                 loadClassDefs();
                 loadAnnoFiles();
-                sortAnnoFiles();
+                //sortAnnoFiles();
                 setupAllSignals();
             }
         }

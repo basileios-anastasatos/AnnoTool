@@ -14,6 +14,9 @@ UI_DIR = ./src/uiStuff/gen
 MOC_DIR = ./tmp/moc
 RCC_DIR = ./tmp
 
+# need this as workaround for missing libGL.so
+LIBS += -L/home/andriluk/lib
+
 INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/annoFilter/include \
     ./src/annoExceptions/include \
@@ -41,9 +44,6 @@ CONFIG(debug) {
 CONFIG(release) {
   message(Release build)
 }
-
-
-
 
 HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/general/include/GlobalInfo.h \

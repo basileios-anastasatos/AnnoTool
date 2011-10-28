@@ -492,7 +492,11 @@ namespace anno {
         }
 
         void AnnoFilterManager::onPM_annoFileSelectChanged(int row, QUuid imageId, ::anno::dt::AnnoFileData *annoFile) {
+
             if(row >= 0 && annoFile != NULL) {
+                assert(annoFile->imageInfo() != NULL);
+                printf("Annotation: %d, image: %s\n", row, annoFile->imageInfo()->imagePath().absoluteFilePath().toStdString().c_str());
+
                 if(_commonFilter != NULL) {
                     _commonFilter->setFileData(annoFile);
                 }

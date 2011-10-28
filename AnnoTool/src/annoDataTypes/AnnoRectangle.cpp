@@ -19,7 +19,9 @@ namespace anno {
         }
 
         QString AnnoRectangle::shapeInfo() const {
-            return QString("Type: %1\nx: %2\ny: %3\nwidth: %4\nheight: %5").arg("Rectangle").arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2).arg(width(), 0, 'f', 2).arg(height(), 0, 'f', 2);
+            //return QString("Type: %1\nx: %2\ny: %3\nwidth: %4\nheight: %5").arg("Rectangle").arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2).arg(width(), 0, 'f', 2).arg(height(), 0, 'f', 2);
+
+            return QString("width: %1, height: %2\n x: %3, y: %4").arg(width(), 0, 'f', 2).arg(height(), 0, 'f', 2).arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2);
         }
 
         QRectF AnnoRectangle::boundingRect() const {

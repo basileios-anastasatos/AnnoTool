@@ -202,6 +202,7 @@ namespace anno {
                 prepareGeometryChange();
                 _anno->setModified(true);
                 setToolTip(_anno->annoInfo());
+
             }
 
         }
@@ -269,10 +270,22 @@ namespace anno {
 //                         int marker_width = 12;
 //                         int marker_height = 12;
 
-            int offset_left = 7;
-            int offset_top = 7;
-            int offset_right = offset_left + 15;
-            int offset_bottom = offset_top + 10;
+//                         int offset_left = 6;
+//                         int offset_top = 6;
+//                         int offset_right = offset_left+4;
+//                         int offset_bottom = offset_top+4;
+
+            /** MA: the problem here is that the area that should be redrawn
+                is not the same as area which should be used for set focus (i.e. by mouse click)
+
+                corrently redraw is not performed properly
+             */
+
+
+            int offset_left = 3;
+            int offset_top = 3;
+            int offset_right = offset_left;
+            int offset_bottom = offset_top;
 
             return QRectF(asp->x() - offset_left, asp->y() - offset_top,
                           offset_right + offset_left + 1, offset_bottom + offset_top + 1);
@@ -310,6 +323,9 @@ namespace anno {
                 QPen penOuter(QColor(255, 255, 255, 255));
                 penOuter.setWidth(1);
 
+                QPen penRed(QColor(255, 0, 0, 255));
+                penRed.setWidth(1);
+
                 QPen penNormal(QColor(30, 30, 255, 255));
                 penNormal.setWidth(2);
 
@@ -334,13 +350,14 @@ namespace anno {
                 //painter->drawEllipse(brect);
 
                 //painter->setPen(penInner);
-                painter->setPen(penOuter);
+                //painter->setPen(penOuter);
+                painter->setPen(penRed);
                 painter->drawEllipse((int)np.x() - 2, (int)np.y() - 2, 5, 5);
 
-                painter->setBrush(Qt::NoBrush);
+                //painter->setBrush(Qt::NoBrush);
 
-                painter->setPen(penOuter);
-                painter->drawEllipse((int)np.x() - 4, (int)np.y() - 4, 9, 9);
+                //painter->setPen(penOuter);
+                //painter->drawEllipse((int)np.x()-4, (int)np.y()-4, 9, 9);
 
             } else {
                 QPen penNone(QColor(0, 0, 0, 0));
@@ -412,9 +429,15 @@ namespace anno {
 
                     requiredRect.setHeight(0.8 * requiredRect.height());
 
+
                     int textOffset = 0;
-                    textRect.setLeft(brect.right() - requiredRect.width() - textOffset);
-                    textRect.setTop(brect.bottom() - requiredRect.height() - textOffset);
+//                             textRect.setLeft(brect.right() - requiredRect.width() - textOffset);
+//                             textRect.setTop(brect.bottom() - requiredRect.height() - textOffset);
+//                             textRect.setWidth(requiredRect.width() + textOffset);
+//                             textRect.setHeight(requiredRect.height() + textOffset);
+
+                    textRect.setLeft(np.x() + 1);
+                    textRect.setTop(np.y() + 1);
                     textRect.setWidth(requiredRect.width() + textOffset);
                     textRect.setHeight(requiredRect.height() + textOffset);
 
