@@ -193,7 +193,19 @@ namespace libAn {
         for(it = rectStrings.begin(); it != rectStrings.end(); it++) {
             AnnoRect r;
             r.parseXML(*it);
+// 	cout << "hmm... " << r.m_nTrackID << endl;
+// 	cout << "hmm... " << r.score() << endl;
+
+// 	cout << "hmm2: " << this->size() << endl;
+// 	this->addAnnoRect(r);
+// 	cout << "hmm2: " << this->size() << endl;
+
+
+// 	cout << "hmm 2... " << m_vRects.size() << endl;
             m_vRects.push_back(r);
+// 	cout << "hmm 2... " << m_vRects.size() << endl;
+// 	cout << "hmm 2... " << m_vRects[m_vRects.size() - 1].m_nTrackID << endl;
+// 	cout << "hmm 2... " << m_vRects[m_vRects.size() - 1].score() << endl;
         }
     }
 

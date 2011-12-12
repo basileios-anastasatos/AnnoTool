@@ -34,6 +34,14 @@ using logging::GlobalLogger;
 #define NATIVE_POSEPOINT_VISIBLE_ATTR QString("is_visible")
 #endif
 
+#ifndef NATIVE_CLASS_ANNORECT
+#define NATIVE_CLASS_ANNORECT QString("AnnoRect")
+#endif
+
+#ifndef NATIVE_ANNORECT_ID_ATTR
+#define NATIVE_ANNORECT_ID_ATTR QString("track_id")
+#endif
+
 class QXmlStreamWriter;
 class QXmlStreamReader;
 

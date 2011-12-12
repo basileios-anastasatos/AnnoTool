@@ -106,6 +106,17 @@ namespace anno {
                         r.setScore(curShape->score());
                     }
 
+                    QString qsTrackID;
+
+                    if (curShape->getClassAttributeValue(NATIVE_CLASS_ANNORECT,
+                                                         NATIVE_ANNORECT_ID_ATTR,
+                                                         qsTrackID)) {
+                        bool ok = false;
+                        r.m_nTrackID = qsTrackID.toInt(&ok);
+                        assert(ok);
+                    }
+
+
                     /* MA BEGIN: add annopoints */
                     QList<QUuid> children_list = curShape->annoChildren();
 

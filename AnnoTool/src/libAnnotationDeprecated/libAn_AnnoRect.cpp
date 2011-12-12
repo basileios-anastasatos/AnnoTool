@@ -115,6 +115,11 @@ namespace libAn {
             m_dScore = getElementDataFloat("score", tmp[0]);
         }
 
+        tmp = getElements("track_id", rectString);
+        if (tmp.size() > 0) {
+            m_nTrackID = getElementDataInt("track_id", tmp[0]);
+        }
+
         tmp = getElements("silhouette", rectString);
         if (tmp.size() > 0) {
             tmp = getElements("id", tmp[0]);
@@ -254,6 +259,7 @@ namespace libAn {
         if (m_dScore != -1) {
             out << "        <score>" << m_dScore << "</score>\n";
         }
+
         if (m_nSilhouetteID != -1) {
             out << "        <silhouette>\n";
             out << "            <id>" << m_nSilhouetteID << "</id>\n";
@@ -274,6 +280,10 @@ namespace libAn {
                 out << "            <id>" << *it << "</id>\n";
             }
             out << "        </viewpoint>\n";
+        }
+
+        if (m_nTrackID >= 0) {
+            out << "        <track_id>" << m_nTrackID << "</track_id>\n";
         }
 
         if (m_vAnnoPoints.size() > 0) {

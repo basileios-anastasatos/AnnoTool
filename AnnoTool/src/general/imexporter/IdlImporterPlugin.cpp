@@ -5,6 +5,8 @@
 #include "AnnoPolygon.h"
 
 #include "libAn_AnnotationList.h"
+#include "libAn_AnnoRect.h"
+
 
 namespace anno {
 
@@ -93,6 +95,20 @@ namespace anno {
                 }
 
                 curFileData->addAnnotation(newAnno);
+
+                /* MA: add track_id atrribute */
+
+                if (curRect.m_nTrackID >= 0) {
+                    newAnno->addClass(NATIVE_CLASS_ANNORECT);
+
+                    anno::dt::AnnoAttribute atr(newAnno,
+                                                NATIVE_ANNORECT_ID_ATTR,
+                                                NATIVE_CLASS_ANNORECT,
+                                                QString::number(curRect.m_nTrackID));
+
+                    newAnno->addAttribute(atr);
+                }
+
 
                 /* MA BEGIN: process annopoints */
 
