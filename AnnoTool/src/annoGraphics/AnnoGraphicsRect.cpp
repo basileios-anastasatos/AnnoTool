@@ -14,6 +14,8 @@
 
 #include "AnnoAvClassList.h"
 
+#include <iostream>
+
 namespace anno {
     namespace graphics {
 
@@ -177,6 +179,34 @@ namespace anno {
                                      const QStyleOptionGraphicsItem *option, QWidget *widget) {
             _shapeConfig.applyShapeConfig(painter, isSelected());
             painter->drawRect(rect());
+
+            /** MA: optionally draw the track-id */
+            assert(_anno != 0);
+            QString qsTrackId;
+
+            if (_anno->getClassAttributeValue(NATIVE_CLASS_ANNORECT, NATIVE_ANNORECT_ID_ATTR, qsTrackId)) {
+
+                /** get the text extent */
+                QFont font = painter->font();
+                font.setPointSize(10);
+                //painter->setFont(QFont("Arial", 7));
+                painter->setFont(font);
+
+                QRectF brect = boundingRect();
+                QRectF textRect(brect.right(), brect.bottom(), 0, 0);
+
+                QRectF requiredRect = painter->boundingRect(textRect, Qt::AlignLeft | Qt::AlignTop, qsTrackId);
+                requiredRect.setHeight(0.8 * requiredRect.height());
+
+                int textOffset = 0;
+                textRect.setLeft(brect.left() + 1);
+                textRect.setTop(brect.top() + 1);
+                textRect.setWidth(requiredRect.width() + textOffset);
+                textRect.setHeight(requiredRect.height() + textOffset);
+
+                painter->setPen(Qt::red);
+                painter->drawText(textRect, qsTrackId);
+            }
         }
 
         void AnnoGraphicsRect::setupAppearance() {
