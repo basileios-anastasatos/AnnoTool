@@ -44,7 +44,13 @@ AnnoToolMainWindow::AnnoToolMainWindow(QWidget *parent) :
     setDocumentName(QString());
 
     setCentralWidget(ui.graphicsView);
-    ui.graphicsView->setScene(&anno::graphics::AnnoGraphicsScene::EmptyScene);
+
+    // MA: 2012-05-03
+    // anno::graphics::AnnoGraphicsScene &emptyScene = anno::graphics::AnnoGraphicsScene::getEmptyScene();
+    // ui.graphicsView->setScene(&emptyScene);
+
+    ui.graphicsView->setScene(anno::graphics::AnnoGraphicsScene::getEmptyScene());
+    //ui.graphicsView->setScene(&anno::graphics::AnnoGraphicsScene::EmptyScene);
 
     zoomCtrl = new ZoomControl(ui.tbView);
     QAction *za = ui.tbView->addWidget(zoomCtrl);
@@ -107,7 +113,10 @@ void AnnoToolMainWindow::clearGraphicsScene() {
     setToolEnabled(false);
     GlobalToolManager::instance()->resetAll();
     if (_graphicsScene != NULL) {
-        ui.graphicsView->setScene(&anno::graphics::AnnoGraphicsScene::EmptyScene);
+        // MA: temporary debug (2012-05-03)
+        ui.graphicsView->setScene(anno::graphics::AnnoGraphicsScene::getEmptyScene());
+        //ui.graphicsView->setScene(&anno::graphics::AnnoGraphicsScene::EmptyScene);
+
         delete _graphicsScene;
         _graphicsScene = NULL;
     }

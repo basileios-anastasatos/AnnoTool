@@ -7,7 +7,8 @@
 namespace anno {
     namespace graphics {
 
-        AnnoGraphicsScene AnnoGraphicsScene::EmptyScene;
+        //AnnoGraphicsScene AnnoGraphicsScene::EmptyScene;
+        AnnoGraphicsScene *AnnoGraphicsScene::EmptyScene = 0;
 
         AnnoGraphicsScene::AnnoGraphicsScene(QObject *parent) :
             QGraphicsScene(parent), _image(NULL), _selShape(NULL), _curMinZ(0), _curMaxZ(0) {

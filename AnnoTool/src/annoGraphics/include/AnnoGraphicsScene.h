@@ -23,9 +23,12 @@ namespace anno {
                 int _curMaxZ;
 
             public:
-                static AnnoGraphicsScene EmptyScene;
+                // MA: switched to using pointed to fix crash after switching to Qt 4.6
+                //static AnnoGraphicsScene EmptyScene;
 
             private:
+                static AnnoGraphicsScene *EmptyScene;
+
                 void initScene();
 
             public:
@@ -51,6 +54,20 @@ namespace anno {
 
                 /* MA: */
                 AnnoGraphicsShape *getShapeByAnnoId(const QUuid &annoId) const;
+
+                /** would be a better implementation, but it crashes in the end -> need to find out where to deallocate emptyScene */
+                /* static AnnoGraphicsScene &getEmptyScene() { */
+                /*   static AnnoGraphicsScene emptyScene; */
+
+                /*   return emptyScene; */
+                /* } */
+
+                static AnnoGraphicsScene *getEmptyScene() {
+                    if (EmptyScene == 0) {
+                        EmptyScene = new AnnoGraphicsScene();
+                    }
+                    return EmptyScene;
+                }
 
 
             public slots:
