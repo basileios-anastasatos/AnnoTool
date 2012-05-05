@@ -211,19 +211,26 @@ namespace libAn {
     void AnnoRect::parseIDL(const string &rectString) {
         string::size_type start = 1, end;
         end = rectString.find(",", start);
-        m_x1 = atoi(rectString.substr(start, end - start).c_str());
+        //m_x1 = atoi(rectString.substr(start, end-start).c_str());
+        m_x1 = atof(rectString.substr(start, end - start).c_str());
         //cout << m_x1 << endl;
+
         start = end + 1;
         end = rectString.find(",", start);
-        m_y1 = atoi(rectString.substr(start, end - start).c_str());
+        //m_y1 = atoi(rectString.substr(start, end-start).c_str());
+        m_y1 = atof(rectString.substr(start, end - start).c_str());
         //cout << m_y1 << endl;
+
         start = end + 1;
         end = rectString.find(",", start);
-        m_x2 = atoi(rectString.substr(start, end - start).c_str());
+        //m_x2 = atoi(rectString.substr(start, end-start).c_str());
+        m_x2 = atof(rectString.substr(start, end - start).c_str());
         //cout << m_x2 << endl;
+
         start = end + 1;
         end = rectString.find("):", start);
-        m_y2 = atoi(rectString.substr(start, end - start).c_str());
+        //m_y2 = atoi(rectString.substr(start, end-start).c_str());
+        m_y2 = atof(rectString.substr(start, end - start).c_str());
         //cout << m_y2 << endl;
 
         start = end + 2;
