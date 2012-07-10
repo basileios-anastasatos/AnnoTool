@@ -6,9 +6,9 @@ CONFIG -= exceptions_off \
     stl_off \
     debug
 
-#CONFIG -= release
-#CONFIG += debug
-CONFIG += release
+CONFIG -= release
+CONFIG += qt debug
+#CONFIG += release
 
 UI_DIR = ./src/uiStuff/gen
 MOC_DIR = ./tmp/moc
@@ -17,7 +17,16 @@ RCC_DIR = ./tmp
 # need this as workaround for missing libGL.so
 LIBS += -L/home/andriluk/lib
 
-INCLUDEPATH += ./src/annoDataTypes/include \
+#LIBS += -L/home/asenina/opencv_installed/lib/ -opencv_core \
+#					      -opencv_imgproc \
+#					      -opencv_highgui
+
+CONFIG += link_pkgconfig
+PKGCONFIG += opencv
+
+INCLUDEPATH += /home/asenina/opencv_installed/include \
+    /home/asenina/opencv_installed/include/opencv \
+    ./src/annoDataTypes/include \
     ./src/annoFilter/include \
     ./src/annoExceptions/include \
     ./src/annoGraphics/include \
