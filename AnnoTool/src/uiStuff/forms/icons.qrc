@@ -30,5 +30,8 @@
     <file alias="tool_point" >res/tbPoint_24.png</file>
     <file alias="toBack" >res/tbToBack_24.png</file>
     <file alias="toFront" >res/tbToFront_24.png</file>
+    <file alias="tool_boundBox" >res/boundingBox_24.png</file>
+    <file alias="tool_brush" >res/brush_24.png</file>
+    <file alias="grabCut" >res/grabCut_24.png</file>
   </qresource>
 </RCC>

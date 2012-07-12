@@ -17,10 +17,6 @@ RCC_DIR = ./tmp
 # need this as workaround for missing libGL.so
 LIBS += -L/home/andriluk/lib
 
-#LIBS += -L/home/asenina/opencv_installed/lib/ -opencv_core \
-#					      -opencv_imgproc \
-#					      -opencv_highgui
-
 CONFIG += link_pkgconfig
 PKGCONFIG += opencv
 
@@ -82,6 +78,8 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoDataTypes/include/AnnoEllipse.h \
     ./src/annoDataTypes/include/AnnoSinglePoint.h \
     ./src/annoDataTypes/include/AnnoPolygon.h \
+    ./src/annoDataTypes/include/AnnoBoundingBox.h \
+    ./src/annoDataTypes/include/AnnoBrush.h \
     ./src/annoFilter/include/annoFiltersForward.h \
     ./src/annoFilter/include/AllAnnoFilterRules.h \
     ./src/annoFilter/include/AnnoFilterRule.h \
@@ -110,6 +108,8 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoGraphics/include/AnnoGraphicsEllipse.h \
     ./src/annoGraphics/include/AnnoGraphicsSinglePoint.h \
     ./src/annoGraphics/include/AnnoGraphicsPolygon.h \
+    ./src/annoGraphics/include/AnnoGraphicsBoundingBox.h \
+    ./src/annoGraphics/include/AnnoGraphicsBrush.h \
     ./src/annoGraphics/include/AnnoGraphicsPixmap.h \
     ./src/annoGraphics/include/AnnoGraphicsScene.h \
     ./src/annoGraphics/include/GraphicsTool.h \
@@ -119,6 +119,8 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoGraphics/include/ToolRect.h \
     ./src/annoGraphics/include/ToolEllipse.h \
     ./src/annoGraphics/include/ToolPolygon.h \
+    ./src/annoGraphics/include/ToolBoundingBox.h \
+    ./src/annoGraphics/include/ToolBrush.h \
     ./src/annoGraphics/include/MapperHelper.h \
     ./src/utils/include/PriorityList.h \
     ./src/utils/include/SortedList.h \
@@ -201,6 +203,8 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoDataTypes/AnnoEllipse.cpp \
     ./src/annoDataTypes/AnnoSinglePoint.cpp \
     ./src/annoDataTypes/AnnoPolygon.cpp \
+    ./src/annoDataTypes/AnnoBoundingBox.cpp \
+    ./src/annoDataTypes/AnnoBrush.cpp \
     ./src/annoFilter/AnnoFilterRule.cpp \
     ./src/annoFilter/LogicFilterRule.cpp \
     ./src/annoFilter/AnnoFilterRuleAtom.cpp \
@@ -225,6 +229,8 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoGraphics/AnnoGraphicsEllipse.cpp \
     ./src/annoGraphics/AnnoGraphicsSinglePoint.cpp \
     ./src/annoGraphics/AnnoGraphicsPolygon.cpp \
+    ./src/annoGraphics/AnnoGraphicsBoundingBox.cpp \
+    ./src/annoGraphics/AnnoGraphicsBrush.cpp \
     ./src/annoGraphics/AnnoGraphicsPixmap.cpp \
     ./src/annoGraphics/AnnoGraphicsScene.cpp \
     ./src/annoGraphics/GraphicsTool.cpp \
@@ -234,6 +240,8 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoGraphics/ToolRect.cpp \
     ./src/annoGraphics/ToolEllipse.cpp \
     ./src/annoGraphics/ToolPolygon.cpp \
+    ./src/annoGraphics/ToolBoundingBox.cpp \
+    ./src/annoGraphics/ToolBrush.cpp \
     ./src/annoGraphics/MapperHelper.cpp \
     ./src/utils/PriorityList.cpp \
     ./src/utils/SortedList.cpp \

@@ -96,11 +96,11 @@ class InteractiveGrabcut {
                     if(self->ldrag) {
                         cv::line(self->mask, self->lstart, pt, cv::Scalar(cv::GC_FGD), 1);
                         self->lstart = pt;
-                        self->show();
+                        //self->show();
                     } else if(self->rdrag) {
                         cv::line(self->mask, self->rstart, pt, cv::Scalar(cv::GC_BGD), 1);
                         self->rstart = pt;
-                        self->show();
+                        //self->show();
                     }
                     break;
                 default:
@@ -135,7 +135,26 @@ class InteractiveGrabcut {
         }
 
         void execute() {
-            std::cout << "computing...";
+            std::cout << "computing..." << std::endl;
+            int nX = 700;
+            int nY = 600;
+            int nWidth = 250;
+            int nHeight = 200;
+            cv::Rect rectangle(nX, nY, nWidth, nHeight);
+            //cv::Mat tmp(src.size(),CV_8UC3, cv::Scalar(0,0,0));
+            //cv::grabCut(src, tmp, rectangle, bgd, fgd, 1, cv::GC_INIT_WITH_RECT);
+            //mask &= tmp;
+            //
+            for(int y = 0; y < mask.rows; y++) {
+                for(int x = 0; x < mask.cols; x++) {
+                    if (y >= nY && y <= (nY + nHeight) && x >= nX && x <= (nX + nWidth)) {
+                        continue;
+                    }
+
+                    mask.at<uchar>(y, x) = cv::GC_BGD;
+                }
+            }
+            //
             cv::grabCut(src, mask, cv::Rect(), bgd, fgd, 1, cv::GC_INIT_WITH_MASK);
             std::cout << "end." << std::endl;
         };
@@ -424,6 +443,8 @@ void AnnoToolMainWindow::uncheckTools() {
     ui.actionToolRectangle->setChecked(false);
     ui.actionToolPolygon->setChecked(false);
     ui.actionToolEllipse->setChecked(false);
+    ui.actionToolBoundingBox->setChecked(false);
+    ui.actionToolBrush->setChecked(false);
 }
 
 void AnnoToolMainWindow::setToolEnabled(bool enabled) {
@@ -436,11 +457,14 @@ void AnnoToolMainWindow::setToolEnabled(bool enabled) {
     ui.actionToolRectangle->setEnabled(enabled);
     ui.actionToolPolygon->setEnabled(enabled);
     ui.actionToolEllipse->setEnabled(enabled);
+    ui.actionToolBoundingBox->setEnabled(enabled);
+    ui.actionToolBrush->setEnabled(enabled);
 
     ui.actionZtoFront->setEnabled(enabled);
     ui.actionZtoBack->setEnabled(enabled);
     ui.actionRemoveAnnotation->setEnabled(enabled);
     ui.actionSaveCurrentImage->setEnabled(enabled);
+    ui.actionGrabCut->setEnabled(enabled);
     zoomCtrl->setEnabled(enabled);
 }
 
@@ -1044,6 +1068,20 @@ void AnnoToolMainWindow::on_actionToolEllipse_triggered() {
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtEllipse);
 }
 
+void AnnoToolMainWindow::on_actionToolBoundingBox_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionToolBoundingBox_triggered");
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtBoundingBox);
+}
+
+void AnnoToolMainWindow::on_actionToolBrush_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionToolBrush_triggered");
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtBrush);
+}
+
+void AnnoToolMainWindow::on_actionGrabCut_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionGrabCut_triggered");
+}
+
 void AnnoToolMainWindow::onTM_toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset) {
     if (!reset) {
         switch (tool) {
@@ -1081,6 +1119,16 @@ void AnnoToolMainWindow::onTM_toolSelected(anno::GlobalToolManager::SelGraphicsT
             case anno::GlobalToolManager::GtEllipse: {
                     uncheckTools();
                     ui.actionToolEllipse->setChecked(true);
+                    break;
+                }
+            case anno::GlobalToolManager::GtBoundingBox: {
+                    uncheckTools();
+                    ui.actionToolBoundingBox->setChecked(true);
+                    break;
+                }
+            case anno::GlobalToolManager::GtBrush: {
+                    uncheckTools();
+                    ui.actionToolBrush->setChecked(true);
                     break;
                 }
             default:

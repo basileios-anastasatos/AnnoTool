@@ -22,7 +22,7 @@ namespace anno {
             // enum of selectable tools
         public:
             enum SelGraphicsTool {
-                GtNone, GtPointer, GtSinglePoint, GtRect, GtPolygon, GtEllipse, GtNone2
+                GtNone, GtPointer, GtSinglePoint, GtRect, GtPolygon, GtEllipse, GtBoundingBox, GtBrush, GtNone2
             };
 
             // Singleton members

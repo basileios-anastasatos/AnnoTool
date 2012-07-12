@@ -128,6 +128,18 @@ namespace anno {
                     GlobalLogger::instance()->logDebug("GlobalToolManager: Selected Tool GtEllipse.");
                     break;
                 }
+            case GtBoundingBox: {
+                    clearTool();
+                    _curTool = new graphics::ToolBoundingBox(_curView, _curScene);
+                    GlobalLogger::instance()->logDebug("GlobalToolManager: Selected Tool GtBoundingBox.");
+                    break;
+                }
+            case GtBrush: {
+                    clearTool();
+                    _curTool = new graphics::ToolBrush(_curView, _curScene);
+                    GlobalLogger::instance()->logDebug("GlobalToolManager: Selected Tool GtBrush.");
+                    break;
+                }
             default:
                 GlobalLogger::instance()->logWarning("GlobalToolManager: Aborted tool selection due to unknown tool type.");
                 return false;
