@@ -3,7 +3,8 @@
 #include "include/AnnoGraphicsSinglePoint.h"
 #include "include/AnnoGraphicsEllipse.h"
 #include "include/AnnoGraphicsPolygon.h"
-#include "AnnoRectangle.h"
+#include "include/AnnoGraphicsBoundingBox.h"
+#include "include/AnnoGraphicsBrush.h"
 #include "importGlobals.h"
 
 namespace anno {
@@ -27,6 +28,14 @@ namespace anno {
                         }
                     case dt::ASTypePolygon: {
                             shape = new AnnoGraphicsPolygon(anno);
+                            break;
+                        }
+                    case dt::ASTypeBoundingBox: {
+                            shape = new AnnoGraphicsBoundingBox(anno);
+                            break;
+                        }
+                    case dt::ASTypeBrush: {
+                            shape = new AnnoGraphicsBrush(anno);
                             break;
                         }
                     default:
