@@ -20,9 +20,7 @@ LIBS += -L/home/andriluk/lib
 CONFIG += link_pkgconfig
 PKGCONFIG += opencv
 
-INCLUDEPATH += /home/asenina/opencv_installed/include \
-    /home/asenina/opencv_installed/include/opencv \
-    ./src/annoDataTypes/include \
+INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/annoFilter/include \
     ./src/annoExceptions/include \
     ./src/annoGraphics/include \
@@ -80,6 +78,7 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoDataTypes/include/AnnoPolygon.h \
     ./src/annoDataTypes/include/AnnoBoundingBox.h \
     ./src/annoDataTypes/include/AnnoBrush.h \
+    ./src/annoDataTypes/include/Segmentation.h \
     ./src/annoFilter/include/annoFiltersForward.h \
     ./src/annoFilter/include/AllAnnoFilterRules.h \
     ./src/annoFilter/include/AnnoFilterRule.h \
@@ -205,6 +204,7 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoDataTypes/AnnoPolygon.cpp \
     ./src/annoDataTypes/AnnoBoundingBox.cpp \
     ./src/annoDataTypes/AnnoBrush.cpp \
+    ./src/annoDataTypes/Segmentation.cpp \
     ./src/annoFilter/AnnoFilterRule.cpp \
     ./src/annoFilter/LogicFilterRule.cpp \
     ./src/annoFilter/AnnoFilterRuleAtom.cpp \
