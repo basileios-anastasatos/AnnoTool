@@ -14,6 +14,7 @@
 #include "importGlobals.h"
 #include "AnnoFileData.h"
 #include "AnnoOperationHelper.h"
+#include "Segmentation.h"//todo remove include from here
 
 #include "AnnoGraphicsScene.h"
 #include "AnnoGraphicsPixmap.h"
@@ -43,16 +44,60 @@ using namespace ::anno::exc;
 
 AnnoToolMainWindow *AnnoToolMainWindow::_me = NULL;
 
+cv::Mat qimage2mat(const QImage &qimage) {
+    cv::Mat mat = cv::Mat(qimage.height(), qimage.width(), CV_8UC4, (uchar *)qimage.bits(), qimage.bytesPerLine());
+    cv::Mat mat2 = cv::Mat(mat.rows, mat.cols, CV_8UC3 );
+    int from_to[] = { 0, 0,  1, 1,  2, 2 };
+    cv::mixChannels( &mat, 1, &mat2, 1, from_to, 3 );
+    return mat2;
+};
+
+//QImage mat2qimage(const cv::Mat& mat)
+//{
+//	cv::Mat rgb;
+//    cvtColor(mat, rgb, CV_BGR2RGB);
+//    return QImage((const unsigned char*)(rgb.data), rgb.cols, rgb.rows, QImage::Format_RGB888);
+//};
+
+QImage Mat2QImage(const cv::Mat3b &src) {
+    QImage dest(src.cols, src.rows, QImage::Format_ARGB32);
+    for (int y = 0; y < src.rows; ++y) {
+        const cv::Vec3b *srcrow = src[y];
+        QRgb *destrow = (QRgb *)dest.scanLine(y);
+        for (int x = 0; x < src.cols; ++x) {
+            destrow[x] = qRgba(srcrow[x][2], srcrow[x][1], srcrow[x][0], 255);
+        }
+    }
+    return dest;
+}
+
+//QImage Mat2QImage(const cv::Mat_<double> &src)
+//{
+//        double scale = 255.0;
+//        QImage dest(src.cols, src.rows, QImage::Format_ARGB32);
+//        for (int y = 0; y < src.rows; ++y) {
+//                const double *srcrow = src[y];
+//                QRgb *destrow = (QRgb*)dest.scanLine(y);
+//                for (int x = 0; x < src.cols; ++x) {
+//                        unsigned int color = srcrow[x] * scale;
+//                        destrow[x] = qRgba(color, color, color, 255);
+//                }
+//        }
+//        return dest;
+//}
+
+
 class InteractiveGrabcut {
         cv::Mat src;
         cv::Mat fgd, bgd;
         bool ldrag, rdrag;
         std::string name;
-    public:
+        cv::Rect m_rcBoundRect;
         cv::Mat mask;
-        //cv::Rect rect;
         cv::Point lstart, rstart;
         cv::Scalar fg_color, bg_color;
+
+    public:
 
         InteractiveGrabcut()
             : src(), mask(), fgd(), bgd(),
@@ -60,9 +105,9 @@ class InteractiveGrabcut {
               fg_color(0, 0, 255), bg_color(255, 0, 0) {
         };
 
-        InteractiveGrabcut(const cv::Mat &src_)
+        InteractiveGrabcut(const cv::Mat &src_, const cv::Rect &rcBoundRect)
             : src(src_), mask(), fgd(), bgd(),
-              ldrag(false), rdrag(false), name("igc"), fg_color(0, 0, 255), bg_color(255, 0, 0) {
+              ldrag(false), rdrag(false), name("igc"), fg_color(0, 0, 255), bg_color(255, 0, 0), m_rcBoundRect(rcBoundRect) {
             mask = cv::Mat::ones(src_.size(), CV_8U) * cv::GC_PR_BGD;
         };
 
@@ -108,7 +153,7 @@ class InteractiveGrabcut {
             };
         };
 
-        void show() {
+        cv::Mat show() {
             cv::Mat scribbled_src = src.clone();
             const float alpha = 0.7f;
             for(int y = 0; y < mask.rows; y++) {
@@ -116,12 +161,12 @@ class InteractiveGrabcut {
                     if(mask.at<uchar>(y, x) == cv::GC_FGD) {
                         cv::circle(scribbled_src, cv::Point(x, y), 2, fg_color, -1);
                     } else if(mask.at<uchar>(y, x) == cv::GC_BGD) {
-                        cv::circle(scribbled_src, cv::Point(x, y), 2, bg_color, -1);
+                        //cv::circle(scribbled_src, cv::Point(x, y), 2, bg_color, -1);
                     } else if(mask.at<uchar>(y, x) == cv::GC_PR_BGD) {
-                        cv::Vec3b &pix = scribbled_src.at<cv::Vec3b>(y, x);
-                        pix[0] = (uchar)(pix[0] * alpha + bg_color[0] * (1 - alpha));
-                        pix[1] = (uchar)(pix[1] * alpha + bg_color[1] * (1 - alpha));
-                        pix[2] = (uchar)(pix[2] * alpha + bg_color[2] * (1 - alpha));
+                        //cv::Vec3b& pix = scribbled_src.at<cv::Vec3b>(y, x);
+                        //pix[0] = (uchar)(pix[0] * alpha + bg_color[0] * (1-alpha));
+                        //pix[1] = (uchar)(pix[1] * alpha + bg_color[1] * (1-alpha));
+                        //pix[2] = (uchar)(pix[2] * alpha + bg_color[2] * (1-alpha));
                     } else if(mask.at<uchar>(y, x) == cv::GC_PR_FGD) {
                         cv::Vec3b &pix = scribbled_src.at<cv::Vec3b>(y, x);
                         pix[0] = (uchar)(pix[0] * alpha + fg_color[0] * (1 - alpha));
@@ -130,33 +175,33 @@ class InteractiveGrabcut {
                     }
                 }
             }
-            cv::imshow(name, scribbled_src);
+            //cv::imshow(name, scribbled_src);
             //cv::imshow(name + "_FG", getFG());
+            return scribbled_src;
         }
 
-        void execute() {
+        cv::Mat execute() {
             std::cout << "computing..." << std::endl;
-            int nX = 700;
-            int nY = 600;
-            int nWidth = 250;
-            int nHeight = 200;
-            cv::Rect rectangle(nX, nY, nWidth, nHeight);
+//        int nX = m_rcBoundRect.x;//700;
+//        int nY = m_rcBoundRect.y;//600;
+//        int nWidth = m_rcBoundRect.width;//250;
+//        int nHeight = m_rcBoundRect.height;//200;
             //cv::Mat tmp(src.size(),CV_8UC3, cv::Scalar(0,0,0));
-            //cv::grabCut(src, tmp, rectangle, bgd, fgd, 1, cv::GC_INIT_WITH_RECT);
-            //mask &= tmp;
-            //
-            for(int y = 0; y < mask.rows; y++) {
-                for(int x = 0; x < mask.cols; x++) {
-                    if (y >= nY && y <= (nY + nHeight) && x >= nX && x <= (nX + nWidth)) {
-                        continue;
-                    }
-
-                    mask.at<uchar>(y, x) = cv::GC_BGD;
-                }
-            }
-            //
-            cv::grabCut(src, mask, cv::Rect(), bgd, fgd, 1, cv::GC_INIT_WITH_MASK);
+            cv::grabCut(src, /*tmp*/mask, m_rcBoundRect, bgd, fgd, 1, cv::GC_INIT_WITH_RECT);
+//      //  mask &= tmp;
+//        for(int y = 0; y < mask.rows; y++)
+//         {
+//        	for(int x = 0; x < mask.cols; x++)
+//        	{
+//        		if (y >= nY && y <= (nY + nHeight) && x >= nX && x <= (nX + nWidth))
+//            		continue;
+//
+//        		mask.at<uchar>(y, x) = cv::GC_BGD;
+//        	}
+//         }
+//        cv::grabCut(src, mask, cv::Rect(), bgd, fgd, 1, cv::GC_INIT_WITH_MASK);
             std::cout << "end." << std::endl;
+            return show();
         };
 
         cv::Mat getBinMask() {
@@ -177,9 +222,8 @@ class InteractiveGrabcut {
             bFirstTime = bNewLoop;
             while(1) {
                 int key = cv::waitKey(1);
-                if(key == '\x1b') {
-                    break;
-                }
+//            if(key == '\x1b')
+//                break;
 
                 func(this, key);
 
@@ -970,13 +1014,6 @@ void AnnoToolMainWindow::onPM_annoFileSelectChanged(int row, QUuid imageId, ::an
     }
     setToolEnabled(true);
     ui.actionCopy->setEnabled(false);
-
-    const std::string input_filename(fileName.filePath().toUtf8().constData());
-    cv::Mat input_image = cv::imread(input_filename);
-
-    InteractiveGrabcut igc(input_image);
-    igc.prepareWindow("test");
-    igc.mainLoop(func, true);
 }
 
 void AnnoToolMainWindow::onPM_annoSelectChanged(int row, QUuid annoId,
@@ -1080,6 +1117,51 @@ void AnnoToolMainWindow::on_actionToolBrush_triggered() {
 
 void AnnoToolMainWindow::on_actionGrabCut_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionGrabCut_triggered");
+
+    /*
+     * anna: Here we should process the current annotation (segmentation).
+     * We should extract the bounding box rectangle, the FG/BG mask and give this data to grabCut algorithm.
+     * The resulting segmentation should be saved to binary image.
+     * The resulting picture should be shown.
+     * The xml data should contain the path to binary image.
+     * The class should be specified by user (f.e.: left hand)
+    */
+
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+    anno::dt::Annotation *anno = pm->selectedAnno();
+    if(anno != NULL) {
+        anno::dt::Segmentation *segm = dynamic_cast<anno::dt::Segmentation *>(anno);
+        if(segm != NULL) {
+            anno::dt::AnnoShape *annoShape = segm->shape();
+            anno::dt::AnnoShapeType eAnnoShapeType = annoShape->shapeType();
+            if(anno::dt::ASTypeBoundingBox == eAnnoShapeType) {
+                QRectF rect = annoShape->boundingRect();
+                // anna: demo
+                anno::dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
+                if (curFile != NULL) {
+//				  QFileInfo fileName = curFile->imageInfo()->imagePath();
+//				  if (fileName.isRelative())
+//				  		fileName = GlobalProjectManager::instance()->relToAbs(fileName);
+//				  const std::string input_filename(fileName.filePath().toUtf8().constData());
+
+//				  cv::Mat input_image = cv::imread(input_filename);
+
+                    QPixmap qPm = _graphicsScene->annoPixmap()->pixmap();
+                    QImage qImg = qPm.toImage();
+
+                    cv::Mat input_image = qimage2mat(qImg);
+
+                    cv::Rect rcRect(rect.x(), rect.y(), rect.width(), rect.height());
+                    InteractiveGrabcut igc(input_image, rcRect);
+                    //igc.prepareWindow("demo");
+                    //igc.mainLoop(func, true);
+                    cv::Mat result = igc.execute();
+                    QImage qImgRes = Mat2QImage(result);
+                    newGraphicsScene(&qImgRes);
+                }
+            }
+        }
+    }
 }
 
 void AnnoToolMainWindow::onTM_toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset) {

@@ -3,21 +3,21 @@
 #include <QGraphicsItem>
 #include <QPainterPath>
 #include "AnnoGraphicsShape.h"
-#include "AnnoBrush.h"
+#include "AnnoSegmentation.h"
 
 class QGraphicsSceneHoverEvent;
 
 namespace anno {
     namespace graphics {
 
-        class AnnoGraphicsBrush : public QGraphicsPolygonItem, public AnnoGraphicsShape {
+        class AnnoGraphicsSegmentation : public QGraphicsPolygonItem, public AnnoGraphicsShape {
             private:
                 bool _drawClosed;
 
             private:
                 void setupAppearance();
-                dt::AnnoBrush *annoPolygon();
-                const dt::AnnoBrush *annoPolygon() const;
+                dt::AnnoSegmenation *annoPolygon();
+                const dt::AnnoSegmenation *annoPolygon() const;
 
             protected:
                 virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent);
@@ -33,8 +33,8 @@ namespace anno {
                 virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
             public:
-                AnnoGraphicsBrush(dt::Annotation *anno, QGraphicsItem *parent = 0);
-                virtual ~AnnoGraphicsBrush();
+                AnnoGraphicsSegmentation(dt::Annotation *anno, QGraphicsItem *parent = 0);
+                virtual ~AnnoGraphicsSegmentation();
 
                 // AnnoGraphicsShape Interface
             public:

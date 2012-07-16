@@ -113,14 +113,14 @@ namespace anno {
                 friend class AnnoAttribute;
 
                 // modified handling stuff
-            private:
+            protected:
                 bool _modified;
                 bool _notify;
                 bool _notifyOnChange;
                 bool _notifyAttr;
 
-                // private vars
-            private:
+                // protected vars
+            protected:
                 QUuid _annoId;
                 double _score;
                 int _zOrder;
@@ -132,7 +132,7 @@ namespace anno {
                 AnnoShape *_shape;
 
                 // internal XML stuff
-            private:
+            protected:
                 void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
                 void annoHierarchyToXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 void annoClassesToXml(QXmlStreamWriter &writer) const throw(XmlException *);
@@ -142,7 +142,7 @@ namespace anno {
                 void loadAnnoAttributesFromXml(QXmlStreamReader &reader) throw(XmlException *);
 
                 // internal attribute modified stuff
-            private:
+            protected:
                 void onAttrModified(AnnoAttribute *attr);
                 void onAttrModifyReset(AnnoAttribute *attr);
 

@@ -6,10 +6,10 @@
 namespace anno {
     namespace dt {
 
-        class AnnoBrush : public QPolygonF, public AnnoShape {
+        class AnnoSegmenation : public QPolygonF, public AnnoShape {
             public:
-                AnnoBrush();
-                virtual ~AnnoBrush();
+                AnnoSegmenation();
+                virtual ~AnnoSegmenation();
 
             public:
                 virtual AnnoShapeType shapeType() const;
@@ -20,8 +20,8 @@ namespace anno {
                 virtual void print() const;
 
             public:
-                AnnoBrush &operator=(const QPolygonF &r);
-                AnnoBrush &operator=(const AnnoBrush &r);
+                AnnoSegmenation &operator=(const QPolygonF &r);
+                AnnoSegmenation &operator=(const AnnoSegmenation &r);
 
             public:
                 virtual void toXml(QXmlStreamWriter &writer) const throw(XmlException *);

@@ -3,7 +3,7 @@
 
 #include "AnnoGraphicsScene.h"
 #include "AnnoFileData.h"
-#include "Annotation.h"
+#include "Segmentation.h"
 #include "AnnoBoundingBox.h"
 #include "AnnoGraphicsShape.h"
 #include "AnnoGraphicsBoundingBox.h"
@@ -104,19 +104,19 @@ namespace anno {
             arect->setTopLeft(img->mapFromScene(event->scenePos()));
             arect->setSize(QSizeF(0.0, 0.0));
             QUuid parentId = GlobalToolManager::instance()->getLockedAnno();
-            dt::Annotation *anno = new dt::Annotation();
-            anno->setAnnoId(QUuid::createUuid());
-            anno->setShape(arect);
+            dt::Segmentation *segm = new dt::Segmentation();
+            segm->setAnnoId(QUuid::createUuid());
+            segm->setShape(arect);
             if(!parentId.isNull()) {
                 _curParentAnno = GlobalProjectManager::instance()->selectedFile()->getAnnotation(parentId);
-                anno->setAnnoParent(parentId);
+                segm->setAnnoParent(parentId);
             }
 
-            AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
+            AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(segm);
             if (s != NULL) {
                 _scene->addAnnoShape(s);
                 _scene->setFocusItem(s->graphicsItem());
-                _scene->selectShape(anno->annoId());
+                _scene->selectShape(segm->annoId());
                 _curShape = static_cast<AnnoGraphicsBoundingBox *>(s);
             }
         }
@@ -136,12 +136,12 @@ namespace anno {
             if (_curShape != NULL) {
                 _curShape->cpMouseReleaseEvent(2, event);
                 dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
-                dt::Annotation *anno = _curShape->relatedAnno();
+                dt::Segmentation *segm = dynamic_cast<dt::Segmentation *>(_curShape->relatedAnno());
                 if(_curParentAnno != NULL) {
-                    _curParentAnno->addAnnoChild(anno->annoId());
+                    _curParentAnno->addAnnoChild(segm->annoId());
                 }
-                curFile->addAnnotation(anno);
-                GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
+                curFile->addAnnotation(segm);
+                GlobalProjectManager::instance()->setSelectedAnnoRow(segm->annoId());
                 AnnoToolMainWindow::updateUI();
                 _curShape = NULL;
             }

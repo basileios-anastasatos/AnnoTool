@@ -4,7 +4,7 @@
 #include "include/AnnoGraphicsEllipse.h"
 #include "include/AnnoGraphicsPolygon.h"
 #include "include/AnnoGraphicsBoundingBox.h"
-#include "include/AnnoGraphicsBrush.h"
+#include "include/AnnoGraphicsSegmentation.h"
 #include "importGlobals.h"
 
 namespace anno {
@@ -34,8 +34,8 @@ namespace anno {
                             shape = new AnnoGraphicsBoundingBox(anno);
                             break;
                         }
-                    case dt::ASTypeBrush: {
-                            shape = new AnnoGraphicsBrush(anno);
+                    case dt::ASTypeSegmentation: {
+                            shape = new AnnoGraphicsSegmentation(anno);
                             break;
                         }
                     default:

@@ -15,7 +15,7 @@ namespace anno {
         using namespace ::anno::exc;
 
         enum AnnoShapeType {
-            ASTypeInvalid, ASTypeSinglePoint, ASTypeLine, ASTypeRectangle, ASTypePolygon, ASTypeEllipse, ASTypeBoundingBox, ASTypeBrush
+            ASTypeInvalid, ASTypeSinglePoint, ASTypeLine, ASTypeRectangle, ASTypePolygon, ASTypeEllipse, ASTypeBoundingBox, ASTypeSegmentation
         };
 
         class AnnoShape {

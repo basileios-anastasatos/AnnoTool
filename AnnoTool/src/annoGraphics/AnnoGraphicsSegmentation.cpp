@@ -1,4 +1,4 @@
-#include "AnnoGraphicsBrush.h"
+#include "AnnoGraphicsSegmentation.h"
 #include <QRectF>
 #include <QPen>
 #include <QBrush>
@@ -13,17 +13,17 @@
 namespace anno {
     namespace graphics {
 
-        AnnoGraphicsBrush::AnnoGraphicsBrush(dt::Annotation *anno, QGraphicsItem *parent) :
+        AnnoGraphicsSegmentation::AnnoGraphicsSegmentation(dt::Annotation *anno, QGraphicsItem *parent) :
             QGraphicsPolygonItem(parent), AnnoGraphicsShape(anno), _drawClosed(true) {
             setupAppearance();
             setPolygon(*annoPolygon());
             initControlPoints();
         }
 
-        AnnoGraphicsBrush::~AnnoGraphicsBrush() {
+        AnnoGraphicsSegmentation::~AnnoGraphicsSegmentation() {
         }
 
-        void AnnoGraphicsBrush::setupAppearance() {
+        void AnnoGraphicsSegmentation::setupAppearance() {
             setFlag(QGraphicsItem::ItemIsSelectable);
             setFlag(QGraphicsItem::ItemIsFocusable);
             setVisible(true);
@@ -31,21 +31,21 @@ namespace anno {
             setToolTip(_anno->annoInfo());
         }
 
-        dt::AnnoBrush *AnnoGraphicsBrush::annoPolygon() {
-            if (_anno != NULL && _anno->shape() != NULL && _anno->shape()->shapeType() == dt::ASTypePolygon) {
-                return reinterpret_cast<dt::AnnoBrush *>(_anno->shape());
+        dt::AnnoSegmenation *AnnoGraphicsSegmentation::annoPolygon() {
+            if (_anno != NULL && _anno->shape() != NULL && _anno->shape()->shapeType() == dt::ASTypeSegmentation) {
+                return reinterpret_cast<dt::AnnoSegmenation *>(_anno->shape());
             }
             return NULL;
         }
 
-        const dt::AnnoBrush *AnnoGraphicsBrush::annoPolygon() const {
-            if (_anno != NULL && _anno->shape() != NULL && _anno->shape()->shapeType() == dt::ASTypePolygon) {
-                return reinterpret_cast<dt::AnnoBrush *>(_anno->shape());
+        const dt::AnnoSegmenation *AnnoGraphicsSegmentation::annoPolygon() const {
+            if (_anno != NULL && _anno->shape() != NULL && _anno->shape()->shapeType() == dt::ASTypeSegmentation) {
+                return reinterpret_cast<dt::AnnoSegmenation *>(_anno->shape());
             }
             return NULL;
         }
 
-        void AnnoGraphicsBrush::initControlPoints() {
+        void AnnoGraphicsSegmentation::initControlPoints() {
             QPolygonF poly = polygon();
             for (int i = 0; i < poly.size(); ++i) {
                 AnnoGraphicsControlPoint *cp = new AnnoGraphicsControlPoint(this, i);
@@ -55,16 +55,16 @@ namespace anno {
             validateCpPos();
         }
 
-        void AnnoGraphicsBrush::validateCpPos() {
-            dt::AnnoBrush *poly = annoPolygon();
+        void AnnoGraphicsSegmentation::validateCpPos() {
+            dt::AnnoSegmenation *poly = annoPolygon();
             for (int i = 0; i < poly->size(); ++i) {
                 QPointF p = poly->at(i);
                 moveControlPointTo(i, p.x(), p.y());
             }
         }
 
-        void AnnoGraphicsBrush::appendPolygonPoint(const QPointF &p) {
-            dt::AnnoBrush *poly = annoPolygon();
+        void AnnoGraphicsSegmentation::appendPolygonPoint(const QPointF &p) {
+            dt::AnnoSegmenation *poly = annoPolygon();
             if (poly != NULL) {
                 prepareGeometryChange();
                 poly->append(p);
@@ -76,8 +76,8 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::insertPolygonPoint(const QPointF &p) {
-            dt::AnnoBrush *poly = annoPolygon();
+        void AnnoGraphicsSegmentation::insertPolygonPoint(const QPointF &p) {
+            dt::AnnoSegmenation *poly = annoPolygon();
             if (poly != NULL && !p.isNull()) {
                 int insertIndex = -1;
                 int size = poly->size();
@@ -121,8 +121,8 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::removePolygonPoint(int index) {
-            dt::AnnoBrush *poly = annoPolygon();
+        void AnnoGraphicsSegmentation::removePolygonPoint(int index) {
+            dt::AnnoSegmenation *poly = annoPolygon();
             prepareGeometryChange();
             poly->remove(index);
             removeControlPoint(index);
@@ -131,34 +131,34 @@ namespace anno {
             validateCpPos();
         }
 
-        void AnnoGraphicsBrush::setClosedDrawing(bool closed) {
+        void AnnoGraphicsSegmentation::setClosedDrawing(bool closed) {
             _drawClosed = closed;
         }
 
-        void AnnoGraphicsBrush::contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent) {
+        void AnnoGraphicsSegmentation::contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent) {
             dt::Annotation *anno = relatedAnno();
             if(GlobalProjectManager::instance()->isAnnoSelected(anno)) {
                 GlobalToolManager::instance()->triggerShapeContextMenu(relatedAnno());
             }
         }
 
-        void AnnoGraphicsBrush::cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event) {
+        void AnnoGraphicsSegmentation::cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug(QString("AG_POLY: cpMousePressEvent on CP %1").arg(index));
         }
 
-        void AnnoGraphicsBrush::cpMouseReleaseEvent(int index,
+        void AnnoGraphicsSegmentation::cpMouseReleaseEvent(int index,
                 QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug(QString("AG_POLY: cpMouseReleaseEvent on CP %1").arg(index));
             setToolTip(_anno->annoInfo());
         }
 
-        void AnnoGraphicsBrush::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
+        void AnnoGraphicsSegmentation::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug(QString("AG_POLY: cpMouseMoveEvent on CP %1").arg(index));
             qreal deltaX = event->scenePos().x() - event->lastScenePos().x();
             qreal deltaY = event->scenePos().y() - event->lastScenePos().y();
             QPointF delta(deltaX, deltaY);
 
-            dt::AnnoBrush *poly = annoPolygon();
+            dt::AnnoSegmenation *poly = annoPolygon();
             QPointF nPoint = poly->at(index);
             nPoint += delta;
 
@@ -173,7 +173,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+        void AnnoGraphicsSegmentation::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: mousePressEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -181,7 +181,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+        void AnnoGraphicsSegmentation::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: mouseReleaseEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -189,7 +189,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+        void AnnoGraphicsSegmentation::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: mouseDoubleClickEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -197,7 +197,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+        void AnnoGraphicsSegmentation::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: mouseMoveEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -205,7 +205,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+        void AnnoGraphicsSegmentation::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: hoverEnterEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -213,7 +213,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+        void AnnoGraphicsSegmentation::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: hoverLeaveEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -221,7 +221,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
+        void AnnoGraphicsSegmentation::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: hoverMoveEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -229,7 +229,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::keyPressEvent(QKeyEvent *event) {
+        void AnnoGraphicsSegmentation::keyPressEvent(QKeyEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: keyPressEvent");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -237,7 +237,7 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::keyReleaseEvent(QKeyEvent *event) {
+        void AnnoGraphicsSegmentation::keyReleaseEvent(QKeyEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: keyReleaseEvent");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -245,8 +245,8 @@ namespace anno {
             }
         }
 
-        QVariant AnnoGraphicsBrush::itemChange(GraphicsItemChange change,
-                                               const QVariant &value) {
+        QVariant AnnoGraphicsSegmentation::itemChange(GraphicsItemChange change,
+                const QVariant &value) {
             if (change == QGraphicsItem::ItemSelectedChange) {
                 if (value.toBool()) {
                     setControlPointsVisible(true);
@@ -257,13 +257,13 @@ namespace anno {
             return QGraphicsPolygonItem::itemChange(change, value);
         }
 
-        QGraphicsItem *AnnoGraphicsBrush::graphicsItem() {
+        QGraphicsItem *AnnoGraphicsSegmentation::graphicsItem() {
             return this;
         }
 
-        void AnnoGraphicsBrush::shapeMoveBy(qreal deltaX, qreal deltaY) {
+        void AnnoGraphicsSegmentation::shapeMoveBy(qreal deltaX, qreal deltaY) {
             QPointF delta(deltaX, deltaY);
-            dt::AnnoBrush *poly = annoPolygon();
+            dt::AnnoSegmenation *poly = annoPolygon();
             QPolygonF tmpPoly = *poly;
             QRectF parRect = parentItem()->boundingRect();
             tmpPoly.translate(delta);
@@ -283,16 +283,16 @@ namespace anno {
             }
         }
 
-        void AnnoGraphicsBrush::shapeSizeBy(qreal facX, qreal facY) {
+        void AnnoGraphicsSegmentation::shapeSizeBy(qreal facX, qreal facY) {
             //TODO implement this!
         }
 
-        dt::AnnoShapeType AnnoGraphicsBrush::shapeType() const {
-            return dt::ASTypePolygon;
+        dt::AnnoShapeType AnnoGraphicsSegmentation::shapeType() const {
+            return dt::ASTypeSegmentation;
         }
 
-        void AnnoGraphicsBrush::paint(QPainter *painter,
-                                      const QStyleOptionGraphicsItem *option, QWidget *widget) {
+        void AnnoGraphicsSegmentation::paint(QPainter *painter,
+                                             const QStyleOptionGraphicsItem *option, QWidget *widget) {
             _shapeConfig.applyShapeConfig(painter, isSelected());
 
             if(_drawClosed) {
@@ -321,17 +321,17 @@ namespace anno {
 //			}
         }
 
-        void AnnoGraphicsBrush::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+        void AnnoGraphicsSegmentation::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: exMouseMoveEvent.");
             mouseMoveEvent(event);
         }
 
-        void AnnoGraphicsBrush::exMousePressEvent(QGraphicsSceneMouseEvent *event) {
+        void AnnoGraphicsSegmentation::exMousePressEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: exMousePressEvent.");
             mousePressEvent(event);
         }
 
-        void AnnoGraphicsBrush::exMouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+        void AnnoGraphicsSegmentation::exMouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug("AG_POLY: exMouseReleaseEvent.");
             mouseReleaseEvent(event);
         }

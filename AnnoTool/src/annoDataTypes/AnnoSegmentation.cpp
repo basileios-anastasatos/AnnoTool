@@ -1,4 +1,4 @@
-#include "include/AnnoBrush.h"
+#include "include/AnnoSegmentation.h"
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 #include <QTextStream>
@@ -8,30 +8,30 @@ namespace anno {
     namespace dt {
         using ::anno::helper::XmlHelper;
 
-        AnnoBrush::AnnoBrush() {
+        AnnoSegmenation::AnnoSegmenation() {
         }
 
-        AnnoBrush::~AnnoBrush() {
+        AnnoSegmenation::~AnnoSegmenation() {
         }
 
-        AnnoShapeType AnnoBrush::shapeType() const {
-            return ASTypePolygon;
+        AnnoShapeType AnnoSegmenation::shapeType() const {
+            return ASTypeSegmentation;
         }
 
-        QString AnnoBrush::shapeInfo() const {
-            return QString("Type: %1\n#-Points: %2").arg("Polygon").arg(size());
+        QString AnnoSegmenation::shapeInfo() const {
+            return QString("Type: %1\n#-Points: %2").arg("Segmentation").arg(size());
         }
 
-        QRectF AnnoBrush::boundingRect() const {
+        QRectF AnnoSegmenation::boundingRect() const {
             return QPolygonF::boundingRect();
         }
 
-        void AnnoBrush::print() const {
+        void AnnoSegmenation::print() const {
             QTextStream out(stdout);
-            out << "[Poly, (" << size() << ")]" << endl;
+            out << "[Segmentation, (" << size() << ")]" << endl;
         }
 
-        AnnoBrush &AnnoBrush::operator=(const QPolygonF &r) {
+        AnnoSegmenation &AnnoSegmenation::operator=(const QPolygonF &r) {
             clear();
             QVectorIterator<QPointF> i(r);
             while(i.hasNext()) {
@@ -40,7 +40,7 @@ namespace anno {
             return *this;
         }
 
-        AnnoBrush &AnnoBrush::operator=(const AnnoBrush &r) {
+        AnnoSegmenation &AnnoSegmenation::operator=(const AnnoSegmenation &r) {
             clear();
             QVectorIterator<QPointF> i(r);
             while(i.hasNext()) {
@@ -49,7 +49,7 @@ namespace anno {
             return *this;
         }
 
-        void AnnoBrush::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {
+        void AnnoSegmenation::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {
             writer.writeStartElement("polygon");
             QVectorIterator<QPointF> i(*this);
             while(i.hasNext()) {
@@ -59,7 +59,7 @@ namespace anno {
             writer.writeEndElement();
         }
 
-        void AnnoBrush::loadFromXml(QXmlStreamReader &reader) throw(XmlException *) {
+        void AnnoSegmenation::loadFromXml(QXmlStreamReader &reader) throw(XmlException *) {
             if (!reader.isStartElement() || reader.name() != "polygon") {
                 throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "polygon", reader.name().toString());
             }
