@@ -6,6 +6,8 @@
 #include "AnnoSinglePoint.h"
 #include "AnnoEllipse.h"
 #include "AnnoPolygon.h"
+#include "AnnoBoundingBox.h"
+#include "AnnoSegmentation.h"
 
 //namespace AnnoTool
 namespace anno {
@@ -40,6 +42,12 @@ namespace anno {
             } else if (reader.isStartElement() && reader.name() == "polygon") {
                 shape = new AnnoPolygon();
                 shape->loadFromXml(reader);
+            } else if (reader.isStartElement() && reader.name() == "boundingBox") {
+                shape = new AnnoBoundingBox();
+                shape->loadFromXml(reader);
+            } else if (reader.isStartElement() && reader.name() == "segmentation") {
+                shape = new AnnoSegmenation();
+                shape->loadFromXml(reader);
             } else {
                 QString msg("Unsupported annotation shape: %1");
                 msg.arg(reader.name().toString());
@@ -68,6 +76,14 @@ namespace anno {
             } else if(shape->shapeType() == ASTypeEllipse) {
                 AnnoEllipse *cs = new AnnoEllipse();
                 *cs = *((AnnoEllipse *)shape);
+                return cs;
+            } else if(shape->shapeType() == ASTypeBoundingBox) {
+                AnnoBoundingBox *cs = new AnnoBoundingBox();
+                *cs = *((AnnoBoundingBox *)shape);
+                return cs;
+            } else if(shape->shapeType() == ASTypeSegmentation) {
+                AnnoSegmenation *cs = new AnnoSegmenation();
+                *cs = *((AnnoSegmenation *)shape);
                 return cs;
             }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QRectF>
+#include <QImage>
 #include "AnnoShape.h"
 
 namespace anno {
@@ -26,6 +27,13 @@ namespace anno {
             public:
                 virtual void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 virtual void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
+
+            public:
+                void setImage(const QImage *segmImg);
+                QImage *getImage();
+
+            private:
+                QImage *_segmImage;
         };
 
     }

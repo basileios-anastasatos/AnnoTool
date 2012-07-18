@@ -39,11 +39,11 @@ namespace anno {
                             break;
                         }
                     default:
-                        GlobalLogger::instance()->logError("Cannot create graphics representation of annotaion! Unknown annotation type!");
+                        GlobalLogger::instance()->logError("Cannot create graphics representation of annotation! Unknown annotation type!");
                         break;
                 }
             } else {
-                GlobalLogger::instance()->logError("Cannot create graphics representation of annotaion!");
+                GlobalLogger::instance()->logError("Cannot create graphics representation of annotation!");
             }
             return shape;
         }

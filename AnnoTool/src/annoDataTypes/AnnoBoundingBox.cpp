@@ -9,6 +9,7 @@ namespace anno {
         using ::anno::helper::XmlHelper;
 
         AnnoBoundingBox::AnnoBoundingBox() {
+            _segmImage = NULL;
         }
 
         AnnoBoundingBox::~AnnoBoundingBox() {
@@ -66,6 +67,16 @@ namespace anno {
                 throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "size", reader.name().toString());
             }
             setSize(XmlHelper::readXmlSize(reader));
+        }
+
+        void AnnoBoundingBox::setImage(const QImage *segmImg) {
+            if (_segmImage != segmImg) {
+                _segmImage = new QImage( (const_cast<QImage *>(segmImg))->copy() );
+            }
+        }
+
+        QImage *AnnoBoundingBox::getImage() {
+            return _segmImage;
         }
     }
 }

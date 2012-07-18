@@ -1,10 +1,58 @@
 #include "include/GlobalToolManager.h"
 #include "AnnoGraphicsScene.h"
+#include "AnnoGraphicsShapeCreator.h"
 #include "AllGraphicsTools.h"
 #include "ShapeContextMenu.h"
+#include "Segmentation.h"
 
 #include "GlobalLogger.h"
 using ::logging::GlobalLogger;
+
+#include "qgraphicsview.h"
+#include "qpainter.h"
+
+
+/*void*/cv::Mat qimage2mat(const QImage &qimage/*, cv::Mat& mat2*/) {
+    cv::Mat mat = cv::Mat(qimage.height(), qimage.width(), CV_8UC4, (uchar *)qimage.bits(), qimage.bytesPerLine());
+    cv::Mat mat2 = cv::Mat(mat.rows, mat.cols, CV_8UC3 );
+    int from_to[] = { 0, 0,  1, 1,  2, 2 };
+    cv::mixChannels( &mat, 1, &mat2, 1, from_to, 3 );
+    return mat2;
+};
+
+//QImage mat2qimage(const cv::Mat& mat)
+//{
+//	cv::Mat rgb;
+//    cvtColor(mat, rgb, CV_BGR2RGB);
+//    return QImage((const unsigned char*)(rgb.data), rgb.cols, rgb.rows, QImage::Format_RGB888);
+//};
+
+QImage */*void*/ Mat2QImage(const cv::Mat3b &src/*, QImage* dest*/) {
+    QImage *dest = new QImage(src.cols, src.rows, QImage::Format_ARGB32);
+    for (int y = 0; y < src.rows; ++y) {
+        const cv::Vec3b *srcrow = src[y];
+        QRgb *destrow = (QRgb *)dest->scanLine(y);
+        for (int x = 0; x < src.cols; ++x) {
+            destrow[x] = qRgba(srcrow[x][2], srcrow[x][1], srcrow[x][0], 255);
+        }
+    }
+    return dest;
+}
+
+//QImage Mat2QImage(const cv::Mat_<double> &src)
+//{
+//        double scale = 255.0;
+//        QImage dest(src.cols, src.rows, QImage::Format_ARGB32);
+//        for (int y = 0; y < src.rows; ++y) {
+//                const double *srcrow = src[y];
+//                QRgb *destrow = (QRgb*)dest.scanLine(y);
+//                for (int x = 0; x < src.cols; ++x) {
+//                        unsigned int color = srcrow[x] * scale;
+//                        destrow[x] = qRgba(color, color, color, 255);
+//                }
+//        }
+//        return dest;
+//}
 
 namespace anno {
 
@@ -233,6 +281,68 @@ namespace anno {
 
     void GlobalToolManager::resetLastAnno() {
         _lastAnnoAdded = QUuid();
+    }
+
+    void GlobalToolManager::runGrabCut() {
+        /*
+		 * anna: Here we should process the current annotation (segmentation).
+		 * We should extract the bounding box rectangle, the FG/BG mask and give this data to grabCut algorithm.
+		 * The resulting segmentation should be saved to binary image.
+		 * The resulting picture should be shown.
+		 * The xml data should contain the path to binary image.
+		 * The class should be specified by user (f.e.: left hand)
+		*/
+        GlobalProjectManager *pm = GlobalProjectManager::instance();
+        anno::dt::Annotation *anno = pm->selectedAnno();
+        if(anno != NULL) {
+            anno::dt::Segmentation *segm = dynamic_cast<anno::dt::Segmentation *>(anno);
+            if(segm != NULL) {
+                anno::dt::AnnoShape *annoShape = segm->shape();
+                if(!annoShape) {
+                    return;
+                }
+
+                anno::dt::AnnoShapeType eAnnoShapeType = annoShape->shapeType();
+                if(anno::dt::ASTypeBoundingBox == eAnnoShapeType) {
+                    QRectF rect = annoShape->boundingRect();
+                    //				anno::dt::AnnoFileData* curFile = GlobalProjectManager::instance()->selectedFile();
+                    //				if (!curFile) return;
+                    //				QFileInfo fileName = curFile->imageInfo()->imagePath();
+                    //				if (fileName.isRelative()) fileName = GlobalProjectManager::instance()->relToAbs(fileName);
+                    //				const std::string input_filename(fileName.filePath().toUtf8().constData());
+                    //				cv::Mat input_image = cv::imread(input_filename);
+
+                    QPixmap qPm = _curScene->annoPixmap()->pixmap();
+                    QImage qImg = qPm.toImage();
+                    cv::Mat input_image = qimage2mat(qImg);
+
+                    cv::Rect rcRect(rect.x(), rect.y(), rect.width(), rect.height());
+
+                    //_grabCut.reset(new InteractiveGrabcut(input_image, rcRect));
+                    InteractiveGrabcut grabCut(input_image, rcRect);
+                    cv::Mat resultImg = grabCut.execute();
+                    QImage *qImgRes = Mat2QImage(resultImg);
+
+                    ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setImage(qImgRes);
+
+                    // save result to Segmentation object
+                    //		anno::dt::AnnoSegmenation* annoSegm = new anno::dt::AnnoSegmenation();
+                    //		annoSegm->setImage(qImgRes);
+//					segm->setSegmentation(annoSegm);
+
+                    //		segm->setShape(annoSegm);
+                    //		anno::graphics::AnnoGraphicsShape* segmShape = anno::graphics::AnnoGraphicsShapeCreator::toGraphicsShape(segm);
+
+//					if (segmShape != NULL)
+//					{
+//						_curScene->addAnnoShape(segmShape);
+//						_curScene->setFocusItem(segmShape->graphicsItem());
+//						_curScene->selectShape(segm->annoId());
+//					}
+                    _curScene->selectShape(segm->annoId());
+                }
+            }
+        }
     }
 
 }

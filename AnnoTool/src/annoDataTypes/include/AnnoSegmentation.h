@@ -1,12 +1,13 @@
 #pragma once
 
-#include <QPolygonF>
+//#include <QPolygonF>
 #include "AnnoShape.h"
+#include <QImage>
 
 namespace anno {
     namespace dt {
 
-        class AnnoSegmenation : public QPolygonF, public AnnoShape {
+        class AnnoSegmenation : public QImage, public AnnoShape {
             public:
                 AnnoSegmenation();
                 virtual ~AnnoSegmenation();
@@ -26,6 +27,13 @@ namespace anno {
             public:
                 virtual void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 virtual void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
+
+            public:
+                void setImage(const QImage *segmImg);
+                QImage *getImage();
+
+            private:
+                QImage *_segmImage;
         };
 
     }

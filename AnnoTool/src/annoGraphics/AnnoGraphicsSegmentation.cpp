@@ -16,7 +16,7 @@ namespace anno {
         AnnoGraphicsSegmentation::AnnoGraphicsSegmentation(dt::Annotation *anno, QGraphicsItem *parent) :
             QGraphicsPolygonItem(parent), AnnoGraphicsShape(anno), _drawClosed(true) {
             setupAppearance();
-            setPolygon(*annoPolygon());
+            //setPolygon(*annoPolygon());
             initControlPoints();
         }
 
@@ -33,14 +33,15 @@ namespace anno {
 
         dt::AnnoSegmenation *AnnoGraphicsSegmentation::annoPolygon() {
             if (_anno != NULL && _anno->shape() != NULL && _anno->shape()->shapeType() == dt::ASTypeSegmentation) {
-                return reinterpret_cast<dt::AnnoSegmenation *>(_anno->shape());
+                dt::AnnoSegmenation *res = dynamic_cast<dt::AnnoSegmenation *>(_anno->shape());
+                return res;
             }
             return NULL;
         }
 
         const dt::AnnoSegmenation *AnnoGraphicsSegmentation::annoPolygon() const {
             if (_anno != NULL && _anno->shape() != NULL && _anno->shape()->shapeType() == dt::ASTypeSegmentation) {
-                return reinterpret_cast<dt::AnnoSegmenation *>(_anno->shape());
+                return dynamic_cast<dt::AnnoSegmenation *>(_anno->shape());
             }
             return NULL;
         }
@@ -56,79 +57,89 @@ namespace anno {
         }
 
         void AnnoGraphicsSegmentation::validateCpPos() {
-            dt::AnnoSegmenation *poly = annoPolygon();
-            for (int i = 0; i < poly->size(); ++i) {
-                QPointF p = poly->at(i);
-                moveControlPointTo(i, p.x(), p.y());
-            }
+//			dt::AnnoSegmenation* poly = annoPolygon();
+//			for (int i = 0; i < poly->size(); ++i)
+//			{
+//				QPointF p = poly->at(i);
+//				moveControlPointTo(i, p.x(), p.y());
+//			}
         }
 
         void AnnoGraphicsSegmentation::appendPolygonPoint(const QPointF &p) {
-            dt::AnnoSegmenation *poly = annoPolygon();
-            if (poly != NULL) {
-                prepareGeometryChange();
-                poly->append(p);
-                insertControlPoint(poly->size() - 1, new AnnoGraphicsControlPoint(this, poly->size() - 1));
-                setPolygon(*poly);
-                validateCpPos();
-            } else {
-                GlobalLogger::instance()->logError("AnnoGraphicsPolygon::appendPolygonPoint: poly == NULL");
-            }
+//			dt::AnnoSegmenation* poly = annoPolygon();
+//			if (poly != NULL)
+//			{
+//				prepareGeometryChange();
+//				poly->append(p);
+//				insertControlPoint(poly->size() - 1, new AnnoGraphicsControlPoint(this, poly->size() - 1));
+//				setPolygon(*poly);
+//				validateCpPos();
+//			}
+//			else
+//			{
+//				GlobalLogger::instance()->logError("AnnoGraphicsPolygon::appendPolygonPoint: poly == NULL");
+//			}
         }
 
         void AnnoGraphicsSegmentation::insertPolygonPoint(const QPointF &p) {
-            dt::AnnoSegmenation *poly = annoPolygon();
-            if (poly != NULL && !p.isNull()) {
-                int insertIndex = -1;
-                int size = poly->size();
-
-                for(int i = 1; i <= size; ++i) {
-                    int idxFirst = i - 1;
-                    int idxLast = i % size;
-                    QPointF first = poly->at(idxFirst);
-                    QPointF last = poly->at(idxLast);
-                    QLineF mainLine(first, last);
-                    QLineF norm = mainLine.normalVector().unitVector();
-                    norm.setLength(4.0);
-                    QLineF firstLine(mainLine);
-                    QLineF secondLine(mainLine);
-                    firstLine.translate(norm.dx(), norm.dy());
-                    secondLine.translate(-norm.dx(), -norm.dy());
-
-                    QPainterPath path;
-                    path.moveTo(firstLine.p1());
-                    path.lineTo(firstLine.p2());
-                    path.lineTo(secondLine.p2());
-                    path.lineTo(secondLine.p1());
-                    path.closeSubpath();
-
-                    if(path.contains(p)) {
-                        insertIndex = idxLast;
-                        break;
-                    }
-                }
-
-                if(insertIndex >= 0) {
-                    prepareGeometryChange();
-                    poly->insert(insertIndex, p);
-                    insertControlPoint(insertIndex, new AnnoGraphicsControlPoint(this, insertIndex));
-                    setPolygon(*poly);
-                    validateCpIndices();
-                    validateCpPos();
-                }
-            } else {
-                GlobalLogger::instance()->logError("AnnoGraphicsPolygon::insertPolygonPoint: poly == NULL");
-            }
+//			dt::AnnoSegmenation* poly = annoPolygon();
+//			if (poly != NULL && !p.isNull())
+//			{
+//				int insertIndex = -1;
+//				int size = poly->size();
+//
+//				for(int i = 1; i <= size; ++i)
+//				{
+//					int idxFirst = i - 1;
+//					int idxLast = i % size;
+//					QPointF first = poly->at(idxFirst);
+//					QPointF last = poly->at(idxLast);
+//					QLineF mainLine(first, last);
+//					QLineF norm = mainLine.normalVector().unitVector();
+//					norm.setLength(4.0);
+//					QLineF firstLine(mainLine);
+//					QLineF secondLine(mainLine);
+//					firstLine.translate(norm.dx(), norm.dy());
+//					secondLine.translate(-norm.dx(), -norm.dy());
+//
+//					QPainterPath path;
+//					path.moveTo(firstLine.p1());
+//					path.lineTo(firstLine.p2());
+//					path.lineTo(secondLine.p2());
+//					path.lineTo(secondLine.p1());
+//					path.closeSubpath();
+//
+//					if(path.contains(p))
+//					{
+//						insertIndex = idxLast;
+//						break;
+//					}
+//				}
+//
+//				if(insertIndex >= 0)
+//				{
+//					prepareGeometryChange();
+//					poly->insert(insertIndex, p);
+//					insertControlPoint(insertIndex, new AnnoGraphicsControlPoint(this, insertIndex));
+//					setPolygon(*poly);
+//					validateCpIndices();
+//					validateCpPos();
+//				}
+//			}
+//			else
+//			{
+//				GlobalLogger::instance()->logError("AnnoGraphicsPolygon::insertPolygonPoint: poly == NULL");
+//			}
         }
 
         void AnnoGraphicsSegmentation::removePolygonPoint(int index) {
-            dt::AnnoSegmenation *poly = annoPolygon();
-            prepareGeometryChange();
-            poly->remove(index);
-            removeControlPoint(index);
-            setPolygon(*poly);
-            validateCpIndices();
-            validateCpPos();
+//			dt::AnnoSegmenation* poly = annoPolygon();
+//			prepareGeometryChange();
+//			poly->remove(index);
+//			removeControlPoint(index);
+//			setPolygon(*poly);
+//			validateCpIndices();
+//			validateCpPos();
         }
 
         void AnnoGraphicsSegmentation::setClosedDrawing(bool closed) {
@@ -153,24 +164,25 @@ namespace anno {
         }
 
         void AnnoGraphicsSegmentation::cpMouseMoveEvent(int index, QGraphicsSceneMouseEvent *event) {
-            GlobalLogger::instance()->logDebug(QString("AG_POLY: cpMouseMoveEvent on CP %1").arg(index));
-            qreal deltaX = event->scenePos().x() - event->lastScenePos().x();
-            qreal deltaY = event->scenePos().y() - event->lastScenePos().y();
-            QPointF delta(deltaX, deltaY);
-
-            dt::AnnoSegmenation *poly = annoPolygon();
-            QPointF nPoint = poly->at(index);
-            nPoint += delta;
-
-            QRectF parRect = parentItem()->boundingRect();
-            if (parRect.contains(nPoint)) {
-                prepareGeometryChange();
-                (*poly)[index] = nPoint;
-                setPolygon(*poly);
-                validateCpPos();
-                _anno->setModified(true);
-                setToolTip(_anno->annoInfo());
-            }
+//			GlobalLogger::instance()->logDebug(QString("AG_POLY: cpMouseMoveEvent on CP %1").arg(index));
+//			qreal deltaX = event->scenePos().x() - event->lastScenePos().x();
+//			qreal deltaY = event->scenePos().y() - event->lastScenePos().y();
+//			QPointF delta(deltaX, deltaY);
+//
+//			dt::AnnoSegmenation* poly = annoPolygon();
+//			QPointF nPoint = poly->at(index);
+//			nPoint += delta;
+//
+//			QRectF parRect = parentItem()->boundingRect();
+//			if (parRect.contains(nPoint))
+//			{
+//				prepareGeometryChange();
+//				(*poly)[index] = nPoint;
+//				setPolygon(*poly);
+//				validateCpPos();
+//				_anno->setModified(true);
+//				setToolTip(_anno->annoInfo());
+//			}
         }
 
         void AnnoGraphicsSegmentation::mousePressEvent(QGraphicsSceneMouseEvent *event) {
@@ -262,25 +274,27 @@ namespace anno {
         }
 
         void AnnoGraphicsSegmentation::shapeMoveBy(qreal deltaX, qreal deltaY) {
-            QPointF delta(deltaX, deltaY);
-            dt::AnnoSegmenation *poly = annoPolygon();
-            QPolygonF tmpPoly = *poly;
-            QRectF parRect = parentItem()->boundingRect();
-            tmpPoly.translate(delta);
-
-            bool validPos = true;
-            for (int i = 0; i < tmpPoly.size(); ++i) {
-                validPos = validPos && parRect.contains(tmpPoly[i]);
-            }
-
-            if (validPos) {
-                prepareGeometryChange();
-                *poly = tmpPoly;
-                setPolygon(tmpPoly);
-                validateCpPos();
-                _anno->setModified(true);
-                setToolTip(_anno->annoInfo());
-            }
+//			QPointF delta(deltaX, deltaY);
+//			dt::AnnoSegmenation* poly = annoPolygon();
+//			QPolygonF tmpPoly = *poly;
+//			QRectF parRect = parentItem()->boundingRect();
+//			tmpPoly.translate(delta);
+//
+//			bool validPos = true;
+//			for (int i = 0; i < tmpPoly.size(); ++i)
+//			{
+//				validPos = validPos && parRect.contains(tmpPoly[i]);
+//			}
+//
+//			if (validPos)
+//			{
+//				prepareGeometryChange();
+//				*poly = tmpPoly;
+//				setPolygon(tmpPoly);
+//				validateCpPos();
+//				_anno->setModified(true);
+//				setToolTip(_anno->annoInfo());
+//			}
         }
 
         void AnnoGraphicsSegmentation::shapeSizeBy(qreal facX, qreal facY) {
@@ -293,32 +307,18 @@ namespace anno {
 
         void AnnoGraphicsSegmentation::paint(QPainter *painter,
                                              const QStyleOptionGraphicsItem *option, QWidget *widget) {
-            _shapeConfig.applyShapeConfig(painter, isSelected());
+            //_shapeConfig.applyShapeConfig(painter, isSelected());
 
-            if(_drawClosed) {
-                painter->drawPolygon(polygon());
-            } else {
-                painter->drawPolyline(polygon());
+            dt::AnnoSegmenation *segm = annoPolygon();
+            QImage *qImg = segm->getImage();
+            if(NULL != qImg) {
+                //QRect rect = qImg->rect();
+
+                //QGraphicsView::mapToScene()
+                //QGraphicsView::mapFromScene().
+
+                painter->drawImage(QPoint(0, 0), *qImg);
             }
-
-//			if(!_paths.isEmpty())
-//			{
-//				GlobalLogger::instance()->logDebug(">>> Painting paths!");
-//				QPen ppen(Qt::SolidLine);
-//				ppen.setWidth(1);
-//				ppen.setColor(QColor(0, 240, 0, 255));
-//				QBrush pbrush(Qt::SolidPattern);
-//				pbrush.setColor(QColor(255, 255, 255, 0));
-//				painter->setPen(ppen);
-//				painter->setBrush(pbrush);
-//
-//				QListIterator<QPainterPath> i(_paths);
-//				while(i.hasNext())
-//				{
-//					QPainterPath p = i.next();
-//					painter->drawPath(p);
-//				}
-//			}
         }
 
         void AnnoGraphicsSegmentation::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {

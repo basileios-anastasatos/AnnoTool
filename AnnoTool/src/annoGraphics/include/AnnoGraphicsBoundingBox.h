@@ -53,6 +53,8 @@ namespace anno {
                 virtual void exMouseMoveEvent(QGraphicsSceneMouseEvent *event);
                 virtual void exMousePressEvent(QGraphicsSceneMouseEvent *event);
                 virtual void exMouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+            private:
+                bool _bShowMask;
         };
 
     }

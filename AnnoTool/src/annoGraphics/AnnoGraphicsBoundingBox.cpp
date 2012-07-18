@@ -82,7 +82,7 @@ namespace anno {
         }
 
         dt::AnnoShapeType AnnoGraphicsBoundingBox::shapeType() const {
-            return dt::ASTypeRectangle;
+            return dt::ASTypeBoundingBox;
         }
 
         void AnnoGraphicsBoundingBox::contextMenuEvent(QGraphicsSceneContextMenuEvent *contextMenuEvent) {
@@ -167,8 +167,10 @@ namespace anno {
         QVariant AnnoGraphicsBoundingBox::itemChange(GraphicsItemChange change, const QVariant &value) {
             if(change == QGraphicsItem::ItemSelectedChange) {
                 if(value.toBool()) {
+                    _bShowMask = true;
                     setControlPointsVisible(true);
                 } else {
+                    _bShowMask = false;
                     setControlPointsVisible(false);
                 }
             }
@@ -177,6 +179,14 @@ namespace anno {
 
         void AnnoGraphicsBoundingBox::paint(QPainter *painter,
                                             const QStyleOptionGraphicsItem *option, QWidget *widget) {
+            dt::AnnoBoundingBox *bBox = annoBoundingBox();
+            QImage *qImg = bBox->getImage();
+            //QRectF imgRect = bBox->boundingRect();
+            //QGraphicsView::mapToScene() mapFromScene() ?
+            if (NULL != qImg && _bShowMask) {
+                painter->drawImage(QPoint(0, 0)/*imgRect*/, *qImg);
+            }
+
             _shapeConfig.applyShapeConfig(painter, isSelected());
             painter->drawRect(rect());
 
@@ -220,14 +230,14 @@ namespace anno {
 
         dt::AnnoBoundingBox *AnnoGraphicsBoundingBox::annoBoundingBox() {
             if (_anno != NULL && _anno->shape() != NULL && _anno->shape()->shapeType() == dt::ASTypeBoundingBox) {
-                return reinterpret_cast<dt::AnnoBoundingBox *>(_anno->shape());
+                return dynamic_cast<dt::AnnoBoundingBox *>(_anno->shape());
             }
             return NULL;
         }
 
         const dt::AnnoBoundingBox *AnnoGraphicsBoundingBox::annoBoundingBox() const {
             if (_anno != NULL && _anno->shape() != NULL && _anno->shape()->shapeType() == dt::ASTypeBoundingBox) {
-                return reinterpret_cast<dt::AnnoBoundingBox *>(_anno->shape());
+                return dynamic_cast<dt::AnnoBoundingBox *>(_anno->shape());
             }
             return NULL;
         }

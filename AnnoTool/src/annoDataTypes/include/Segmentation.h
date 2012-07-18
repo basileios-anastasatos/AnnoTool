@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Annotation.h"
+#include "AnnoSegmentation.h"
+#include <QImage>
+#include "AnnoBoundingBox.h"
+
 
 //namespace AnnoTool
 namespace anno {
@@ -67,7 +71,7 @@ namespace anno {
         class Segmentation : public Annotation {
                 Q_OBJECT
 
-//				friend class AnnoAttribute;
+                friend class AnnoAttribute;
 
                 // modified handling stuff
             private:
@@ -87,6 +91,7 @@ namespace anno {
 //				QList<QString> _annoClasses;
 //				QList<AnnoAttribute> _annoAttributes;
 //				AnnoShape* _shape;
+//				AnnoSegmenation* _annoSegm;
 
                 // internal XML stuff
             private:
@@ -146,6 +151,8 @@ namespace anno {
 //				void setComment(const QString& comment);
 //				AnnoShape* shape() const;
 //				void setShape(AnnoShape* shape);
+//				void setSegmentation(const AnnoSegmenation* annoSegm);
+//				void setSegmentation(const QImage* annoSegmImg);
 //				QList<QString> classes() const;
 //				QList<AnnoAttribute> attributes() const;
 //
@@ -452,6 +459,20 @@ namespace anno {
 //			if (_shape != shape)
 //			{
 //				_shape = shape;
+//				setModified(true);
+//			}
+//		}
+//		inline void Segmentation::setSegmentation(const QImage* annoSegmImg)
+//		{
+//			if(!_annoSegm)
+//				_annoSegm = new AnnoSegmenation();
+//			_annoSegm->setImage(annoSegmImg);
+//		}
+//		inline void Segmentation::setSegmentation(const AnnoSegmenation* annoSegm)
+//		{
+//			if (_annoSegm != annoSegm)
+//			{
+//				_annoSegm = const_cast<AnnoSegmenation*>(annoSegm);
 //				setModified(true);
 //			}
 //		}
