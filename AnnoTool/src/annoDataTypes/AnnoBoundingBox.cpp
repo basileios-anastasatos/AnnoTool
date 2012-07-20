@@ -13,6 +13,10 @@ namespace anno {
         }
 
         AnnoBoundingBox::~AnnoBoundingBox() {
+            if (NULL != _segmImage) {
+                delete _segmImage;
+            }
+            _segmImage = NULL;
         }
 
         AnnoShapeType AnnoBoundingBox::shapeType() const {
@@ -20,9 +24,11 @@ namespace anno {
         }
 
         QString AnnoBoundingBox::shapeInfo() const {
-            //return QString("Type: %1\nx: %2\ny: %3\nwidth: %4\nheight: %5").arg("BoundingBox").arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2).arg(width(), 0, 'f', 2).arg(height(), 0, 'f', 2);
+            QString res = QString("Type: %1\nx: %2\ny: %3\nwidth: %4\nheight: %5\n").arg("BoundingBox").arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2).arg(width(), 0, 'f', 2).arg(height(), 0, 'f', 2);
+            res += QString("image path:%1\nx: %2\ny: %3\nwidth: %4\nheight: %5").arg(_segmImagePath).arg(_segmRealBoundRect.x()).arg(_segmRealBoundRect.y()).arg(_segmRealBoundRect.width()).arg(_segmRealBoundRect.height());
+            return res;
 
-            return QString("width: %1, height: %2\n x: %3, y: %4").arg(width(), 0, 'f', 2).arg(height(), 0, 'f', 2).arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2);
+            //return QString("width: %1, height: %2\n x: %3, y: %4").arg(width(), 0, 'f', 2).arg(height(), 0, 'f', 2).arg(x(), 0, 'f', 2).arg(y(), 0, 'f', 2);
         }
 
         QRectF AnnoBoundingBox::boundingRect() const {
@@ -50,13 +56,16 @@ namespace anno {
             writer.writeStartElement("boundingBox");
             XmlHelper::writeXmlPoint(writer, x(), y());
             XmlHelper::writeXmlSize(writer, width(), height());
+            writer.writeTextElement("imgPath", _segmImagePath);
+            XmlHelper::writeXmlPoint(writer, _segmRealBoundRect.x(), _segmRealBoundRect.y());
+            XmlHelper::writeXmlSize(writer, _segmRealBoundRect.width(), _segmRealBoundRect.height());
             writer.writeEndElement();
         }
 
         void AnnoBoundingBox::loadFromXml(QXmlStreamReader &reader)
         throw(XmlException *) {
-            if (!reader.isStartElement() || reader.name() != "rect") {
-                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "rect", reader.name().toString());
+            if (!reader.isStartElement() || reader.name() != "boundingBox") {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "boundingBox", reader.name().toString());
             }
             if (!XmlHelper::skipToStartElement("point", reader)) {
                 throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "point", reader.name().toString());
@@ -67,12 +76,44 @@ namespace anno {
                 throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "size", reader.name().toString());
             }
             setSize(XmlHelper::readXmlSize(reader));
+
+            if (!XmlHelper::skipToStartElement("imgPath", reader)) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "imgPath", reader.name().toString());
+            }
+            _segmImagePath = reader.readElementText();
+            _segmImage = new QImage(_segmImagePath);
+
+            if (!XmlHelper::skipToStartElement("point", reader)) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "point", reader.name().toString());
+            }
+            QPointF pt = XmlHelper::readXmlPoint(reader);
+            _segmRealBoundRect.setTopLeft(QPoint(pt.x(), pt.y()));
+
+            if (!XmlHelper::skipToStartElement("size", reader)) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "size", reader.name().toString());
+            }
+            QSizeF sz = XmlHelper::readXmlSize(reader);
+            _segmRealBoundRect.setSize(QSize(sz.width(), sz.height()));
         }
 
         void AnnoBoundingBox::setImage(const QImage *segmImg) {
-            if (_segmImage != segmImg) {
-                _segmImage = new QImage( (const_cast<QImage *>(segmImg))->copy() );
+            if (NULL != _segmImage) {
+                delete _segmImage;
             }
+            _segmImage = new QImage( (const_cast<QImage *>(segmImg))->copy() );
+        }
+
+        void AnnoBoundingBox::setImagePath(const QString &sPath) {
+            if (_segmImagePath != sPath) {
+                _segmImagePath = sPath;
+            }
+        }
+
+        void AnnoBoundingBox::setRealBoundRect(QRect &rect) {
+            _segmRealBoundRect.setX(rect.x());
+            _segmRealBoundRect.setY(rect.y());
+            _segmRealBoundRect.setWidth(rect.width());
+            _segmRealBoundRect.setHeight(rect.height());
         }
 
         QImage *AnnoBoundingBox::getImage() {

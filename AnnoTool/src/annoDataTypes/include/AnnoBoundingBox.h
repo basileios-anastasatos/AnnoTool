@@ -2,6 +2,7 @@
 
 #include <QRectF>
 #include <QImage>
+#include <QString>
 #include "AnnoShape.h"
 
 namespace anno {
@@ -30,10 +31,14 @@ namespace anno {
 
             public:
                 void setImage(const QImage *segmImg);
+                void setImagePath(const QString &sPath);
+                void setRealBoundRect(QRect &rect);
                 QImage *getImage();
 
             private:
                 QImage *_segmImage;
+                QString _segmImagePath;
+                QRect   _segmRealBoundRect;
         };
 
     }

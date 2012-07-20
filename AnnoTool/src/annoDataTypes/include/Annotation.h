@@ -133,7 +133,7 @@ namespace anno {
 
                 // internal XML stuff
             protected:
-                void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
+                virtual void loadFromXml(QXmlStreamReader &reader) throw(XmlException *);
                 void annoHierarchyToXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 void annoClassesToXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 void annoAttributesToXml(QXmlStreamWriter &writer) const throw(XmlException *);
@@ -216,7 +216,7 @@ namespace anno {
 
                 // public XML interface
             public:
-                void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
+                virtual void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 static Annotation *fromXml(QXmlStreamReader &reader) throw(XmlException *);
 
             signals:

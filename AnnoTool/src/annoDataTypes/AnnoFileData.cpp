@@ -2,8 +2,10 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 #include <QTextStream>
+#include <QDir>
 
 #include "importGlobals.h"
+#include "Segmentation.h"
 
 //namespace AnnoTool
 namespace anno {
@@ -276,9 +278,12 @@ namespace anno {
 
             QString tagAnnoLst("imageAnnotations");
             QString tagAnno("annotation");
+            QString tagSegment("segmentation");
             while (!reader.atEnd()) {
                 if (reader.isStartElement() && reader.name() == tagAnno) {
                     addAnnotation(Annotation::fromXml(reader));
+                } else if (reader.isStartElement() && reader.name() == tagSegment) {
+                    addAnnotation(Segmentation::fromXml(reader));
                 } else if (reader.isEndElement() && reader.name() == tagAnnoLst) {
                     reader.readNext();
                     break;
@@ -318,7 +323,22 @@ namespace anno {
             if (!_annoList.isEmpty()) {
                 QListIterator<Annotation *> i(_annoList);
                 while (i.hasNext()) {
-                    i.next()->toXml(writer);
+                    Annotation *iterAnno = i.next();
+                    Segmentation *iterSegm = dynamic_cast<Segmentation *>(iterAnno);
+                    if (NULL != iterSegm) {
+                        QFileInfo file(_sourceFile);
+                        QDir dir(file.absoluteDir());
+                        QString sDirPath = dir.absolutePath();
+                        sDirPath += QString("/%1").arg(imageInfo()->imageId());
+                        if(!QDir(sDirPath).exists()) {
+                            dir.mkdir(sDirPath);
+                        }
+                        QString sFilePath(sDirPath);
+                        sFilePath += QString("/%2.jpg").arg(iterSegm->annoId());
+
+                        iterSegm->saveSegmentationImage(sFilePath);
+                    }
+                    iterAnno->toXml(writer);
                 }
             }
             writer.writeEndElement();

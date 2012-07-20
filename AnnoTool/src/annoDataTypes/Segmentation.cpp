@@ -3,7 +3,7 @@
 #include <QXmlStreamWriter>
 #include <QTextStream>
 #include "importGlobals.h"
-
+#include "AnnoBoundingBox.h"
 
 //namespace AnnoTool
 namespace anno {
@@ -367,26 +367,39 @@ namespace anno {
 //			writer.writeEndElement();
 //		}
 //
-//		void Annotation::toXml(QXmlStreamWriter& writer) const throw(XmlException*)
-//		{
-//			writer.writeStartElement("annotation");
-//			writer.writeAttribute("uuid", annoIdAsString());
-//			if (!_comment.isEmpty())
-//				writer.writeTextElement("comment", _comment);
-//			if(hasAnnoParent() || hasAnnoChildren())
-//				annoHierarchyToXml(writer);
-//			if (!_annoClasses.isEmpty())
-//				annoClassesToXml(writer);
-//			if (!_annoAttributes.isEmpty() || hasScore())
-//				annoAttributesToXml(writer);
-//			if (_shape != NULL)
-//			{
-//				writer.writeStartElement("shape");
-//				_shape->toXml(writer);
-//				writer.writeEndElement();
-//			}
-//			writer.writeEndElement();
-//		}
+        void Segmentation::saveSegmentationImage(QString sPath) {
+            if (_shape != NULL) {
+                AnnoBoundingBox *segm = dynamic_cast<AnnoBoundingBox *>(_shape);
+                if (NULL != segm) {
+                    segm->setImagePath(sPath);
+                    QImage *img = segm->getImage();
+                    img->save(sPath);
+                }
+            }
+        }
+
+        void Segmentation::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {
+            writer.writeStartElement("segmentation");
+            writer.writeAttribute("uuid", annoIdAsString());
+            if (!_comment.isEmpty()) {
+                writer.writeTextElement("comment", _comment);
+            }
+            if(hasAnnoParent() || hasAnnoChildren()) {
+                annoHierarchyToXml(writer);
+            }
+            if (!_annoClasses.isEmpty()) {
+                annoClassesToXml(writer);
+            }
+            if (!_annoAttributes.isEmpty() || hasScore()) {
+                annoAttributesToXml(writer);
+            }
+            if (_shape != NULL) {
+                writer.writeStartElement("shape");
+                _shape->toXml(writer);
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        }
 //
 //		void Annotation::loadAnnoHierarchyFromXml(QXmlStreamReader& reader) throw(XmlException*)
 //		{
@@ -488,55 +501,47 @@ namespace anno {
 //			}
 //		}
 //
-//		void Annotation::loadFromXml(QXmlStreamReader& reader) throw(XmlException*)
-//		{
-//			QString tagAnno("annotation");
-//
-//			if (!reader.isStartElement() || reader.name() != tagAnno)
-//			{
-//				throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, tagAnno, reader.name().toString());
-//			}
-//			_annoId = QUuid(reader.attributes().value("uuid").toString());
-//
-//			XmlHelper::skipToNextStartElement(true, reader);
-//			if (reader.isStartElement() && reader.name() == "hierarchy")
-//			{
-//				loadAnnoHierarchyFromXml(reader);
-//				XmlHelper::skipToNextStartElement(false, reader);
-//			}
-//
-//			if (reader.isStartElement() && reader.name() == "comment")
-//			{
-//				_comment = reader.readElementText();
-//				XmlHelper::skipToNextStartElement(true, reader);
-//			}
-//			if (reader.isStartElement() && reader.name() == "annoClass")
-//			{
-//				loadAnnoClassesFromXml(reader);
-//				XmlHelper::skipToNextStartElement(false, reader);
-//			}
-//			if (reader.isStartElement() && reader.name() == "attributeValues")
-//			{
-//				loadAnnoAttributesFromXml(reader);
-//				XmlHelper::skipToNextStartElement(false, reader);
-//			}
-//
-//			if (!reader.isStartElement() || reader.name() != "shape")
-//			{
-//				throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "shape", reader.name().toString());
-//			}
-//			_shape = AnnoShape::fromXml(reader);
-//
-//			XmlHelper::skipToEndElement(tagAnno, reader);
-//			reader.readNext();
-//		}
-//
-//		Annotation* Annotation::fromXml(QXmlStreamReader& reader) throw(XmlException*)
-//		{
-//			Annotation* data = new Annotation();
-//			data->loadFromXml(reader);
-//			return data;
-//		}
+        void Segmentation::loadFromXml(QXmlStreamReader &reader) throw(XmlException *) {
+            QString tagAnno("segmentation");
+
+            if (!reader.isStartElement() || reader.name() != tagAnno) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, tagAnno, reader.name().toString());
+            }
+            _annoId = QUuid(reader.attributes().value("uuid").toString());
+
+            XmlHelper::skipToNextStartElement(true, reader);
+            if (reader.isStartElement() && reader.name() == "hierarchy") {
+                loadAnnoHierarchyFromXml(reader);
+                XmlHelper::skipToNextStartElement(false, reader);
+            }
+
+            if (reader.isStartElement() && reader.name() == "comment") {
+                _comment = reader.readElementText();
+                XmlHelper::skipToNextStartElement(true, reader);
+            }
+            if (reader.isStartElement() && reader.name() == "annoClass") {
+                loadAnnoClassesFromXml(reader);
+                XmlHelper::skipToNextStartElement(false, reader);
+            }
+            if (reader.isStartElement() && reader.name() == "attributeValues") {
+                loadAnnoAttributesFromXml(reader);
+                XmlHelper::skipToNextStartElement(false, reader);
+            }
+
+            if (!reader.isStartElement() || reader.name() != "shape") {
+                throw XmlHelper::genExpFormatExpected(__FILE__, __LINE__, "shape", reader.name().toString());
+            }
+            _shape = AnnoShape::fromXml(reader);
+
+            XmlHelper::skipToEndElement(tagAnno, reader);
+            reader.readNext();
+        }
+
+        Annotation *Segmentation::fromXml(QXmlStreamReader &reader) throw(XmlException *) {
+            Segmentation *data = new Segmentation();
+            data->loadFromXml(reader);
+            return data;
+        }
 //
 //          /* MA: */
 //          bool Annotation::setClassAttributeValue(QString qsClass, QString qsAttribute, QString qsValue)

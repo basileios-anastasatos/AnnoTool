@@ -283,14 +283,31 @@ namespace anno {
         _lastAnnoAdded = QUuid();
     }
 
+    void extractImage(const cv::Mat &src, cv::Rect &rect, cv::Mat &res) {
+        double dYStart, dYFinish;
+        double dXStart, dXFinish;
+        dYStart = (rect.y >= 0) ? rect.y : 0;
+        dYFinish = (rect.y + rect.height) <= src.size().height ? (rect.y + rect.height) : src.size().height;
+        dXStart = (rect.x >= 0) ? rect.x : 0;
+        dXFinish = (rect.x + rect.width) <= src.size().width ? (rect.x + rect.width) : src.size().width;
+
+        rect.x = dXStart;
+        rect.y = dYStart;
+        rect.width = dXFinish - dXStart;
+        rect.height = dYFinish - dYStart;
+
+        cv::Mat tmp = src.rowRange(dYStart, dYFinish);
+        res = tmp.colRange(dXStart, dXFinish);
+    }
+
     void GlobalToolManager::runGrabCut() {
         /*
-		 * anna: Here we should process the current annotation (segmentation).
-		 * We should extract the bounding box rectangle, the FG/BG mask and give this data to grabCut algorithm.
-		 * The resulting segmentation should be saved to binary image.
-		 * The resulting picture should be shown.
-		 * The xml data should contain the path to binary image.
+		 * anna: Here we should process the current annotation (segmentation)
+		 * We should give the bounding box rectangle and/or the FG/BG mask to grabCut algorithm
+		 * The resulting picture should be shown
+		 * The resulting segmentation should be saved to binary image
 		 * The class should be specified by user (f.e.: left hand)
+		 * The xml data should contain the bounding box, class and the path to binary image
 		*/
         GlobalProjectManager *pm = GlobalProjectManager::instance();
         anno::dt::Annotation *anno = pm->selectedAnno();
@@ -304,42 +321,52 @@ namespace anno {
 
                 anno::dt::AnnoShapeType eAnnoShapeType = annoShape->shapeType();
                 if(anno::dt::ASTypeBoundingBox == eAnnoShapeType) {
+//					QRectF rect = annoShape->boundingRect();
+//
+//					QPixmap qPm = _curScene->annoPixmap()->pixmap();
+//					QImage qImg = qPm.toImage();
+//					cv::Mat input_image = qimage2mat(qImg);
+//
+//					cv::Rect rcRect(rect.x(), rect.y(), rect.width(), rect.height());
+//
+//					//_grabCut.reset(new InteractiveGrabcut(input_image, rcRect));
+//					InteractiveGrabcut grabCut(input_image, rcRect);
+//					cv::Rect rcRealRect;
+//					cv::Mat resultImg = grabCut.execute(rcRealRect);
+//					QImage* qImgRes = Mat2QImage(resultImg);
+//
+//					((anno::dt::AnnoBoundingBox*)(segm->shape()))->setImage(qImgRes);
+//					_curScene->selectShape(segm->annoId());	// refresh
+
                     QRectF rect = annoShape->boundingRect();
-                    //				anno::dt::AnnoFileData* curFile = GlobalProjectManager::instance()->selectedFile();
-                    //				if (!curFile) return;
-                    //				QFileInfo fileName = curFile->imageInfo()->imagePath();
-                    //				if (fileName.isRelative()) fileName = GlobalProjectManager::instance()->relToAbs(fileName);
-                    //				const std::string input_filename(fileName.filePath().toUtf8().constData());
-                    //				cv::Mat input_image = cv::imread(input_filename);
 
                     QPixmap qPm = _curScene->annoPixmap()->pixmap();
                     QImage qImg = qPm.toImage();
                     cv::Mat input_image = qimage2mat(qImg);
 
-                    cv::Rect rcRect(rect.x(), rect.y(), rect.width(), rect.height());
+                    double dXInflate = 2 * rect.width(), dYInflate = 2 * rect.height();
+                    cv::Rect rcRectInflated( rect.x() - dXInflate, rect.y() - dYInflate, rect.width() + 2 * dXInflate, rect.height() + 2 * dYInflate);
+                    cv::Mat inputExtracted;
+                    extractImage(input_image, rcRectInflated, inputExtracted);
+                    // rcRectExtracted could be changed in extractImage method, now it contains the actual extracted rectangle
 
-                    //_grabCut.reset(new InteractiveGrabcut(input_image, rcRect));
-                    InteractiveGrabcut grabCut(input_image, rcRect);
-                    cv::Mat resultImg = grabCut.execute();
-                    QImage *qImgRes = Mat2QImage(resultImg);
+                    cv::Rect rcRect(rect.x() - rcRectInflated.x, rect.y() - rcRectInflated.y, rect.width(), rect.height());//rect with Bound box
+                    cv::Rect rcRealRect;
+
+                    InteractiveGrabcut grabCut(inputExtracted, rcRect);
+                    cv::Mat resultImg = grabCut.execute(rcRealRect);
+                    // rcRealRect is the real min-max bounding rect of the segmentation
+                    //convert it to global coordinates
+                    QRect realRect(rect.x() - dXInflate + rcRealRect.x, rect.y() - dYInflate + rcRealRect.y, rcRealRect.width, rcRealRect.height);
+
+                    cv::Mat resultExtracted;
+                    extractImage(resultImg, rcRect, resultExtracted);
+
+                    QImage *qImgRes = Mat2QImage(resultExtracted);
 
                     ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setImage(qImgRes);
-
-                    // save result to Segmentation object
-                    //		anno::dt::AnnoSegmenation* annoSegm = new anno::dt::AnnoSegmenation();
-                    //		annoSegm->setImage(qImgRes);
-//					segm->setSegmentation(annoSegm);
-
-                    //		segm->setShape(annoSegm);
-                    //		anno::graphics::AnnoGraphicsShape* segmShape = anno::graphics::AnnoGraphicsShapeCreator::toGraphicsShape(segm);
-
-//					if (segmShape != NULL)
-//					{
-//						_curScene->addAnnoShape(segmShape);
-//						_curScene->setFocusItem(segmShape->graphicsItem());
-//						_curScene->selectShape(segm->annoId());
-//					}
-                    _curScene->selectShape(segm->annoId());
+                    ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setRealBoundRect(realRect);
+                    _curScene->selectShape(segm->annoId());	// refresh
                 }
             }
         }

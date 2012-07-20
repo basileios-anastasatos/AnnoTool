@@ -181,10 +181,12 @@ namespace anno {
                                             const QStyleOptionGraphicsItem *option, QWidget *widget) {
             dt::AnnoBoundingBox *bBox = annoBoundingBox();
             QImage *qImg = bBox->getImage();
-            //QRectF imgRect = bBox->boundingRect();
+            QRectF imgRect = bBox->boundingRect();
+//			imgRect.setX(imgRect.x() - 1.0);
+//			imgRect.setY(imgRect.y() - 2.0);
             //QGraphicsView::mapToScene() mapFromScene() ?
             if (NULL != qImg && _bShowMask) {
-                painter->drawImage(QPoint(0, 0)/*imgRect*/, *qImg);
+                painter->drawImage(/*QPoint(0, 0)*/imgRect, *qImg);
             }
 
             _shapeConfig.applyShapeConfig(painter, isSelected());
