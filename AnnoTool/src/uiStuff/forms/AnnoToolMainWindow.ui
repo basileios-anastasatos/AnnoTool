@@ -474,6 +474,9 @@
    <property name="statusTip">
     <string>Run the GrabCut segmentation</string>
    </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
   </action>
   <action name="actionFileNew">
    <property name="icon">
