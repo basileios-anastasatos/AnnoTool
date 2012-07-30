@@ -444,6 +444,9 @@
    <property name="statusTip">
     <string>Select the bounding box tool</string>
    </property>
+   <property name="shortcut">
+    <string>6</string>
+   </property>
   </action>
   <action name="actionToolBrush">
    <property name="checkable">
@@ -459,10 +462,13 @@
    <property name="statusTip">
     <string>Select the brush tool</string>
    </property>
+   <property name="shortcut">
+    <string>7</string>
+   </property>
   </action>
   <action name="actionGrabCut">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">

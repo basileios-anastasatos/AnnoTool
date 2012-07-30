@@ -4,10 +4,11 @@
 #include "GraphicsTool.h"
 #include "RecentAttrValues.h"
 #include <QUuid>
+#include <QPainterPath>
 
 #include <cv.h>
 #include <cxcore.h>
-#include <highgui.h>
+//#include <highgui.h>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -41,59 +42,48 @@ namespace anno {
             InteractiveGrabcut()
                 : src(), mask(), fgd(), bgd(),
                   ldrag(false), rdrag(false),
-                  fg_color(0, 0, 255), bg_color(255, 0, 0) {
+                  fg_color(0, 255, 0), bg_color(255, 0, 0) {
             };
 
             InteractiveGrabcut(const cv::Mat &src_, const cv::Rect &rcBoundRect)
                 : src(src_), mask(), fgd(), bgd(),
-                  ldrag(false), rdrag(false), fg_color(0, 0, 255), bg_color(255, 0, 0), m_rcBoundRect(rcBoundRect) {
+                  ldrag(false), rdrag(false), fg_color(0, 255, 0), bg_color(255, 0, 0), m_rcBoundRect(rcBoundRect) {
                 mask = cv::Mat::ones(src_.size(), CV_8U) * cv::GC_PR_BGD;
             };
 
-//	    static void events( int e, int x, int y, int flags, void* s )
-//	    {
-//	        InteractiveGrabcut* self = (InteractiveGrabcut*)s;
-//	        cv::Point pt(x, y);
-//	        switch(e)
-//	        {
-//	        case CV_EVENT_LBUTTONDOWN:
-//	            self->ldrag = true;
-//	            self->lstart = pt;
-//	            break;
-//	        case CV_EVENT_LBUTTONUP:
-//	            self->ldrag = false;
-//	            self->show();
-//	            break;
-//	        case CV_EVENT_RBUTTONDOWN:
-//	            self->rdrag = true;
-//	            self->rstart = pt;
-//	            break;
-//	        case CV_EVENT_RBUTTONUP:
-//	            self->rdrag = false;
-//	            self->show();
-//	            break;
-//	        case CV_EVENT_MOUSEMOVE:
-//	            if(self->ldrag)
-//	            {
-//	                cv::line(self->mask, self->lstart, pt, cv::Scalar(cv::GC_FGD), 1);
-//	                self->lstart = pt;
-//	                //self->show();
-//	            }
-//	            else if(self->rdrag)
-//	            {
-//	                cv::line(self->mask, self->rstart, pt, cv::Scalar(cv::GC_BGD), 1);
-//	                self->rstart = pt;
-//	                //self->show();
-//	            }
-//	            break;
-//	        default:
-//	            break;
-//	        };
-//	    };
+            /*	    void setMask(bool bReuseMask, const cv::Mat& prevMask, int xOffset, int yOffset)
+		    {
+			for(int y = 0; y < mask.rows; y++)
+				{
+					for(int x = 0; x < mask.cols; x++)
+					{
+						if (y >= m_rcBoundRect.y && y < (m_rcBoundRect.y + m_rcBoundRect.height) && x >= m_rcBoundRect.x && x < (m_rcBoundRect.x + m_rcBoundRect.width) && bReuseMask)
+							mask.at<uchar>(y, x) = prevMask.at<uchar>(y + yOffset, x + xOffset);
+						else
+							mask.at<uchar>(y, x) = cv::GC_BGD;
+					}
+				}
+		    }*/
 
-            cv::Mat getFGImage(cv::Rect &rcRealBoundRect) {
+            void updateMask(const QPainterPath &fgPath, const QPainterPath &bgPath, int xOffset, int yOffset) {
+                for(int y = 0; y < mask.rows; y++) {
+                    for(int x = 0; x < mask.cols; x++) {
+                        cv::Point pt(x + xOffset, y + yOffset);
+                        if(fgPath.contains(QPointF(x + xOffset, y + yOffset))) {
+                            mask.at<uchar>(y, x) = cv::GC_FGD;
+                        }
+                        if(bgPath.contains(QPointF(x + xOffset, y + yOffset))) {
+                            mask.at<uchar>(y, x) = cv::GC_BGD;
+                        }
+                    }
+                }
+            };
+
+            cv::Mat getFGImage(cv::Rect &rcRealBoundRect, cv::Mat &binMaskRes) {
                 cv::Mat scribbled_src = src.clone();
-                const float alpha = 0.7f;
+                binMaskRes = src.clone();
+                const float alphaFG = 0.5f;
+                const float alphaPFG = 0.8f;
                 int minX = mask.cols + 1, maxX = -1, minY = mask.rows + 1, maxY = -1;
                 for(int y = 0; y < mask.rows; y++) {
                     for(int x = 0; x < mask.cols; x++) {
@@ -110,14 +100,26 @@ namespace anno {
                             if (maxY < y) {
                                 maxY = y;
                             }
-                            cv::circle(scribbled_src, cv::Point(x, y), 2, fg_color, -1);
+
+                            cv::Vec3b &pix = scribbled_src.at<cv::Vec3b>(y, x);
+                            pix[0] = (uchar)(pix[0] * alphaFG + fg_color[0] * (1 - alphaFG));
+                            pix[1] = (uchar)(pix[1] * alphaFG + fg_color[1] * (1 - alphaFG));
+                            pix[2] = (uchar)(pix[2] * alphaFG + fg_color[2] * (1 - alphaFG));
+
+                            cv::Vec3b &pix1 = binMaskRes.at<cv::Vec3b>(y, x);
+                            pix1[0] = 0;
+                            pix1[1] = 0;
+                            pix1[2] = 255;
                         } else if(mask.at<uchar>(y, x) == cv::GC_BGD) {
-                            //cv::circle(scribbled_src, cv::Point(x, y), 2, bg_color, -1);
+                            cv::Vec3b &pix = binMaskRes.at<cv::Vec3b>(y, x);
+                            pix[0] = 255;
+                            pix[1] = 0;
+                            pix[2] = 0;
                         } else if(mask.at<uchar>(y, x) == cv::GC_PR_BGD) {
-                            //cv::Vec3b& pix = scribbled_src.at<cv::Vec3b>(y, x);
-                            //pix[0] = (uchar)(pix[0] * alpha + bg_color[0] * (1-alpha));
-                            //pix[1] = (uchar)(pix[1] * alpha + bg_color[1] * (1-alpha));
-                            //pix[2] = (uchar)(pix[2] * alpha + bg_color[2] * (1-alpha));
+                            cv::Vec3b &pix = binMaskRes.at<cv::Vec3b>(y, x);
+                            pix[0] = 127;
+                            pix[1] = 0;
+                            pix[2] = 0;
                         } else if(mask.at<uchar>(y, x) == cv::GC_PR_FGD) {
                             if (minX > x) {
                                 minX = x;
@@ -131,10 +133,16 @@ namespace anno {
                             if (maxY < y) {
                                 maxY = y;
                             }
+
                             cv::Vec3b &pix = scribbled_src.at<cv::Vec3b>(y, x);
-                            pix[0] = (uchar)(pix[0] * alpha + fg_color[0] * (1 - alpha));
-                            pix[1] = (uchar)(pix[1] * alpha + fg_color[1] * (1 - alpha));
-                            pix[2] = (uchar)(pix[2] * alpha + fg_color[2] * (1 - alpha));
+                            pix[0] = (uchar)(pix[0] * alphaPFG + fg_color[0] * (1 - alphaPFG));
+                            pix[1] = (uchar)(pix[1] * alphaPFG + fg_color[1] * (1 - alphaPFG));
+                            pix[2] = (uchar)(pix[2] * alphaPFG + fg_color[2] * (1 - alphaPFG));
+
+                            cv::Vec3b &pix1 = binMaskRes.at<cv::Vec3b>(y, x);
+                            pix1[0] = 0;
+                            pix1[1] = 0;
+                            pix1[2] = 127;
                         }
                     }
                 }
@@ -145,26 +153,32 @@ namespace anno {
                 return scribbled_src;
             }
 
-            cv::Mat execute(cv::Rect &rcRealBoundRect) {
+            cv::Mat execute(cv::Rect &rcRealBoundRect, /*cv::Mat& maskRes,*/ cv::Mat &binMaskRes, bool bUseMask) {
                 std::cout << "computing..." << std::endl;
-//	        cv::Mat tmp(src.size(),CV_8UC3, cv::Scalar(0,0,0));
-                cv::grabCut(src, /*tmp*/mask, m_rcBoundRect, bgd, fgd, 1, cv::GC_INIT_WITH_RECT);
-//	        mask &= tmp;
-//	        for(int y = 0; y < mask.rows; y++)
-//	         {
-//	        	for(int x = 0; x < mask.cols; x++)
-//	        	{
-//	        		if (y >= nY && y <= (nY + nHeight) && x >= nX && x <= (nX + nWidth))
-//	            		continue;
-//
-//	        		mask.at<uchar>(y, x) = cv::GC_BGD;
-//	        	}
-//	         }
-//	        cv::grabCut(src, mask, cv::Rect(), bgd, fgd, 1, cv::GC_INIT_WITH_MASK);
+
+                if(!bUseMask) {
+                    cv::grabCut(src, mask, m_rcBoundRect, bgd, fgd, 1, cv::GC_INIT_WITH_RECT);
+                } else {
+//	        	cv::Mat tmp(src.size(),CV_8UC3, cv::Scalar(0,0,0));
+//	        	cv::grabCut(src, tmp, m_rcBoundRect, bgd, fgd, 1, cv::GC_INIT_WITH_RECT);
+//	        	mask &= tmp;
+                    for(int y = 0; y < mask.rows; y++) {
+                        for(int x = 0; x < mask.cols; x++) {
+                            if (y >= m_rcBoundRect.y && y < (m_rcBoundRect.y + m_rcBoundRect.height) && x >= m_rcBoundRect.x && x < (m_rcBoundRect.x + m_rcBoundRect.width)) {
+                                continue;
+                            } else {
+                                mask.at<uchar>(y, x) = cv::GC_BGD;
+                            }
+                        }
+                    }
+                    cv::grabCut(src, mask, cv::Rect(), bgd, fgd, 1, cv::GC_INIT_WITH_MASK);
+                }
 
                 std::cout << "end." << std::endl;
 
-                return getFGImage(rcRealBoundRect);
+                //maskRes = mask.clone();
+
+                return getFGImage(rcRealBoundRect, binMaskRes);
             };
 
 //	    cv::Mat getBinMask()
@@ -210,9 +224,6 @@ namespace anno {
             SelGraphicsTool _curToolId;
             QUuid _lastAnnoAdded;
             QUuid _lockedParentAnno;
-            auto_ptr<anno::InteractiveGrabcut> _grabCut;
-            cv::Mat _resultImg;
-            QImage *_qImgRes;
 
             // private singleton stuff
         private:

@@ -24,6 +24,7 @@ namespace anno {
             setupAppearance();
             setRect(*annoBoundingBox());
             initControlPoints();
+            _bShowMask = false;
         }
 
         AnnoGraphicsBoundingBox::~AnnoGraphicsBoundingBox() {
@@ -62,6 +63,8 @@ namespace anno {
         }
 
         void AnnoGraphicsBoundingBox::shapeMoveBy(qreal deltaX, qreal deltaY) {
+            dt::AnnoBoundingBox *bBox = annoBoundingBox();
+            bBox->resetImage();
             QPointF delta(deltaX, deltaY);
             QRectF tmpRect = mapRectToParent(*annoBoundingBox());
             QRectF parRect = parentItem()->boundingRect();
@@ -182,9 +185,6 @@ namespace anno {
             dt::AnnoBoundingBox *bBox = annoBoundingBox();
             QImage *qImg = bBox->getImage();
             QRectF imgRect = bBox->boundingRect();
-//			imgRect.setX(imgRect.x() - 1.0);
-//			imgRect.setY(imgRect.y() - 2.0);
-            //QGraphicsView::mapToScene() mapFromScene() ?
             if (NULL != qImg && _bShowMask) {
                 painter->drawImage(/*QPoint(0, 0)*/imgRect, *qImg);
             }
@@ -228,6 +228,7 @@ namespace anno {
             setAcceptsHoverEvents(true);
             setVisible(true);
             setToolTip(_anno->annoInfo());
+            _bShowMask = false;
         }
 
         dt::AnnoBoundingBox *AnnoGraphicsBoundingBox::annoBoundingBox() {
@@ -246,6 +247,8 @@ namespace anno {
 
         void AnnoGraphicsBoundingBox::cpMousePressEvent(int index, QGraphicsSceneMouseEvent *event) {
             GlobalLogger::instance()->logDebug(QString("AG_BOUNDING_BOX: cpMousePressEvent on CP %1").arg(index));
+            dt::AnnoBoundingBox *bBox = annoBoundingBox();
+            bBox->resetImage();
         }
 
         void AnnoGraphicsBoundingBox::cpMouseReleaseEvent(int index, QGraphicsSceneMouseEvent *event) {

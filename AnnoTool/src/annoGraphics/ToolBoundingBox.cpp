@@ -5,7 +5,6 @@
 #include "AnnoFileData.h"
 #include "Segmentation.h"
 #include "AnnoBoundingBox.h"
-#include "AnnoGraphicsShape.h"
 #include "AnnoGraphicsBoundingBox.h"
 #include "AnnoGraphicsShapeCreator.h"
 #include "importGlobals.h"

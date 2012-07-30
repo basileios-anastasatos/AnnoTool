@@ -31,13 +31,22 @@ namespace anno {
 
             public:
                 void setImage(const QImage *segmImg);
-                void setImagePath(const QString &sPath);
+                void resetImage();
+                void buildImageByMask(const QString &sPath);
+
+                void setMask(const QImage *segmMask);
+                void setMaskPath(const QString &sPath);
+
                 void setRealBoundRect(QRect &rect);
+
                 QImage *getImage();
+                QImage *getMask();
+
 
             private:
                 QImage *_segmImage;
-                QString _segmImagePath;
+                QImage *_segmMask;
+                QString _segmMaskPath;
                 QRect   _segmRealBoundRect;
         };
 

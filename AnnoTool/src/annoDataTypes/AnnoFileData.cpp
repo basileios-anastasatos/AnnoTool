@@ -5,7 +5,6 @@
 #include <QDir>
 
 #include "importGlobals.h"
-#include "Segmentation.h"
 
 //namespace AnnoTool
 namespace anno {
@@ -283,7 +282,15 @@ namespace anno {
                 if (reader.isStartElement() && reader.name() == tagAnno) {
                     addAnnotation(Annotation::fromXml(reader));
                 } else if (reader.isStartElement() && reader.name() == tagSegment) {
-                    addAnnotation(Segmentation::fromXml(reader));
+                    Annotation *anno = Segmentation::fromXml(reader);
+                    addAnnotation(anno);
+                    Segmentation *segm = dynamic_cast<Segmentation *>(anno);
+                    //build real images
+                    QFileInfo fileName = imageInfo()->imagePath();
+                    if (fileName.isRelative()) {
+                        fileName = GlobalProjectManager::instance()->relToAbs(fileName);
+                    }
+                    segm->buildSegmentationImage(fileName.filePath());
                 } else if (reader.isEndElement() && reader.name() == tagAnnoLst) {
                     reader.readNext();
                     break;
@@ -334,7 +341,7 @@ namespace anno {
                             dir.mkdir(sDirPath);
                         }
                         QString sFilePath(sDirPath);
-                        sFilePath += QString("/%2.jpg").arg(iterSegm->annoId());
+                        sFilePath += QString("/%2.png").arg(iterSegm->annoId());
 
                         iterSegm->saveSegmentationImage(sFilePath);
                     }

@@ -97,6 +97,7 @@ namespace anno {
 //		}
 
         Segmentation::Segmentation(QObject *parent) { //: Annotation(parent)
+            _grabCutContext = NULL;
 //			_modified = false;
 //			_score = NAN;
 //			_shape = NULL;
@@ -104,6 +105,7 @@ namespace anno {
         }
 
         Segmentation::Segmentation(const Segmentation *anno, QObject *parent) { //: Annotation(parent)
+            _grabCutContext = NULL;
 //			_modified = anno->_modified;
 //			_notify = anno->_notify;
 //			_notifyOnChange = anno->_notifyOnChange;
@@ -123,6 +125,10 @@ namespace anno {
         Segmentation::~Segmentation() {
 //			if (_shape != NULL)
 //			delete _shape;
+            if (NULL != _grabCutContext) {
+                delete _grabCutContext;
+            }
+            _grabCutContext = NULL;
         }
 
 //		void Annotation::setModified(bool mod)
@@ -312,7 +318,37 @@ namespace anno {
 //				setModified(true);
 //			}
 //		}
-//
+
+        void Segmentation::appendFGPath(const QPainterPath &fgPath) {
+            _painterFGPath.addPath(fgPath);
+        }
+
+        void Segmentation::appendBGPath(const QPainterPath &bgPath) {
+            _painterBGPath.addPath(bgPath);
+        }
+
+        const QPainterPath &Segmentation::getFGPath() {
+            return _painterFGPath;
+        }
+
+        const QPainterPath &Segmentation::getBGPath() {
+            return _painterBGPath;
+        }
+
+        anno::InteractiveGrabcut *Segmentation::provideGrabCutContext() {
+            if (NULL == _grabCutContext) {
+                _grabCutContext = new anno::InteractiveGrabcut();
+            }
+            return _grabCutContext;
+        }
+
+        anno::InteractiveGrabcut *Segmentation::provideGrabCutContext(const cv::Mat &src_, const cv::Rect &rcBoundRect) {
+            if (NULL == _grabCutContext) {
+                _grabCutContext = new anno::InteractiveGrabcut(src_, rcBoundRect);
+            }
+            return _grabCutContext;
+        }
+
 //		void Annotation::annoHierarchyToXml(QXmlStreamWriter& writer) const throw(XmlException*)
 //		{
 //			writer.writeStartElement("hierarchy");
@@ -367,13 +403,24 @@ namespace anno {
 //			writer.writeEndElement();
 //		}
 //
-        void Segmentation::saveSegmentationImage(QString sPath) {
+        void Segmentation::saveSegmentationImage(const QString &sPath) {
             if (_shape != NULL) {
                 AnnoBoundingBox *segm = dynamic_cast<AnnoBoundingBox *>(_shape);
                 if (NULL != segm) {
-                    segm->setImagePath(sPath);
-                    QImage *img = segm->getImage();
-                    img->save(sPath);
+                    segm->setMaskPath(sPath);
+                    QImage *imgMask = segm->getMask();
+                    if(NULL != imgMask) {
+                        imgMask->save(sPath);
+                    }
+                }
+            }
+        }
+
+        void Segmentation::buildSegmentationImage(const QString &sPath) {
+            if (_shape != NULL) {
+                AnnoBoundingBox *segm = dynamic_cast<AnnoBoundingBox *>(_shape);
+                if (NULL != segm) {
+                    segm->buildImageByMask(sPath);
                 }
             }
         }

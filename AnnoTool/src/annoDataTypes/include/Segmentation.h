@@ -1,13 +1,17 @@
 #pragma once
 
 #include "Annotation.h"
-#include "AnnoSegmentation.h"
 #include <QImage>
+#include <QPainterPath>
 #include "AnnoBoundingBox.h"
 
+#include <cv.h>
+#include <cxcore.h>
 
 //namespace AnnoTool
 namespace anno {
+    class InteractiveGrabcut;
+
     //namespace DataTypes
     namespace dt {
         using namespace ::anno::exc;
@@ -91,7 +95,11 @@ namespace anno {
 //				QList<QString> _annoClasses;
 //				QList<AnnoAttribute> _annoAttributes;
 //				AnnoShape* _shape;
-//				AnnoSegmenation* _annoSegm;
+                //AnnoSegmenation* _annoSegm;
+                QPainterPath _painterFGPath;
+                QPainterPath _painterBGPath;
+                anno::InteractiveGrabcut *_grabCutContext;
+
 
                 // internal XML stuff
             private:
@@ -168,6 +176,12 @@ namespace anno {
 //				void removeClassAll();
 //				void removeAttribute(int index);
 //				void removeAttributeAll();
+                void appendFGPath(const QPainterPath &fgPath);
+                void appendBGPath(const QPainterPath &bgPath);
+                const QPainterPath &getFGPath();
+                const QPainterPath &getBGPath();
+                anno::InteractiveGrabcut *provideGrabCutContext();
+                anno::InteractiveGrabcut *provideGrabCutContext(const cv::Mat &src_, const cv::Rect &rcBoundRect);
 //
 //				/** MA: helpers */
 //				bool setClassAttributeValue(QString qsClass, QString qsAttribute, QString qsValue);
@@ -177,7 +191,8 @@ namespace anno {
             public:
 //				void print() const;
 //				QString annoInfo() const;
-                void saveSegmentationImage(QString sPath);
+                void saveSegmentationImage(const QString &sPath);
+                void buildSegmentationImage(const QString &sPath);
 
                 // public XML interface
             public:
