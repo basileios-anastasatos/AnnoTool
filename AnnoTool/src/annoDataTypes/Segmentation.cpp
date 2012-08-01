@@ -335,16 +335,17 @@ namespace anno {
             return _painterBGPath;
         }
 
-        anno::InteractiveGrabcut *Segmentation::provideGrabCutContext() {
+        util::InteractiveGrabcut *Segmentation::provideGrabCutContext() {
             if (NULL == _grabCutContext) {
-                _grabCutContext = new anno::InteractiveGrabcut();
+                _grabCutContext = new util::InteractiveGrabcut();
             }
             return _grabCutContext;
         }
 
-        anno::InteractiveGrabcut *Segmentation::provideGrabCutContext(const cv::Mat &src_, const cv::Rect &rcBoundRect) {
+        util::InteractiveGrabcut *Segmentation::provideGrabCutContext(const QString &sPath, const QRectF &boundBoxRect, const QImage *qSegmMask /*= NULL*/) {
             if (NULL == _grabCutContext) {
-                _grabCutContext = new anno::InteractiveGrabcut(src_, rcBoundRect);
+                _grabCutContext = new util::InteractiveGrabcut();
+                _grabCutContext->buildGrabCut(sPath, boundBoxRect, qSegmMask);
             }
             return _grabCutContext;
         }
@@ -420,9 +421,15 @@ namespace anno {
             if (_shape != NULL) {
                 AnnoBoundingBox *segm = dynamic_cast<AnnoBoundingBox *>(_shape);
                 if (NULL != segm) {
-                    segm->buildImageByMask(sPath);
+                    _grabCutContext = provideGrabCutContext();
+                    _grabCutContext->buildGrabCut(sPath, segm->boundingRect(), segm->getMask());
+                    segm->setImage(const_cast<const QImage *>(_grabCutContext->getImageWithMask()));
                 }
             }
+        }
+
+        void Segmentation::recalculateSegmentation(QRectF &newRect) {
+            GlobalToolManager::instance()->recalculateSegmentation(this, newRect);
         }
 
         void Segmentation::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {

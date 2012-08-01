@@ -123,6 +123,7 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoGraphics/include/MapperHelper.h \
     ./src/utils/include/PriorityList.h \
     ./src/utils/include/SortedList.h \
+    ./src/utils/include/GrabCut.h \
     ./src/general/include/importGlobals.h \
     ./src/general/include/GlobalToolManager.h \
     ./src/general/include/GlobalConfig.h \
@@ -245,6 +246,7 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoGraphics/MapperHelper.cpp \
     ./src/utils/PriorityList.cpp \
     ./src/utils/SortedList.cpp \
+    ./src/utils/GrabCut.cpp \
     ./src/general/GlobalToolManager.cpp \
     ./src/general/GlobalConfig.cpp \
     ./src/general/GlobalImageLoader.cpp \

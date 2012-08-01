@@ -29,6 +29,8 @@ namespace anno {
                 virtual void keyReleaseEvent(QKeyEvent *event);
                 virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
+                void changeBoundingBox();
+
             public:
                 AnnoGraphicsBoundingBox(dt::Annotation *anno, QGraphicsItem *parent = 0);
                 virtual ~AnnoGraphicsBoundingBox();

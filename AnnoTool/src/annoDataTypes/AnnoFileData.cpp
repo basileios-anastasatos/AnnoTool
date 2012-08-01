@@ -327,21 +327,27 @@ namespace anno {
             _imageInfo.toXml(writer);
             _annoInfo.toXml(writer);
             writer.writeStartElement("imageAnnotations");
+
+            QFileInfo file(_sourceFile);
+            QDir dir(file.absoluteDir());
+            QString sDirPath = dir.absolutePath();
+            sDirPath += QString("/%1").arg(imageInfo()->imageId());
+            QDir dirAnno(sDirPath);
+            if(dirAnno.exists()) {
+                GlobalProjectManager::removeNonEmptyDir(dirAnno);
+            }
+
             if (!_annoList.isEmpty()) {
                 QListIterator<Annotation *> i(_annoList);
                 while (i.hasNext()) {
                     Annotation *iterAnno = i.next();
                     Segmentation *iterSegm = dynamic_cast<Segmentation *>(iterAnno);
                     if (NULL != iterSegm) {
-                        QFileInfo file(_sourceFile);
-                        QDir dir(file.absoluteDir());
-                        QString sDirPath = dir.absolutePath();
-                        sDirPath += QString("/%1").arg(imageInfo()->imageId());
-                        if(!QDir(sDirPath).exists()) {
-                            dir.mkdir(sDirPath);
+                        if(!dirAnno.exists()) {
+                            dirAnno.mkdir(sDirPath);
                         }
                         QString sFilePath(sDirPath);
-                        sFilePath += QString("/%2.png").arg(iterSegm->annoId());
+                        sFilePath += QString("/%1.png").arg(iterSegm->annoId());
 
                         iterSegm->saveSegmentationImage(sFilePath);
                     }

@@ -230,8 +230,8 @@ namespace anno {
             }
 
             QPointF pt = img->mapFromScene(event->scenePos());
-            pt.setX(int(pt.x()));
-            pt.setY(int(pt.y()));
+            pt.setX(qRound(pt.x()));
+            pt.setY(qRound(pt.y()));
 
             dt::AnnoPath *aPath = new dt::AnnoPath();
             aPath->moveTo(pt);
@@ -342,6 +342,8 @@ namespace anno {
                     segm->appendBGPath(_curShape->path());
                 }
 
+                segm->setModified(true);
+
                 _curShape = NULL;
             }
             _curParentAnno = NULL;
@@ -350,8 +352,8 @@ namespace anno {
         void ToolBrush::mouseMoveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneMouseEvent *event) {
             if (_curShape != NULL) {
                 QPointF pt = img->mapFromScene(event->scenePos());
-                pt.setX(int(pt.x()));
-                pt.setY(int(pt.y()));
+                pt.setX(qRound(pt.x()));
+                pt.setY(qRound(pt.y()));
                 _curShape->addPointToPath(pt);
 //				_curShape->cpMouseMoveEvent(2, event);
             }

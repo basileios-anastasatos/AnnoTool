@@ -4,16 +4,6 @@
 #include <QTextStream>
 #include "XmlHelper.h"
 
-#include <cv.h>
-#include <cxcore.h>
-#include <highgui.h>
-#include <string>
-#include <vector>
-#include <iostream>
-#include <memory>
-
-using namespace std;
-
 namespace anno {
     namespace dt {
         using ::anno::helper::XmlHelper;
@@ -42,7 +32,8 @@ namespace anno {
 
         QString AnnoBoundingBox::shapeInfo() const {
             QString res = QString("Type: %1\nx: %2\ny: %3\nwidth: %4\nheight: %5\n").arg("BoundingBox").arg((int)(x())).arg((int)(y())).arg((int)(width())).arg((int)(height()));
-            res += QString("image path:%1\nx: %2\ny: %3\nwidth: %4\nheight: %5").arg(_segmMaskPath).arg(_segmRealBoundRect.x()).arg(_segmRealBoundRect.y()).arg(_segmRealBoundRect.width()).arg(_segmRealBoundRect.height());
+            //res += QString("image path:%1\nx: %2\ny: %3\nwidth: %4\nheight: %5").arg(_segmMaskPath).arg(_segmRealBoundRect.x()).arg(_segmRealBoundRect.y()).arg(_segmRealBoundRect.width()).arg(_segmRealBoundRect.height());
+            res += QString("REAL: x: %1\ny: %2\nwidth: %3\nheight: %4").arg(_segmRealBoundRect.x()).arg(_segmRealBoundRect.y()).arg(_segmRealBoundRect.width()).arg(_segmRealBoundRect.height());
             return res;
         }
 
@@ -123,6 +114,11 @@ namespace anno {
                 delete _segmImage;
             }
             _segmImage = NULL;
+
+            if (NULL != _segmMask) {
+                delete _segmMask;
+            }
+            _segmMask = NULL;
         }
 
         void AnnoBoundingBox::setMask(const QImage *segmMask) {
@@ -151,76 +147,6 @@ namespace anno {
 
         QImage *AnnoBoundingBox::getMask() {
             return _segmMask;
-        }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        cv::Mat qimage2mat(const QImage &qimage) {
-            cv::Mat mat = cv::Mat(qimage.height(), qimage.width(), CV_8UC4, (uchar *)qimage.bits(), qimage.bytesPerLine());
-            cv::Mat mat2 = cv::Mat(mat.rows, mat.cols, CV_8UC3 );
-            int from_to[] = { 0, 0,  1, 1,  2, 2 };
-            cv::mixChannels( &mat, 1, &mat2, 1, from_to, 3 );
-            return mat2;
-        }
-
-        QImage *Mat2QImage(const cv::Mat3b &src) {
-            QImage *dest = new QImage(src.cols, src.rows, QImage::Format_ARGB32);
-            for (int y = 0; y < src.rows; ++y) {
-                const cv::Vec3b *srcrow = src[y];
-                QRgb *destrow = (QRgb *)dest->scanLine(y);
-                for (int x = 0; x < src.cols; ++x) {
-                    destrow[x] = qRgba(srcrow[x][2], srcrow[x][1], srcrow[x][0], 255);
-                }
-            }
-            return dest;
-        }
-
-        void extractImage(const cv::Mat &src, cv::Rect &rect, cv::Mat &res) {
-            double dYStart, dYFinish;
-            double dXStart, dXFinish;
-            dYStart = (rect.y >= 0) ? rect.y : 0;
-            dYFinish = (rect.y + rect.height) <= src.rows ? (rect.y + rect.height) : src.rows;
-            dXStart = (rect.x >= 0) ? rect.x : 0;
-            dXFinish = (rect.x + rect.width) <= src.cols ? (rect.x + rect.width) : src.cols;
-
-            rect.x = dXStart;
-            rect.y = dYStart;
-            rect.width = dXFinish - dXStart;
-            rect.height = dYFinish - dYStart;
-
-            cv::Mat tmp = src.rowRange(dYStart, dYFinish);
-            res = tmp.colRange(dXStart, dXFinish);
-        }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        void AnnoBoundingBox::buildImageByMask(const QString &sPath) {
-            const std::string input_filename(sPath.toUtf8().constData());
-            cv::Mat wholeImage = cv::imread(input_filename);
-
-            cv::Rect rect( (int)(x()), (int)(y()), (int)(width()), (int)(height()) );
-            cv::Mat extractedImg;
-            extractImage(wholeImage, rect, extractedImg);
-
-            cv::Mat mask = qimage2mat(*_segmMask);
-
-            cv::Scalar fg_color(0, 0, 255);
-            const float alpha = 0.7f;
-
-            int nCount = 0;
-            int nTotal = mask.rows * mask.cols;
-
-            for(int y = 0; y < mask.rows; y++) {
-                for(int x = 0; x < mask.cols; x++) {
-                    if(255 == mask.at<cv::Vec3b>(y, x)[2]) {
-                        cv::circle(extractedImg, cv::Point(x, y), 2, fg_color, -1);
-                    } else if(127 == mask.at<cv::Vec3b>(y, x)[2]) {
-                        ++nCount;
-                        cv::Vec3b &pix = extractedImg.at<cv::Vec3b>(y, x);
-                        pix[0] = (uchar)(pix[0] * alpha + fg_color[0] * (1 - alpha));
-                        pix[1] = (uchar)(pix[1] * alpha + fg_color[1] * (1 - alpha));
-                        pix[2] = (uchar)(pix[2] * alpha + fg_color[2] * (1 - alpha));
-                    }
-                }
-            }
-
-            setImage(Mat2QImage(extractedImg));
         }
     }
 }

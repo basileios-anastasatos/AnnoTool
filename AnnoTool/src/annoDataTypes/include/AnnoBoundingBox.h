@@ -32,7 +32,6 @@ namespace anno {
             public:
                 void setImage(const QImage *segmImg);
                 void resetImage();
-                void buildImageByMask(const QString &sPath);
 
                 void setMask(const QImage *segmMask);
                 void setMaskPath(const QString &sPath);

@@ -179,9 +179,9 @@ namespace anno {
             _shapeConfig.applyShapeConfig(painter, isSelected());
 
             if(_bIsForeground) {
-                painter->setPen(QPen(QColor("green"), 1.0));
+                painter->setPen(QPen(QColor("green"), 3.0));
             } else {
-                painter->setPen(QPen(QColor("blue"), 1.0));
+                painter->setPen(QPen(QColor("blue"), 3.0));
             }
 
             painter->drawPath(_painterPath);

@@ -4,9 +4,12 @@
 #include <QImage>
 #include <QPainterPath>
 #include "AnnoBoundingBox.h"
+#include "GrabCut.h"
 
 #include <cv.h>
 #include <cxcore.h>
+
+using namespace util;
 
 //namespace AnnoTool
 namespace anno {
@@ -98,7 +101,7 @@ namespace anno {
                 //AnnoSegmenation* _annoSegm;
                 QPainterPath _painterFGPath;
                 QPainterPath _painterBGPath;
-                anno::InteractiveGrabcut *_grabCutContext;
+                util::InteractiveGrabcut *_grabCutContext;
 
 
                 // internal XML stuff
@@ -180,8 +183,8 @@ namespace anno {
                 void appendBGPath(const QPainterPath &bgPath);
                 const QPainterPath &getFGPath();
                 const QPainterPath &getBGPath();
-                anno::InteractiveGrabcut *provideGrabCutContext();
-                anno::InteractiveGrabcut *provideGrabCutContext(const cv::Mat &src_, const cv::Rect &rcBoundRect);
+                util::InteractiveGrabcut *provideGrabCutContext();
+                util::InteractiveGrabcut *provideGrabCutContext(const QString &sPath, const QRectF &boundBoxRect, const QImage *qSegmMask = NULL);
 //
 //				/** MA: helpers */
 //				bool setClassAttributeValue(QString qsClass, QString qsAttribute, QString qsValue);
@@ -193,6 +196,7 @@ namespace anno {
 //				QString annoInfo() const;
                 void saveSegmentationImage(const QString &sPath);
                 void buildSegmentationImage(const QString &sPath);
+                void recalculateSegmentation(QRectF &newRect);
 
                 // public XML interface
             public:
