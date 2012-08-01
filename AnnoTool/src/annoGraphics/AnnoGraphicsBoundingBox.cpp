@@ -26,6 +26,7 @@ namespace anno {
             setRect(*annoBoundingBox());
             initControlPoints();
             _bShowMask = false;
+            _bMove = false;
         }
 
         AnnoGraphicsBoundingBox::~AnnoGraphicsBoundingBox() {
@@ -64,6 +65,7 @@ namespace anno {
         }
 
         void AnnoGraphicsBoundingBox::shapeMoveBy(qreal deltaX, qreal deltaY) {
+            _bMove = true;
             dt::AnnoBoundingBox *bBox = annoBoundingBox();
             QImage *qImg = bBox->getImage();
             if(NULL != qImg) {
@@ -101,11 +103,10 @@ namespace anno {
         }
 
         void AnnoGraphicsBoundingBox::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-            dt::AnnoBoundingBox *bBox = annoBoundingBox();
-            QImage *qImg = bBox->getImage();
-            if(NULL != qImg) {
-                _bShowMask = false;
-            }
+//			dt::AnnoBoundingBox* bBox = annoBoundingBox();
+//			QImage* qImg = bBox->getImage();
+//			if(NULL != qImg)
+//				_bShowMask = false;
             GlobalLogger::instance()->logDebug("AG_RECT: mousePressEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {
@@ -121,9 +122,10 @@ namespace anno {
             }
             dt::AnnoBoundingBox *bBox = annoBoundingBox();
             QImage *qImg = bBox->getImage();
-            if(NULL != qImg) {
+            if(NULL != qImg && _bMove) {
                 changeBoundingBox();
                 _bShowMask = true;
+                _bMove = false;
             }
         }
 
@@ -186,6 +188,16 @@ namespace anno {
         QVariant AnnoGraphicsBoundingBox::itemChange(GraphicsItemChange change, const QVariant &value) {
             if(change == QGraphicsItem::ItemSelectedChange) {
                 if(value.toBool()) {
+                    // buildSegmentationImage is done only once when the segmentation is selected for the first time
+                    dt::AnnoBoundingBox *bBox = annoBoundingBox();
+                    QImage *qImg = bBox->getImage();
+                    if (NULL == qImg) {
+                        dt::Segmentation *segm = dynamic_cast<dt::Segmentation *>(_anno);
+                        if (segm) {
+                            segm->buildSegmentationImage();
+                        }
+                    }
+
                     _bShowMask = true;
                     setControlPointsVisible(true);
                 } else {

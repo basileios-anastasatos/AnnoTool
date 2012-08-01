@@ -256,7 +256,7 @@ namespace anno {
                     return;
                 }
 
-                bool bFGPath = false, bBGPath = false;
+                bool bFGPath = false, bBGPath = false;	// look for new paths
                 const QPainterPath fgPath = segm->getFGPath();
                 bFGPath = !fgPath.isEmpty();
                 const QPainterPath bgPath = segm->getBGPath();
@@ -278,7 +278,7 @@ namespace anno {
                     util::InteractiveGrabcut *grabCut = segm->provideGrabCutContext(fileName.filePath(), boundBoxRect);
 
                     if(bFGPath || bBGPath) {
-                        grabCut->updateMask(fgPath, bgPath/*, rcBBRectInflated.x, rcBBRectInflated.y*/);    // set probably new paths
+                        grabCut->updateMask(fgPath, bgPath);    // add new paths to the mask
                     }
 
                     QRect realRect;
@@ -288,6 +288,10 @@ namespace anno {
                     ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setImage(qImgRes);
                     ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setMask(&qImgMaskRes);
                     ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setRealBoundRect(realRect);
+
+                    const QPainterPath emptyPath;	// reset the paths
+                    segm->setFGPath(emptyPath);
+                    segm->setBGPath(emptyPath);
 
                     segm->setModified(true);
 

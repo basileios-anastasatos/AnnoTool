@@ -203,6 +203,7 @@ namespace anno {
         }
 
         void AnnoGraphicsPath::startPathFromPoint(const QPointF &pt) {
+            _painterPath = QPainterPath();// empty
             _painterPath.moveTo(pt);
         }
 

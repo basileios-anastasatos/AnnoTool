@@ -99,9 +99,10 @@ namespace anno {
 //				QList<AnnoAttribute> _annoAttributes;
 //				AnnoShape* _shape;
                 //AnnoSegmenation* _annoSegm;
-                QPainterPath _painterFGPath;
-                QPainterPath _painterBGPath;
-                util::InteractiveGrabcut *_grabCutContext;
+                QPainterPath				_painterFGPath;
+                QPainterPath				_painterBGPath;
+                util::InteractiveGrabcut	*_grabCutContext;
+                QString						_sImagePath;
 
 
                 // internal XML stuff
@@ -181,6 +182,8 @@ namespace anno {
 //				void removeAttributeAll();
                 void appendFGPath(const QPainterPath &fgPath);
                 void appendBGPath(const QPainterPath &bgPath);
+                void setFGPath(const QPainterPath &fgPath);
+                void setBGPath(const QPainterPath &bgPath);
                 const QPainterPath &getFGPath();
                 const QPainterPath &getBGPath();
                 util::InteractiveGrabcut *provideGrabCutContext();
@@ -195,7 +198,8 @@ namespace anno {
 //				void print() const;
 //				QString annoInfo() const;
                 void saveSegmentationImage(const QString &sPath);
-                void buildSegmentationImage(const QString &sPath);
+                void setSegmentationImagePath(const QString &sPath);
+                void buildSegmentationImage();
                 void recalculateSegmentation(QRectF &newRect);
 
                 // public XML interface

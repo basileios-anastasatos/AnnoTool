@@ -290,7 +290,7 @@ namespace anno {
                     if (fileName.isRelative()) {
                         fileName = GlobalProjectManager::instance()->relToAbs(fileName);
                     }
-                    segm->buildSegmentationImage(fileName.filePath());
+                    segm->setSegmentationImagePath(fileName.filePath());
                 } else if (reader.isEndElement() && reader.name() == tagAnnoLst) {
                     reader.readNext();
                     break;

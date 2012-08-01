@@ -234,7 +234,7 @@ namespace anno {
             pt.setY(qRound(pt.y()));
 
             dt::AnnoPath *aPath = new dt::AnnoPath();
-            aPath->moveTo(pt);
+//			aPath->moveTo(pt);
 
             GlobalProjectManager *pm = GlobalProjectManager::instance();
             anno::dt::Annotation *selAnno = pm->selectedAnno();
@@ -326,6 +326,7 @@ namespace anno {
 
             if (_curShape != NULL) {
                 _curShape->cpMouseReleaseEvent(2, event);
+                // commented code
 //				dt::AnnoFileData* curFile = GlobalProjectManager::instance()->selectedFile();
 //				dt::Annotation* anno = _curShape->relatedAnno();
 //				if(_curParentAnno != NULL)
@@ -333,6 +334,7 @@ namespace anno {
 //				curFile->addAnnotation(anno);
 //				GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
 //				AnnoToolMainWindow::updateUI();
+                //
 
                 dt::Segmentation *segm = dynamic_cast<dt::Segmentation *>(_curParentAnno);
 

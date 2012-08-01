@@ -57,6 +57,7 @@ namespace anno {
                 virtual void exMouseReleaseEvent(QGraphicsSceneMouseEvent *event);
             private:
                 bool _bShowMask;
+                bool _bMove;
         };
 
     }

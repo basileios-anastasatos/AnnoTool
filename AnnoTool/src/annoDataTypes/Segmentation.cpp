@@ -327,6 +327,14 @@ namespace anno {
             _painterBGPath.addPath(bgPath);
         }
 
+        void Segmentation::setFGPath(const QPainterPath &fgPath) {
+            _painterFGPath = fgPath;
+        }
+
+        void Segmentation::setBGPath(const QPainterPath &bgPath) {
+            _painterFGPath = bgPath;
+        }
+
         const QPainterPath &Segmentation::getFGPath() {
             return _painterFGPath;
         }
@@ -417,12 +425,16 @@ namespace anno {
             }
         }
 
-        void Segmentation::buildSegmentationImage(const QString &sPath) {
-            if (_shape != NULL) {
+        void Segmentation::setSegmentationImagePath(const QString &sPath) {
+            _sImagePath = sPath;
+        }
+
+        void Segmentation::buildSegmentationImage() {
+            if (_shape != NULL && _sImagePath != "") {
                 AnnoBoundingBox *segm = dynamic_cast<AnnoBoundingBox *>(_shape);
                 if (NULL != segm) {
                     _grabCutContext = provideGrabCutContext();
-                    _grabCutContext->buildGrabCut(sPath, segm->boundingRect(), segm->getMask());
+                    _grabCutContext->buildGrabCut(_sImagePath, segm->boundingRect(), segm->getMask());
                     segm->setImage(const_cast<const QImage *>(_grabCutContext->getImageWithMask()));
                 }
             }

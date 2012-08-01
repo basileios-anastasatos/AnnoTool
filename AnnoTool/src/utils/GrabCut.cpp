@@ -43,41 +43,53 @@ namespace util {
         _bNew = false;
         extractImage(inputWholeImg, _rcAbsRect, _resultWithMask);// todo  reuse later?
 
-        cv::Mat segmMask = qImage2Mat(*qSegmMask);
+        cv::Mat segmMaskImg = qImage2Mat(*qSegmMask);
 
         const float alphaFG = 0.5f;
         const float alphaPFG = 0.8f;
 
-        for(int y = 0; y < segmMask.rows; ++y) {
-            for(int x = 0; x < segmMask.cols; ++x) {
-                if(255 == segmMask.at<cv::Vec3b>(y, x)[1]) {
+        for(int y = 0; y < segmMaskImg.rows; ++y) {
+            for(int x = 0; x < segmMaskImg.cols; ++x) {
+                if(255 == segmMaskImg.at<cv::Vec3b>(y, x)[1]) {
                     cv::Vec3b &pix = _resultWithMask.at<cv::Vec3b>(y, x);
                     pix[0] = (uchar)(pix[0] * alphaFG + _fg_color[0] * (1 - alphaFG));
                     pix[1] = (uchar)(pix[1] * alphaFG + _fg_color[1] * (1 - alphaFG));
                     pix[2] = (uchar)(pix[2] * alphaFG + _fg_color[2] * (1 - alphaFG));
 
-                    _mask.at<uchar>(y, x) = cv::GC_FGD;
+                    _mask.at<uchar>(y + _rcRelBoundRect.y, x + _rcRelBoundRect.x) = cv::GC_FGD;
                     if (!_bFGMaskNotEmpty) {
                         _bFGMaskNotEmpty = true;
                     }
-                } else if(127 == segmMask.at<cv::Vec3b>(y, x)[1]) {
+                } else if(127 == segmMaskImg.at<cv::Vec3b>(y, x)[1]) {
                     cv::Vec3b &pix = _resultWithMask.at<cv::Vec3b>(y, x);
                     pix[0] = (uchar)(pix[0] * alphaPFG + _fg_color[0] * (1 - alphaPFG));
                     pix[1] = (uchar)(pix[1] * alphaPFG + _fg_color[1] * (1 - alphaPFG));
                     pix[2] = (uchar)(pix[2] * alphaPFG + _fg_color[2] * (1 - alphaPFG));
 
-                    _mask.at<uchar>(y, x) = cv::GC_PR_FGD;
+                    _mask.at<uchar>(y + _rcRelBoundRect.y, x + _rcRelBoundRect.x) = cv::GC_PR_FGD;
                     if (!_bFGMaskNotEmpty) {
                         _bFGMaskNotEmpty = true;
                     }
-                } else if(255 == segmMask.at<cv::Vec3b>(y, x)[0]) {
-                    _mask.at<uchar>(y, x) = cv::GC_BGD;
+                } else if(255 == segmMaskImg.at<cv::Vec3b>(y, x)[0]) {
+                    _mask.at<uchar>(y + _rcRelBoundRect.y, x + _rcRelBoundRect.x) = cv::GC_BGD;
                     if (!_bBGMaskNotEmpty) {
                         _bBGMaskNotEmpty = true;
                     }
-                } else if(127 == segmMask.at<cv::Vec3b>(y, x)[0]) {
-                    _mask.at<uchar>(y, x) = cv::GC_PR_BGD;
+                } else if(127 == segmMaskImg.at<cv::Vec3b>(y, x)[0]) {
+                    _mask.at<uchar>(y + _rcRelBoundRect.y, x + _rcRelBoundRect.x) = cv::GC_PR_BGD;
                     if (!_bBGMaskNotEmpty) {
+                        _bBGMaskNotEmpty = true;
+                    }
+                }
+            }
+        }
+        for(int y = 0; y < _mask.rows; y++) {
+            for(int x = 0; x < _mask.cols; x++) {
+                if (y >= _rcRelBoundRect.y && y < (_rcRelBoundRect.y + _rcRelBoundRect.height) && x >= _rcRelBoundRect.x && x < (_rcRelBoundRect.x + _rcRelBoundRect.width)) {
+                    continue;
+                } else {
+                    _mask.at<uchar>(y, x) = cv::GC_BGD;
+                    if(!_bBGMaskNotEmpty) {
                         _bBGMaskNotEmpty = true;
                     }
                 }
@@ -95,11 +107,16 @@ namespace util {
 
         cv::Mat maskOld = _mask.clone(); // size = oldRect
         _mask.release();
-        _mask = newGrabCut->_mask.clone(); // size = newRect
+        //_mask = newGrabCut->_mask.clone(); // size = newRect
+        _mask = cv::Mat::ones(_src.size(), CV_8U) * cv::GC_PR_BGD;
 
         _fgd.release();
         _bgd.release();
         _resultWithMask.release();// todo  create/copy ?
+
+        _bNew = true;
+        _bFGMaskNotEmpty = false;
+        _bBGMaskNotEmpty = false;
 
         int xI = intersection.x();
         int yI = intersection.y();
@@ -111,8 +128,24 @@ namespace util {
                 int yNew = y - newRect.y();
                 int xOld = x - oldRect.x();
                 int yOld = y - oldRect.y();
-                _mask.at<uchar>(yNew, xNew) = maskOld.at<uchar>(yOld, xOld);
+
+                uchar val = maskOld.at<uchar>(yOld, xOld);
+                _mask.at<uchar>(yNew, xNew) = val;
+                if (cv::GC_FGD == val) {
+                    if(!_bFGMaskNotEmpty) {
+                        _bFGMaskNotEmpty = true;
+                    }
+                }
+                if (cv::GC_BGD == val) {
+                    if(!_bBGMaskNotEmpty) {
+                        _bBGMaskNotEmpty = true;
+                    }
+                }
             }
+        }
+
+        if(_bFGMaskNotEmpty && _bBGMaskNotEmpty) {
+            _bNew = false;
         }
 
         _rcAbsRect = newGrabCut->_rcAbsRect;
