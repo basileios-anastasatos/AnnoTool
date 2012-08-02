@@ -167,7 +167,7 @@ namespace util {
         delete newGrabCut;
     }
 
-    QImage *InteractiveGrabcut::getImageWithMask() {
+    QImage *InteractiveGrabcut::getImageWithMask() { //only used when we open segmentation - todo ?
         return mat2QImage(_resultWithMask);
     }
 

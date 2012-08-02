@@ -63,7 +63,7 @@ namespace anno {
         }
 
         void ToolBrush::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
+            if(event->button() != Qt::LeftButton && event->button() != Qt::MidButton) {
                 return;
             }
 
@@ -76,7 +76,7 @@ namespace anno {
 
         void ToolBrush::mousePressEvent(AnnoGraphicsShape *shape,
                                         QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
+            if(event->button() != Qt::LeftButton && event->button() != Qt::MidButton) {
                 return;
             }
 
@@ -129,7 +129,7 @@ namespace anno {
 
         void ToolBrush::mouseReleaseEvent(AnnoGraphicsShape *shape,
                                           QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
+            if(event->button() != Qt::LeftButton && event->button() != Qt::MidButton) {
                 return;
             }
 
@@ -220,7 +220,7 @@ namespace anno {
 
         void ToolBrush::mousePressEvent(AnnoGraphicsPixmap *img,
                                         QGraphicsSceneMouseEvent *event) {
-            if(event->button() != Qt::LeftButton) {
+            if(event->button() != Qt::LeftButton && event->button() != Qt::MidButton) {
                 return;
             }
 
@@ -260,7 +260,7 @@ namespace anno {
             _bDrag = true;
 
             _bFGBrush = true;
-            if(isModifyEvent(event)) {
+            if(isModifyEvent(event) || event->button() == Qt::MidButton) {
                 _bFGBrush = false;
             }
 
@@ -316,7 +316,7 @@ namespace anno {
             if (event->button() == Qt::RightButton) {
                 switchDefaultTool();
                 return;
-            } else if (event->button() != Qt::LeftButton) {
+            } else if (event->button() != Qt::LeftButton && event->button() != Qt::MidButton) {
                 return;
             }
 

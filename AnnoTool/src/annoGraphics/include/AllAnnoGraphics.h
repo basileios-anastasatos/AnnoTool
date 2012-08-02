@@ -6,7 +6,7 @@
 #include "AnnoGraphicsControlPoint.h"
 #include "AnnoGraphicsPixmap.h"
 #include "AnnoGraphicsRect.h"
-#include "AnnoGraphicsBoundingBox.h"
+#include "AnnoGraphicsSegmentation.h"
 #include "AnnoGraphicsPath.h"
 
 #endif /*ALLANNOGRAPHICS_H_*/

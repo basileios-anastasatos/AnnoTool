@@ -3,11 +3,8 @@
 #include "Annotation.h"
 #include <QImage>
 #include <QPainterPath>
-#include "AnnoBoundingBox.h"
 #include "GrabCut.h"
-
-#include <cv.h>
-#include <cxcore.h>
+#include "AnnoSegmentation.h"
 
 using namespace util;
 

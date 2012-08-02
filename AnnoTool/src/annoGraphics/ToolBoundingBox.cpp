@@ -4,8 +4,8 @@
 #include "AnnoGraphicsScene.h"
 #include "AnnoFileData.h"
 #include "Segmentation.h"
-#include "AnnoBoundingBox.h"
-#include "AnnoGraphicsBoundingBox.h"
+#include "AnnoSegmentation.h"
+#include "AnnoGraphicsSegmentation.h"
 #include "AnnoGraphicsShapeCreator.h"
 #include "importGlobals.h"
 #include "AnnoToolMainWindow.h"
@@ -99,7 +99,7 @@ namespace anno {
                 _view->setCursor(_cursorActive);
             }
 
-            dt::AnnoBoundingBox *arect = new dt::AnnoBoundingBox();
+            dt::AnnoSegmentation *arect = new dt::AnnoSegmentation();
             arect->setTopLeft(img->mapFromScene(event->scenePos()));
             arect->setSize(QSizeF(0.0, 0.0));
             QUuid parentId = GlobalToolManager::instance()->getLockedAnno();
@@ -116,7 +116,7 @@ namespace anno {
                 _scene->addAnnoShape(s);
                 _scene->setFocusItem(s->graphicsItem());
                 _scene->selectShape(segm->annoId());
-                _curShape = static_cast<AnnoGraphicsBoundingBox *>(s);
+                _curShape = static_cast<AnnoGraphicsSegmentation *>(s);
             }
         }
 

@@ -77,7 +77,7 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoDataTypes/include/AnnoSinglePoint.h \
     ./src/annoDataTypes/include/AnnoPolygon.h \
     ./src/annoDataTypes/include/AnnoPath.h \
-    ./src/annoDataTypes/include/AnnoBoundingBox.h \
+    ./src/annoDataTypes/include/AnnoSegmentation.h \
     ./src/annoDataTypes/include/Segmentation.h \
     ./src/annoFilter/include/annoFiltersForward.h \
     ./src/annoFilter/include/AllAnnoFilterRules.h \
@@ -107,7 +107,7 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoGraphics/include/AnnoGraphicsEllipse.h \
     ./src/annoGraphics/include/AnnoGraphicsSinglePoint.h \
     ./src/annoGraphics/include/AnnoGraphicsPolygon.h \
-    ./src/annoGraphics/include/AnnoGraphicsBoundingBox.h \
+    ./src/annoGraphics/include/AnnoGraphicsSegmentation.h \
     ./src/annoGraphics/include/AnnoGraphicsPath.h \
     ./src/annoGraphics/include/AnnoGraphicsPixmap.h \
     ./src/annoGraphics/include/AnnoGraphicsScene.h \
@@ -204,7 +204,7 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoDataTypes/AnnoSinglePoint.cpp \
     ./src/annoDataTypes/AnnoPolygon.cpp \
     ./src/annoDataTypes/AnnoPath.cpp \
-    ./src/annoDataTypes/AnnoBoundingBox.cpp \
+    ./src/annoDataTypes/AnnoSegmentation.cpp \
     ./src/annoDataTypes/Segmentation.cpp \
     ./src/annoFilter/AnnoFilterRule.cpp \
     ./src/annoFilter/LogicFilterRule.cpp \
@@ -230,7 +230,7 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoGraphics/AnnoGraphicsEllipse.cpp \
     ./src/annoGraphics/AnnoGraphicsSinglePoint.cpp \
     ./src/annoGraphics/AnnoGraphicsPolygon.cpp \
-    ./src/annoGraphics/AnnoGraphicsBoundingBox.cpp \
+    ./src/annoGraphics/AnnoGraphicsSegmentation.cpp \
     ./src/annoGraphics/AnnoGraphicsPath.cpp \
     ./src/annoGraphics/AnnoGraphicsPixmap.cpp \
     ./src/annoGraphics/AnnoGraphicsScene.cpp \

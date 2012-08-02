@@ -3,7 +3,6 @@
 #include <QXmlStreamWriter>
 #include <QTextStream>
 #include "importGlobals.h"
-#include "AnnoBoundingBox.h"
 
 //namespace AnnoTool
 namespace anno {
@@ -414,7 +413,7 @@ namespace anno {
 //
         void Segmentation::saveSegmentationImage(const QString &sPath) {
             if (_shape != NULL) {
-                AnnoBoundingBox *segm = dynamic_cast<AnnoBoundingBox *>(_shape);
+                AnnoSegmentation *segm = dynamic_cast<AnnoSegmentation *>(_shape);
                 if (NULL != segm) {
                     segm->setMaskPath(sPath);
                     QImage *imgMask = segm->getMask();
@@ -431,7 +430,7 @@ namespace anno {
 
         void Segmentation::buildSegmentationImage() {
             if (_shape != NULL && _sImagePath != "") {
-                AnnoBoundingBox *segm = dynamic_cast<AnnoBoundingBox *>(_shape);
+                AnnoSegmentation *segm = dynamic_cast<AnnoSegmentation *>(_shape);
                 if (NULL != segm) {
                     _grabCutContext = provideGrabCutContext();
                     _grabCutContext->buildGrabCut(_sImagePath, segm->boundingRect(), segm->getMask());

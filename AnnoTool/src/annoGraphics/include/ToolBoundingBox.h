@@ -9,13 +9,13 @@ namespace anno {
     }
 
     namespace graphics {
-        class AnnoGraphicsBoundingBox;
+        class AnnoGraphicsSegmentation;
 
         class ToolBoundingBox : public GraphicsTool {
             private:
                 QCursor _cursorNormal;
                 QCursor _cursorActive;
-                AnnoGraphicsBoundingBox *_curShape;
+                AnnoGraphicsSegmentation *_curShape;
                 dt::Annotation *_curParentAnno;
 
             private:

@@ -8,10 +8,10 @@
 namespace anno {
     namespace dt {
 
-        class AnnoBoundingBox : public QRectF, public AnnoShape {
+        class AnnoSegmentation : public QRectF, public AnnoShape {
             public:
-                AnnoBoundingBox();
-                virtual ~AnnoBoundingBox();
+                AnnoSegmentation();
+                virtual ~AnnoSegmentation();
 
             public:
                 virtual AnnoShapeType shapeType() const;
@@ -22,8 +22,8 @@ namespace anno {
                 virtual void print() const;
 
             public:
-                AnnoBoundingBox &operator=(const QRectF &r);
-                AnnoBoundingBox &operator=(const AnnoBoundingBox &r);
+                AnnoSegmentation &operator=(const QRectF &r);
+                AnnoSegmentation &operator=(const AnnoSegmentation &r);
 
             public:
                 virtual void toXml(QXmlStreamWriter &writer) const throw(XmlException *);

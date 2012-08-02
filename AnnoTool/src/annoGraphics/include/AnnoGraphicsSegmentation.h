@@ -2,18 +2,18 @@
 
 #include <QGraphicsRectItem>
 #include "AnnoGraphicsShape.h"
-#include "AnnoBoundingBox.h"
+#include "AnnoSegmentation.h"
 
 class QGraphicsSceneHoverEvent;
 
 namespace anno {
     namespace graphics {
 
-        class AnnoGraphicsBoundingBox : public QGraphicsRectItem, public AnnoGraphicsShape {
+        class AnnoGraphicsSegmentation : public QGraphicsRectItem, public AnnoGraphicsShape {
             private:
                 void setupAppearance();
-                dt::AnnoBoundingBox *annoBoundingBox();
-                const dt::AnnoBoundingBox *annoBoundingBox() const;
+                dt::AnnoSegmentation *annoSegmentation();
+                const dt::AnnoSegmentation *annoSegmentation() const;
                 QRectF mapRectToParent(const QRectF &r) const;
 
             protected:
@@ -32,8 +32,8 @@ namespace anno {
                 void changeBoundingBox();
 
             public:
-                AnnoGraphicsBoundingBox(dt::Annotation *anno, QGraphicsItem *parent = 0);
-                virtual ~AnnoGraphicsBoundingBox();
+                AnnoGraphicsSegmentation(dt::Annotation *anno, QGraphicsItem *parent = 0);
+                virtual ~AnnoGraphicsSegmentation();
 
             public:
                 virtual void initControlPoints();

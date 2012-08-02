@@ -263,7 +263,7 @@ namespace anno {
                 bBGPath = !bgPath.isEmpty();
 
                 anno::dt::AnnoShapeType eAnnoShapeType = annoShape->shapeType();
-                if(anno::dt::ASTypeBoundingBox == eAnnoShapeType) {
+                if(anno::dt::ASTypeSegmentation == eAnnoShapeType) {
                     anno::dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
                     if (!curFile) {
                         return;
@@ -285,9 +285,9 @@ namespace anno {
                     QImage qImgMaskRes;
                     QImage *qImgRes = grabCut->execute(bFGPath || bBGPath, realRect, qImgMaskRes);
 
-                    ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setImage(qImgRes);
-                    ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setMask(&qImgMaskRes);
-                    ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setRealBoundRect(realRect);
+                    ((anno::dt::AnnoSegmentation *)(segm->shape()))->setImage(qImgRes);
+                    ((anno::dt::AnnoSegmentation *)(segm->shape()))->setMask(&qImgMaskRes);
+                    ((anno::dt::AnnoSegmentation *)(segm->shape()))->setRealBoundRect(realRect);
 
                     const QPainterPath emptyPath;	// reset the paths
                     segm->setFGPath(emptyPath);
@@ -310,7 +310,7 @@ namespace anno {
             }
 
             anno::dt::AnnoShapeType eAnnoShapeType = annoShape->shapeType();
-            if(anno::dt::ASTypeBoundingBox == eAnnoShapeType) {
+            if(anno::dt::ASTypeSegmentation == eAnnoShapeType) {
                 util::InteractiveGrabcut *grabCut = segm->provideGrabCutContext();
 
                 util::InteractiveGrabcut::recalculate(grabCut, newRect);
@@ -319,9 +319,9 @@ namespace anno {
                 QImage qImgMaskRes;
                 QImage *qImgRes = grabCut->execute(false, realRect, qImgMaskRes);
 
-                ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setImage(qImgRes);
-                ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setMask(&qImgMaskRes);
-                ((anno::dt::AnnoBoundingBox *)(segm->shape()))->setRealBoundRect(realRect);
+                ((anno::dt::AnnoSegmentation *)(segm->shape()))->setImage(qImgRes);
+                ((anno::dt::AnnoSegmentation *)(segm->shape()))->setMask(&qImgMaskRes);
+                ((anno::dt::AnnoSegmentation *)(segm->shape()))->setRealBoundRect(realRect);
 
                 segm->setModified(true);
 
