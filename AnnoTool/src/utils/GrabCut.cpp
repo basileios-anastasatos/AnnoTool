@@ -11,7 +11,7 @@ namespace util {
     InteractiveGrabcut::InteractiveGrabcut() :
         _filePath(""),
         _src(), _mask(), _fgd(), _bgd(), _resultWithMask(),
-        _fg_color(0, 255, 0), _bg_color(255, 0, 0),
+        _fg_color(255, 255, 0), _bg_color(255, 0, 0),
         _bNew(true), _bFGMaskNotEmpty(false), _bBGMaskNotEmpty(false) {
     }
 
@@ -45,8 +45,8 @@ namespace util {
 
         cv::Mat segmMaskImg = qImage2Mat(*qSegmMask);
 
-        const float alphaFG = 0.5f;
-        const float alphaPFG = 0.8f;
+        const float alphaFG = 0.6f;
+        const float alphaPFG = 0.7f;
 
         for(int y = 0; y < segmMaskImg.rows; ++y) {
             for(int x = 0; x < segmMaskImg.cols; ++x) {
@@ -207,8 +207,8 @@ namespace util {
     cv::Mat InteractiveGrabcut::getFGImage(cv::Rect &rcRealBoundRect, cv::Mat &binMaskRes) {
         cv::Mat scribbled_src = _src.clone();
         binMaskRes = _src.clone();
-        const float alphaFG = 0.5f;
-        const float alphaPFG = 0.8f;
+        const float alphaFG = 0.6f;
+        const float alphaPFG = 0.7f;
         int minX = _mask.cols + 1, maxX = -1, minY = _mask.rows + 1, maxY = -1;
         for(int y = 0; y < _mask.rows; y++) {
             for(int x = 0; x < _mask.cols; x++) {

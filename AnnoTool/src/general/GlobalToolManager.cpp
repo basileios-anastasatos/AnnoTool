@@ -272,10 +272,16 @@ namespace anno {
                     if (fileName.isRelative()) {
                         fileName = GlobalProjectManager::instance()->relToAbs(fileName);
                     }
+                    QString sFilePath = fileName.filePath();
+                    std::string filePath = (sFilePath.toUtf8().constData());
 
                     QRectF boundBoxRect = annoShape->boundingRect();
 
-                    util::InteractiveGrabcut *grabCut = segm->provideGrabCutContext(fileName.filePath(), boundBoxRect);
+                    if(10 > boundBoxRect.width() || 10 > boundBoxRect.height()) { //nothing to do
+                        return;
+                    }
+
+                    util::InteractiveGrabcut *grabCut = segm->provideGrabCutContext(sFilePath, boundBoxRect);
 
                     if(bFGPath || bBGPath) {
                         grabCut->updateMask(fgPath, bgPath);    // add new paths to the mask
