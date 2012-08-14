@@ -331,7 +331,7 @@ namespace anno {
         }
 
         void Segmentation::setBGPath(const QPainterPath &bgPath) {
-            _painterFGPath = bgPath;
+            _painterBGPath = bgPath;
         }
 
         const QPainterPath &Segmentation::getFGPath() {
