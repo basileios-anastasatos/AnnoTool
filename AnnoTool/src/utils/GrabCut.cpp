@@ -39,9 +39,9 @@ namespace util {
             return;
         }
 
-        // opened existing segmentation
+        // open existing segmentation
         _bNew = false;
-        extractImage(inputWholeImg, _rcAbsRect, _resultWithMask);// todo  reuse later?
+//		extractImage(inputWholeImg, _rcAbsRect, _resultWithMask);// todo  reuse later?
 
         cv::Mat segmMaskImg = qImage2Mat(*qSegmMask);
 
@@ -51,20 +51,20 @@ namespace util {
         for(int y = 0; y < segmMaskImg.rows; ++y) {
             for(int x = 0; x < segmMaskImg.cols; ++x) {
                 if(255 == segmMaskImg.at<cv::Vec3b>(y, x)[1]) {
-                    cv::Vec3b &pix = _resultWithMask.at<cv::Vec3b>(y, x);
-                    pix[0] = (uchar)(pix[0] * alphaFG + _fg_color[0] * (1 - alphaFG));
-                    pix[1] = (uchar)(pix[1] * alphaFG + _fg_color[1] * (1 - alphaFG));
-                    pix[2] = (uchar)(pix[2] * alphaFG + _fg_color[2] * (1 - alphaFG));
+//					cv::Vec3b& pix = _resultWithMask.at<cv::Vec3b>(y, x);
+//					pix[0] = (uchar)(pix[0] * alphaFG + _fg_color[0] * (1-alphaFG));
+//					pix[1] = (uchar)(pix[1] * alphaFG + _fg_color[1] * (1-alphaFG));
+//					pix[2] = (uchar)(pix[2] * alphaFG + _fg_color[2] * (1-alphaFG));
 
                     _mask.at<uchar>(y + _rcRelBoundRect.y, x + _rcRelBoundRect.x) = cv::GC_FGD;
                     if (!_bFGMaskNotEmpty) {
                         _bFGMaskNotEmpty = true;
                     }
                 } else if(127 == segmMaskImg.at<cv::Vec3b>(y, x)[1]) {
-                    cv::Vec3b &pix = _resultWithMask.at<cv::Vec3b>(y, x);
-                    pix[0] = (uchar)(pix[0] * alphaPFG + _fg_color[0] * (1 - alphaPFG));
-                    pix[1] = (uchar)(pix[1] * alphaPFG + _fg_color[1] * (1 - alphaPFG));
-                    pix[2] = (uchar)(pix[2] * alphaPFG + _fg_color[2] * (1 - alphaPFG));
+//					cv::Vec3b& pix = _resultWithMask.at<cv::Vec3b>(y, x);
+//					pix[0] = (uchar)(pix[0] * alphaPFG + _fg_color[0] * (1-alphaPFG));
+//					pix[1] = (uchar)(pix[1] * alphaPFG + _fg_color[1] * (1-alphaPFG));
+//					pix[2] = (uchar)(pix[2] * alphaPFG + _fg_color[2] * (1-alphaPFG));
 
                     _mask.at<uchar>(y + _rcRelBoundRect.y, x + _rcRelBoundRect.x) = cv::GC_PR_FGD;
                     if (!_bFGMaskNotEmpty) {
@@ -160,7 +160,7 @@ namespace util {
             curGrabCut->buildGrabCut(QString::fromUtf8(curGrabCut->getImagePath().c_str()), newBoundBoxRect);
             return;
         }
-        // rebuild GrabcCut
+        // rebuild GrabCut
         InteractiveGrabcut *newGrabCut = new InteractiveGrabcut();
         newGrabCut->buildGrabCut(QString::fromUtf8(curGrabCut->getImagePath().c_str()), newBoundBoxRect);
         curGrabCut->rebuildGrabCut(newGrabCut);
@@ -168,7 +168,15 @@ namespace util {
     }
 
     QImage *InteractiveGrabcut::getImageWithMask() { //only used when we open segmentation - todo ?
-        return mat2QImage(_resultWithMask);
+        //return mat2QImage(_resultWithMask);
+        cv::Rect rcRealRect;
+        cv::Mat imgMaskResult;	//image mask for saving
+        cv::Mat resultImg = getFGImage(rcRealRect, imgMaskResult);
+
+        cv::Mat resultExtracted;
+        extractImage(resultImg, _rcRelBoundRect, resultExtracted);
+        std::cout << "end other stuff" << std::endl;
+        return mat2QImage(resultExtracted);
     }
 
     std::string InteractiveGrabcut::getImagePath() {
@@ -259,15 +267,15 @@ namespace util {
                     pix1[1] = 127;
                     pix1[2] = 0;
                 } else if(_mask.at<uchar>(y, x) == cv::GC_BGD) {
-                    cv::Vec3b &pix = binMaskRes.at<cv::Vec3b>(y, x);
-                    pix[0] = 255;
-                    pix[1] = 0;
-                    pix[2] = 0;
+                    cv::Vec3b &pix1 = binMaskRes.at<cv::Vec3b>(y, x);
+                    pix1[0] = 255;
+                    pix1[1] = 0;
+                    pix1[2] = 0;
                 } else if(_mask.at<uchar>(y, x) == cv::GC_PR_BGD) {
-                    cv::Vec3b &pix = binMaskRes.at<cv::Vec3b>(y, x);
-                    pix[0] = 127;
-                    pix[1] = 0;
-                    pix[2] = 0;
+                    cv::Vec3b &pix1 = binMaskRes.at<cv::Vec3b>(y, x);
+                    pix1[0] = 127;
+                    pix1[1] = 0;
+                    pix1[2] = 0;
                 }
             }
         }
