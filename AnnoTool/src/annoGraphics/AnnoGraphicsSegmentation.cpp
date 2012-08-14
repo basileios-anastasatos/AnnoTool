@@ -211,6 +211,9 @@ namespace anno {
         void AnnoGraphicsSegmentation::paint(QPainter *painter,
                                              const QStyleOptionGraphicsItem *option, QWidget *widget) {
             dt::AnnoSegmentation *bBox = annoSegmentation();
+            if (NULL == bBox) {
+                return;
+            }
             QImage *qImg = bBox->getImage();
             QRectF imgRect = bBox->boundingRect();
             if (NULL != qImg && _bShowMask) {
