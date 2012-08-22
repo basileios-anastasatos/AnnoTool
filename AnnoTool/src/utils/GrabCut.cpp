@@ -183,8 +183,62 @@ namespace util {
         return _filePath;
     }
 
-    void InteractiveGrabcut::updateMask(const QPainterPath &fgPath, const QPainterPath &bgPath) {
-        if (fgPath.isEmpty() && bgPath.isEmpty()) {
+    bool pointOnLineSegment(QPointF pt, qreal x1, qreal y1, qreal x2, qreal y2) {
+        // check if point is on the segment
+        bool bOnSegment = (min(x1, x2) <= pt.x() && max(x1, x2) >= pt.x() && min(y1, y2) <= pt.y() && max(y1, y2) >= pt.y());
+        if(!bOnSegment) {
+            return false;
+        }
+
+        qreal t = 0.5;
+        // check if point is on the line
+        if (abs(x1 - x2) <= t) { // x1 ~= x2
+            // line: x = x1 (= x2)
+            bool bOnLine = ( abs(pt.x() - x1) <= t);
+            if(!bOnLine) {
+                return false;
+            }
+        } else {
+            // line: y = kx + b
+            qreal k = (y2 - y1) / (x2 - x1);
+            qreal b = y1 - x1 * (y2 - y1) / (x2 - x1);
+            bool bOnLine = abs( k * pt.x() + b - pt.y()) <= t;
+            if(!bOnLine) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool pathContainsPoint(const QPainterPath &path, QPointF pt) {
+        int nCount = path.elementCount();
+        qreal xStart;
+        qreal yStart;
+        for(int i = 0; i < nCount; ++i) {
+            QPainterPath::Element elem = path.elementAt(i);
+            qreal x = elem.x;
+            qreal y = elem.y;
+            bool bMoveTo = elem.isMoveTo();
+            if (bMoveTo) {
+                xStart = x;
+                yStart = y;
+                continue;
+            }
+            bool bLineTo = elem.isLineTo();
+            if (bLineTo) {
+                bool bOnLineSegment = pointOnLineSegment(pt, xStart, yStart, x, y);
+                if (bOnLineSegment) {
+                    return true;
+                }
+                xStart = x;
+                yStart = y;
+            }
+        }
+        return false;
+    }
+
+    void InteractiveGrabcut::addFGPathToMask(const QPainterPath &fgPath) {
+        if (fgPath.isEmpty()) {
             return;
         }
 
@@ -194,14 +248,31 @@ namespace util {
         for(int y = 0; y < _mask.rows; y++) {
             for(int x = 0; x < _mask.cols; x++) {
                 QPointF pt(x + xOffset, y + yOffset);
-                if(fgPath.contains(pt)) {
+                //we can't use fgPath.contains(pt) here 'cause contains function treats path as a CLOSED shape
+                if(pathContainsPoint(fgPath, pt)) {
                     cv::circle(_mask, cv::Point(x, y), 2, cv::GC_FGD, -1);
                     //_mask.at<uchar>(y, x) = cv::GC_FGD;
                     if (!_bFGMaskNotEmpty) {
                         _bFGMaskNotEmpty = true;
                     }
                 }
-                if(bgPath.contains(pt)) {
+            }
+        }
+    }
+
+    void InteractiveGrabcut::addBGPathToMask(const QPainterPath &bgPath) {
+        if (bgPath.isEmpty()) {
+            return;
+        }
+
+        int xOffset = _rcAbsInflatedRect.x;
+        int yOffset = _rcAbsInflatedRect.y;
+
+        for(int y = 0; y < _mask.rows; y++) {
+            for(int x = 0; x < _mask.cols; x++) {
+                QPointF pt(x + xOffset, y + yOffset);
+                //we can't use bgPath.contains(pt) here 'cause contains function treats path as a CLOSED shape
+                if(pathContainsPoint(bgPath, pt)) {
                     cv::circle(_mask, cv::Point(x, y), 2, cv::GC_BGD, -1);
                     //_mask.at<uchar>(y, x) = cv::GC_BGD;
                     if (!_bBGMaskNotEmpty) {
@@ -361,12 +432,12 @@ namespace util {
     }
 
     QImage *InteractiveGrabcut::mat2QImage(const cv::Mat3b &src) {
-        QImage *dest = new QImage(src.cols, src.rows, QImage::Format_ARGB32);
+        QImage *dest = new QImage(src.cols, src.rows, QImage::Format_RGB32);
         for (int y = 0; y < src.rows; ++y) {
             const cv::Vec3b *srcrow = src[y];
             QRgb *destrow = (QRgb *)dest->scanLine(y);
             for (int x = 0; x < src.cols; ++x) {
-                destrow[x] = qRgba(srcrow[x][2], srcrow[x][1], srcrow[x][0], 255);
+                destrow[x] = qRgb(srcrow[x][2], srcrow[x][1], srcrow[x][0]);
             }
         }
         return dest;

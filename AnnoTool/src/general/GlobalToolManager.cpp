@@ -256,12 +256,6 @@ namespace anno {
                     return;
                 }
 
-                bool bFGPath = false, bBGPath = false;	// look for new paths
-                const QPainterPath fgPath = segm->getFGPath();
-                bFGPath = !fgPath.isEmpty();
-                const QPainterPath bgPath = segm->getBGPath();
-                bBGPath = !bgPath.isEmpty();
-
                 anno::dt::AnnoShapeType eAnnoShapeType = annoShape->shapeType();
                 if(anno::dt::ASTypeSegmentation == eAnnoShapeType) {
                     anno::dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
@@ -283,8 +277,24 @@ namespace anno {
 
                     util::InteractiveGrabcut *grabCut = segm->provideGrabCutContext(sFilePath, boundBoxRect);
 
-                    if(bFGPath || bBGPath) {
-                        grabCut->updateMask(fgPath, bgPath);    // add new paths to the mask
+                    bool bFGPath = false, bBGPath = false;	// look for new paths
+                    const std::vector<QPainterPath> vFGPath = segm->getFGPath();
+                    bFGPath = !vFGPath.empty();
+                    const std::vector<QPainterPath> vBGPath = segm->getBGPath();
+                    bBGPath = !vBGPath.empty();
+
+                    // add new paths to the mask
+                    if(bFGPath) {
+                        std::vector<QPainterPath>::const_iterator itFG = vFGPath.begin(), itFGEnd = vFGPath.end();
+                        for(; itFG != itFGEnd; ++itFG) {
+                            grabCut->addFGPathToMask(*itFG);
+                        }
+                    }
+                    if(bBGPath) {
+                        std::vector<QPainterPath>::const_iterator itBG = vBGPath.begin(), itBGEnd = vBGPath.end();
+                        for(; itBG != itBGEnd; ++itBG) {
+                            grabCut->addBGPathToMask(*itBG);
+                        }
                     }
 
                     QRect realRect;
@@ -295,9 +305,9 @@ namespace anno {
                     ((anno::dt::AnnoSegmentation *)(segm->shape()))->setMask(&qImgMaskRes);
                     ((anno::dt::AnnoSegmentation *)(segm->shape()))->setRealBoundRect(realRect);
 
-                    const QPainterPath emptyPath;	// reset the paths
-                    segm->setFGPath(emptyPath);
-                    segm->setBGPath(emptyPath);
+                    // reset the paths
+                    segm->emptyFGPath();
+                    segm->emptyBGPath();
 
                     segm->setModified(true);
 

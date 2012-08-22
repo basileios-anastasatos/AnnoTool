@@ -36,7 +36,8 @@ namespace util {
             static void recalculate(InteractiveGrabcut *curGrabCut, const QRectF &newBoundBoxRect);
 
             void cropSource(QRect &cropRect);
-            void updateMask(const QPainterPath &fgPath, const QPainterPath &bgPath);
+            void addFGPathToMask(const QPainterPath &fgPath);
+            void addBGPathToMask(const QPainterPath &bgPath);
             QImage *execute(bool bUpdMask, QRect &realRect, QImage &qImgMaskRes);
 
             QImage *getImageWithMask();

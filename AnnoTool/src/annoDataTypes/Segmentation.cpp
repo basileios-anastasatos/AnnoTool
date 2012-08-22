@@ -319,27 +319,27 @@ namespace anno {
 //		}
 
         void Segmentation::appendFGPath(const QPainterPath &fgPath) {
-            _painterFGPath.addPath(fgPath);
+            _v_painterFGPath.push_back(fgPath);
         }
 
         void Segmentation::appendBGPath(const QPainterPath &bgPath) {
-            _painterBGPath.addPath(bgPath);
+            _v_painterBGPath.push_back(bgPath);
         }
 
-        void Segmentation::setFGPath(const QPainterPath &fgPath) {
-            _painterFGPath = fgPath;
+        void Segmentation::emptyFGPath() {
+            _v_painterFGPath.clear();
         }
 
-        void Segmentation::setBGPath(const QPainterPath &bgPath) {
-            _painterBGPath = bgPath;
+        void Segmentation::emptyBGPath() {
+            _v_painterBGPath.clear();
         }
 
-        const QPainterPath &Segmentation::getFGPath() {
-            return _painterFGPath;
+        const std::vector<QPainterPath> Segmentation::getFGPath() {
+            return _v_painterFGPath;
         }
 
-        const QPainterPath &Segmentation::getBGPath() {
-            return _painterBGPath;
+        const std::vector<QPainterPath> Segmentation::getBGPath() {
+            return _v_painterBGPath;
         }
 
         util::InteractiveGrabcut *Segmentation::provideGrabCutContext() {
@@ -418,7 +418,7 @@ namespace anno {
                     segm->setMaskPath(sPath);
                     QImage *imgMask = segm->getMask();
                     if(NULL != imgMask) {
-                        imgMask->save(sPath);
+                        imgMask->save(sPath, "PNG");
                     }
                 }
             }

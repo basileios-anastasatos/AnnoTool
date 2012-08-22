@@ -204,6 +204,7 @@ namespace anno {
 
         void AnnoGraphicsPath::startPathFromPoint(const QPointF &pt) {
             _painterPath = QPainterPath();// empty
+            setPath(_painterPath);
             _painterPath.moveTo(pt);
         }
 

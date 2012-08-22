@@ -96,8 +96,8 @@ namespace anno {
 //				QList<AnnoAttribute> _annoAttributes;
 //				AnnoShape* _shape;
                 //AnnoSegmenation* _annoSegm;
-                QPainterPath				_painterFGPath;
-                QPainterPath				_painterBGPath;
+                std::vector<QPainterPath>	_v_painterFGPath;
+                std::vector<QPainterPath>	_v_painterBGPath;
                 util::InteractiveGrabcut	*_grabCutContext;
                 QString						_sImagePath;
 
@@ -179,10 +179,10 @@ namespace anno {
 //				void removeAttributeAll();
                 void appendFGPath(const QPainterPath &fgPath);
                 void appendBGPath(const QPainterPath &bgPath);
-                void setFGPath(const QPainterPath &fgPath);
-                void setBGPath(const QPainterPath &bgPath);
-                const QPainterPath &getFGPath();
-                const QPainterPath &getBGPath();
+                void emptyFGPath();
+                void emptyBGPath();
+                const std::vector<QPainterPath> getFGPath();
+                const std::vector<QPainterPath> getBGPath();
                 util::InteractiveGrabcut *provideGrabCutContext();
                 util::InteractiveGrabcut *provideGrabCutContext(const QString &sPath, const QRectF &boundBoxRect, const QImage *qSegmMask = NULL);
 //
