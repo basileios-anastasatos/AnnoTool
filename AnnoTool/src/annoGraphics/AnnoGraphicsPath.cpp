@@ -16,11 +16,16 @@ namespace anno {
         AnnoGraphicsPath::AnnoGraphicsPath(dt::Annotation *anno, QGraphicsItem *parent) :
             QGraphicsPathItem(parent), AnnoGraphicsShape(anno) {
             setupAppearance();
-            setPath(*annoPath());
+            //setPath(*annoPath());
             _bIsForeground = true;
+            _painterPath = NULL;
         }
 
         AnnoGraphicsPath::~AnnoGraphicsPath() {
+            if (NULL != _painterPath) {
+                delete _painterPath;
+                _painterPath = NULL;
+            }
         }
 
         void AnnoGraphicsPath::setupAppearance() {
@@ -184,7 +189,7 @@ namespace anno {
                 painter->setPen(QPen(QColor("blue"), 3.0));
             }
 
-            painter->drawPath(_painterPath);
+            painter->drawPath(path()/**_painterPath*/);
         }
 
         void AnnoGraphicsPath::exMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
@@ -203,14 +208,22 @@ namespace anno {
         }
 
         void AnnoGraphicsPath::startPathFromPoint(const QPointF &pt) {
-            _painterPath = QPainterPath();// empty
-            setPath(_painterPath);
-            _painterPath.moveTo(pt);
+            if (NULL != _painterPath) {
+                delete _painterPath;
+                _painterPath = NULL;
+            }
+            _painterPath = new QPainterPath();
+            _painterPath->moveTo(pt);
+            setPath(*_painterPath);
         }
 
         void AnnoGraphicsPath::addPointToPath(const QPointF &pt) {
-            _painterPath.lineTo(pt);
-            setPath(_painterPath);
+            _painterPath->lineTo(pt);
+            setPath(*_painterPath);
+        }
+
+        QPainterPath *AnnoGraphicsPath::getPath() const {
+            return _painterPath;
         }
 
     }

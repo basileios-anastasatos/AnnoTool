@@ -13,7 +13,7 @@ namespace anno {
         class AnnoGraphicsPath : public QGraphicsPathItem, public AnnoGraphicsShape {
             private:
                 bool		 _bIsForeground;
-                QPainterPath _painterPath;
+                QPainterPath *_painterPath;
 
             private:
                 void setupAppearance();
@@ -62,6 +62,7 @@ namespace anno {
                 }
                 void startPathFromPoint(const QPointF &pt);
                 void addPointToPath(const QPointF &pt);
+                QPainterPath *getPath() const;
 
         };
 

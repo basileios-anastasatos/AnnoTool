@@ -264,7 +264,7 @@ namespace anno {
                 _bFGBrush = false;
             }
 
-            if (_curShape == NULL) {
+            if (true/*_curShape == NULL*/) {
                 AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
                 if (s != NULL) {
                     _scene->addAnnoShape(s);
@@ -339,9 +339,9 @@ namespace anno {
                 dt::Segmentation *segm = dynamic_cast<dt::Segmentation *>(_curParentAnno);
 
                 if(_bFGBrush) {
-                    segm->appendFGPath(_curShape->path());
+                    segm->appendFGPath(*(_curShape->getPath()));
                 } else {
-                    segm->appendBGPath(_curShape->path());
+                    segm->appendBGPath(*(_curShape->getPath()));
                 }
 
                 segm->setModified(true);
