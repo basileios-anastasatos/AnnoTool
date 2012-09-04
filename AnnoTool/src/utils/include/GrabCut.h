@@ -18,7 +18,6 @@ namespace util {
             cv::Mat 	_fgd;
             cv::Mat 	_bgd;
             cv::Mat 	_mask;
-            cv::Mat 	_resultWithMask;
 
             cv::Scalar 	_fg_color;
             cv::Scalar 	_bg_color;

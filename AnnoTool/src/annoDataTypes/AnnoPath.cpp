@@ -19,7 +19,6 @@ namespace anno {
         }
 
         QString AnnoPath::shapeInfo() const {
-            //return QString("Type: %1\n#-Points: %2").arg("Polygon").arg(size());
             return QString("Type: %1\n").arg("Path");
         }
 
@@ -31,64 +30,25 @@ namespace anno {
             return *((QPainterPath *)this);
         }
 
+        // todo
         void AnnoPath::print() const {
-//			QTextStream out(stdout);
-//			out <<"[Poly, (" <<size() <<")]" <<endl;
         }
 
-        AnnoPath &AnnoPath::operator=(const QPainterPath &path) {
-//			clear();
-//			QVectorIterator<QPointF> i(r);
-//			while(i.hasNext())
-//			{
-//				append(i.next());
-//			}
-            return *this;
-        }
-
-        AnnoPath &AnnoPath::operator=(const AnnoPath &path) {
-//			clear();
-//			QVectorIterator<QPointF> i(r);
-//			while(i.hasNext())
-//			{
-//				append(i.next());
-//			}
-            return *this;
-        }
+        // todo
+//		AnnoPath& AnnoPath::operator=(const QPainterPath& path)
+//		{
+//			return *this;
+//		}
+//
+//		AnnoPath& AnnoPath::operator=(const AnnoPath& path)
+//		{
+//			return *this;
+//		}
 
         void AnnoPath::toXml(QXmlStreamWriter &writer) const throw(XmlException *) {
-//			writer.writeStartElement("polygon");
-//			QVectorIterator<QPointF> i(*this);
-//			while(i.hasNext())
-//			{
-//				QPointF p = i.next();
-//				XmlHelper::writeXmlPoint(writer, p.x(), p.y());
-//			}
-//			writer.writeEndElement();
         }
 
         void AnnoPath::loadFromXml(QXmlStreamReader &reader) throw(XmlException *) {
-//			if (!reader.isStartElement() || reader.name() != "polygon")
-//			{
-//				throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "polygon", reader.name().toString());
-//			}
-//
-//			QString tagPoint("point");
-//			QString tagPoly("polygon");
-//			while (!reader.atEnd())
-//			{
-//				if (reader.isStartElement() && reader.name() == tagPoint)
-//				{
-//					QPointF p = XmlHelper::readXmlPoint(reader);
-//					append(p);
-//				}
-//				else if (reader.isEndElement() && reader.name() == tagPoly)
-//				{
-//					reader.readNext();
-//					break;
-//				}
-//				reader.readNext();
-//			}
         }
 
     }

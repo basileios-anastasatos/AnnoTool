@@ -103,10 +103,6 @@ namespace anno {
         }
 
         void AnnoGraphicsSegmentation::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-//			dt::AnnoSegmentation* bBox = AnnoSegmentation();
-//			QImage* qImg = bBox->getImage();
-//			if(NULL != qImg)
-//				_bShowMask = false;
             GlobalLogger::instance()->logDebug("AG_SEGMENTATION: mousePressEvent.");
             GlobalToolManager *tm = GlobalToolManager::instance();
             if (tm->hasTool()) {

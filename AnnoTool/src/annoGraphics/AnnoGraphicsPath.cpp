@@ -16,7 +16,6 @@ namespace anno {
         AnnoGraphicsPath::AnnoGraphicsPath(dt::Annotation *anno, QGraphicsItem *parent) :
             QGraphicsPathItem(parent), AnnoGraphicsShape(anno) {
             setupAppearance();
-            //setPath(*annoPath());
             _bIsForeground = true;
             _painterPath = NULL;
         }
@@ -134,10 +133,8 @@ namespace anno {
             if (change == QGraphicsItem::ItemSelectedChange) {
                 if (value.toBool()) {
                     setVisible(true);
-                    //setControlPointsVisible(true);
                 } else {
                     setVisible(false);
-                    //	setControlPointsVisible(false);
                 }
             }
             return QGraphicsPathItem::itemChange(change, value);
@@ -148,27 +145,6 @@ namespace anno {
         }
 
         void AnnoGraphicsPath::shapeMoveBy(qreal deltaX, qreal deltaY) {
-//			QPointF delta(deltaX, deltaY);
-//			dt::AnnoPolygon* poly = annoPolygon();
-//			QPolygonF tmpPoly = *poly;
-//			QRectF parRect = parentItem()->boundingRect();
-//			tmpPoly.translate(delta);
-//
-//			bool validPos = true;
-//			for (int i = 0; i < tmpPoly.size(); ++i)
-//			{
-//				validPos = validPos && parRect.contains(tmpPoly[i]);
-//			}
-//
-//			if (validPos)
-//			{
-//				prepareGeometryChange();
-//				*poly = tmpPoly;
-//				setPolygon(tmpPoly);
-//				validateCpPos();
-//				_anno->setModified(true);
-//				setToolTip(_anno->annoInfo());
-//			}
         }
 
         void AnnoGraphicsPath::shapeSizeBy(qreal facX, qreal facY) {

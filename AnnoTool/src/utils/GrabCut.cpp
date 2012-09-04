@@ -10,7 +10,7 @@ using namespace std;
 namespace util {
     InteractiveGrabcut::InteractiveGrabcut() :
         _filePath(""),
-        _src(), _mask(), _fgd(), _bgd(), _resultWithMask(),
+        _src(), _mask(), _fgd(), _bgd(),
         _fg_color(255, 255, 0), _bg_color(255, 0, 0),
         _bNew(true), _bFGMaskNotEmpty(false), _bBGMaskNotEmpty(false) {
     }
@@ -41,7 +41,6 @@ namespace util {
 
         // open existing segmentation
         _bNew = false;
-//		extractImage(inputWholeImg, _rcAbsRect, _resultWithMask);// todo  reuse later?
 
         cv::Mat segmMaskImg = qImage2Mat(*qSegmMask);
 
@@ -51,21 +50,11 @@ namespace util {
         for(int y = 0; y < segmMaskImg.rows; ++y) {
             for(int x = 0; x < segmMaskImg.cols; ++x) {
                 if(255 == segmMaskImg.at<cv::Vec3b>(y, x)[1]) {
-//					cv::Vec3b& pix = _resultWithMask.at<cv::Vec3b>(y, x);
-//					pix[0] = (uchar)(pix[0] * alphaFG + _fg_color[0] * (1-alphaFG));
-//					pix[1] = (uchar)(pix[1] * alphaFG + _fg_color[1] * (1-alphaFG));
-//					pix[2] = (uchar)(pix[2] * alphaFG + _fg_color[2] * (1-alphaFG));
-
                     _mask.at<uchar>(y + _rcRelBoundRect.y, x + _rcRelBoundRect.x) = cv::GC_FGD;
                     if (!_bFGMaskNotEmpty) {
                         _bFGMaskNotEmpty = true;
                     }
                 } else if(127 == segmMaskImg.at<cv::Vec3b>(y, x)[1]) {
-//					cv::Vec3b& pix = _resultWithMask.at<cv::Vec3b>(y, x);
-//					pix[0] = (uchar)(pix[0] * alphaPFG + _fg_color[0] * (1-alphaPFG));
-//					pix[1] = (uchar)(pix[1] * alphaPFG + _fg_color[1] * (1-alphaPFG));
-//					pix[2] = (uchar)(pix[2] * alphaPFG + _fg_color[2] * (1-alphaPFG));
-
                     _mask.at<uchar>(y + _rcRelBoundRect.y, x + _rcRelBoundRect.x) = cv::GC_PR_FGD;
                     if (!_bFGMaskNotEmpty) {
                         _bFGMaskNotEmpty = true;
@@ -112,7 +101,6 @@ namespace util {
 
         _fgd.release();
         _bgd.release();
-        _resultWithMask.release();// todo  create/copy ?
 
         _bNew = true;
         _bFGMaskNotEmpty = false;
@@ -168,7 +156,6 @@ namespace util {
     }
 
     QImage *InteractiveGrabcut::getImageWithMask() { //only used when we open segmentation - todo ?
-        //return mat2QImage(_resultWithMask);
         cv::Rect rcRealRect;
         cv::Mat imgMaskResult;	//image mask for saving
         cv::Mat resultImg = getFGImage(rcRealRect, imgMaskResult);
@@ -362,7 +349,6 @@ namespace util {
         _fgd.release();
         _bgd.release();
         _mask.release();
-        _resultWithMask.release();
     }
 
     QImage *InteractiveGrabcut::execute(bool bUpdMask, QRect &realRect, QImage &qImgMaskRes) {
@@ -371,7 +357,8 @@ namespace util {
         if (_bNew) { // new segmentation
             if (!bUpdMask) {
                 cv::grabCut(_src, _mask, _rcRelBoundRect, _bgd, _fgd, 2, cv::GC_INIT_WITH_RECT);
-            } else { // we have brush path
+            } else { // we have the brush path
+                // commented code
 //	        	cv::Mat tmp(src.size(),CV_8UC3, cv::Scalar(0,0,0));
 //	        	cv::grabCut(src, tmp, m_rcBoundRect, bgd, fgd, 1, cv::GC_INIT_WITH_RECT);
 //	        	mask &= tmp;
@@ -460,6 +447,7 @@ namespace util {
         res = tmp.colRange(dXStart, dXFinish);
     }
 
+    // commented code
 //	    cv::Mat getBinMask()
 //	    {
 //	        cv::Mat binmask(mask.size(), CV_8U);

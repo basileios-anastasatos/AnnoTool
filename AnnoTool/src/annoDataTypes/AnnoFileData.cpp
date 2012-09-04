@@ -285,7 +285,6 @@ namespace anno {
                     Annotation *anno = Segmentation::fromXml(reader);
                     addAnnotation(anno);
                     Segmentation *segm = dynamic_cast<Segmentation *>(anno);
-                    //build real images
                     QFileInfo fileName = imageInfo()->imagePath();
                     if (fileName.isRelative()) {
                         fileName = GlobalProjectManager::instance()->relToAbs(fileName);

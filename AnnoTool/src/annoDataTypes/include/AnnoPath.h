@@ -20,9 +20,9 @@ namespace anno {
             public:
                 virtual void print() const;
 
-            public:
-                AnnoPath &operator=(const QPainterPath &r);
-                AnnoPath &operator=(const AnnoPath &r);
+//			public:
+//				AnnoPath& operator=(const QPainterPath& r);
+//				AnnoPath& operator=(const AnnoPath& r);
 
             public:
                 virtual void toXml(QXmlStreamWriter &writer) const throw(XmlException *);

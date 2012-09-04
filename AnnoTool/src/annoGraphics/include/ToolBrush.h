@@ -58,13 +58,6 @@ namespace anno {
             public:
                 virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-//				virtual void mousePressEvent(AnnoGraphicsControlPoint* cp,
-//						QGraphicsSceneMouseEvent* event);
-//				virtual void mouseReleaseEvent(AnnoGraphicsControlPoint* cp,
-//						QGraphicsSceneMouseEvent* event);
-//				virtual void mouseMoveEvent(AnnoGraphicsControlPoint* cp,
-//						QGraphicsSceneMouseEvent* event);
-
                 virtual void mousePressEvent(AnnoGraphicsShape *shape,
                                              QGraphicsSceneMouseEvent *event);
                 virtual void mouseReleaseEvent(AnnoGraphicsShape *shape,
@@ -89,12 +82,6 @@ namespace anno {
                 virtual void hoverLeaveEvent(AnnoGraphicsShape *shape,
                                              QGraphicsSceneHoverEvent *event);
 
-//				virtual void hoverEnterEvent(AnnoGraphicsControlPoint* cp,
-//						QGraphicsSceneHoverEvent* event);
-//				virtual void hoverLeaveEvent(AnnoGraphicsControlPoint* cp,
-//						QGraphicsSceneHoverEvent* event);
-
-//				virtual void keyReleaseEvent(AnnoGraphicsControlPoint* cp, QKeyEvent* event);
                 virtual void keyReleaseEvent(AnnoGraphicsShape *shape, QKeyEvent *event);
                 virtual void keyReleaseEvent(AnnoGraphicsPixmap *img, QKeyEvent *event);
 

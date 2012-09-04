@@ -4,7 +4,6 @@
 #include <QTextStream>
 #include "importGlobals.h"
 
-
 //namespace AnnoTool
 namespace anno {
     //namespace DataTypes

@@ -66,11 +66,6 @@ namespace anno {
             if(event->button() != Qt::LeftButton && event->button() != Qt::MidButton) {
                 return;
             }
-
-            if (!_modify && _curShape != NULL) {
-//				_curShape->removePolygonPoint(_curShape->polygon().size() - 1);
-//				finishPolygon();
-            }
         }
 
 
@@ -80,50 +75,8 @@ namespace anno {
                 return;
             }
 
-//			if(isModifyResetEvent(event))
-//			{
-//				resetModify();
-//			}
-//
-//			if(isModifyActive(event))
-//			{
-//				if (isType(shape))
-//				{
-//					AnnoGraphicsPath* poly = (AnnoGraphicsBrush*)shape;
-//					poly->insertPolygonPoint(event->pos());
-
-//					GlobalProjectManager* pm = GlobalProjectManager::instance();
-//					anno::dt::Annotation* anno = pm->selectedAnno();
-//					if(NULL == anno)
-//						return;
-//					anno::dt::Segmentation* segm = dynamic_cast<anno::dt::Segmentation*>(anno);
-//					if(NULL == segm)
-//						return;
-//					_curParentAnno = segm;
-//
-//					if(_bFGBrush/*event->button() == Qt::LeftButton*/)
-//					{
-//						_lbDrag = true;
-//						_lbStart = event->pos();
-//						_painterFGPath.moveTo((int)(_lbStart.x()), (int)(_lbStart.y()));
-//						return;
-//					}
-//					else
-//					//if(event->button() == Qt::RightButton)
-//					{
-//						_rbDrag = true;
-//						_rbStart = event->pos();
-//						//_painterPath = QPainterPath();
-//						_painterBGPath.moveTo((int)(_rbStart.x()), (int)(_rbStart.y()));
-//						return;
-//					}
-//				}
-//			}
-//			else if(!isModifyEvent(event))
-            {
-                if (shape->parentImage() != NULL) {
-                    shape->parentImage()->exMousePressEvent(event);
-                }
+            if (shape->parentImage() != NULL) {
+                shape->parentImage()->exMousePressEvent(event);
             }
         }
 
@@ -133,88 +86,15 @@ namespace anno {
                 return;
             }
 
-//			if (isModifyResetEvent(event))
-//			{
-//				resetModify();
-//			}
-//
-//			if(isModifyEvent(event))
-//			{
-//				if(_lbDrag)
-//				{
-//					_lbDrag = false;
-//
-//					if (NULL == _curParentAnno)
-//						return;
-//					dt::Segmentation* segm = dynamic_cast<dt::Segmentation*>(_curParentAnno);
-//					if (NULL == segm)
-//						return;
-//
-//					segm->setFGPAth(_painterFGPath);
-//
-//					return;
-//				}
-//
-//				if(_rbDrag)
-//				{
-//					_rbDrag = false;
-//
-//					if (NULL == _curParentAnno)
-//						return;
-//					dt::Segmentation* segm = dynamic_cast<dt::Segmentation*>(_curParentAnno);
-//					if (NULL == segm)
-//						return;
-//
-//					segm->setBGPAth(_painterBGPath);
-//
-//					return;
-//				}
-
-//				if (isType(shape) && shape->graphicsItem()->contains(event->pos()))
-//				{
-//					setModify(shape);
-//				}
-//			}
-//			else
-            {
-                if (shape->parentImage() != NULL) {
-                    shape->parentImage()->exMouseReleaseEvent(event);
-                }
+            if (shape->parentImage() != NULL) {
+                shape->parentImage()->exMouseReleaseEvent(event);
             }
         }
 
         void ToolBrush::mouseMoveEvent(AnnoGraphicsShape *shape,
                                        QGraphicsSceneMouseEvent *event) {
-//			if(isModifyActive(event))
-//			{
-//				if (GlobalProjectManager::instance()->isAnnoSelected(shape->relatedAnno()))
-//				{
-//					if(_lbDrag)
-//					{
-//						_lbStart = event->pos();
-//						_painterFGPath.lineTo((int)(_lbStart.x()), (int)(_lbStart.y()));
-//						_graphicsFGPath.setPath(_painterFGPath);
-//						_graphicsFGPath.show();
-//					}
-//
-//					if(_rbDrag)
-//					{
-//						_rbStart = event->pos();
-//						_painterBGPath.lineTo((int)(_rbStart.x()), (int)(_rbStart.y()));
-//						_graphicsBGPath.setPath(_painterBGPath);
-//						_graphicsBGPath.show();
-//					}
-
-//					qreal deltaX = event->pos().x() - event->lastPos().x();
-//					qreal deltaY = event->pos().y() - event->lastPos().y();
-//					shape->shapeMoveBy(deltaX, deltaY);
-//				}
-//			}
-//			else if(!isModifyEvent(event))
-            {
-                if (shape->parentImage() != NULL) {
-                    shape->parentImage()->exMouseMoveEvent(event);
-                }
+            if (shape->parentImage() != NULL) {
+                shape->parentImage()->exMouseMoveEvent(event);
             }
         }
 
@@ -233,8 +113,7 @@ namespace anno {
             pt.setX(qRound(pt.x()));
             pt.setY(qRound(pt.y()));
 
-            dt::AnnoPath *aPath = new dt::AnnoPath();
-//			aPath->moveTo(pt);
+            dt::AnnoPath *aPath = new dt::AnnoPath(); //dummy
 
             GlobalProjectManager *pm = GlobalProjectManager::instance();
             anno::dt::Annotation *selAnno = pm->selectedAnno();
@@ -253,7 +132,6 @@ namespace anno {
             anno->setAnnoId(QUuid::createUuid());
             anno->setShape(aPath);
             if(!parentId.isNull()) {
-                //_curParentAnno = GlobalProjectManager::instance()->selectedFile()->getAnnotation(parentId);
                 anno->setAnnoParent(parentId);
             }
 
@@ -264,51 +142,16 @@ namespace anno {
                 _bFGBrush = false;
             }
 
-            if (true/*_curShape == NULL*/) {
-                AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
-                if (s != NULL) {
-                    _scene->addAnnoShape(s);
-                    _scene->setFocusItem(s->graphicsItem());
-                    _scene->selectShape(anno->annoId());
-                    _curShape = static_cast<AnnoGraphicsPath *>(s);
-                    _curShape->setIsForeground(_bFGBrush);
-                    _curShape->startPathFromPoint(pt);
-                    //_curShape->setPath(aPath->path());
-                }
+            AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
+            if (s != NULL) {
+                _scene->addAnnoShape(s);
+                _scene->setFocusItem(s->graphicsItem());
+                _scene->selectShape(anno->annoId());
+                _curShape = static_cast<AnnoGraphicsPath *>(s);
+                _curShape->setIsForeground(_bFGBrush);
+                _curShape->startPathFromPoint(pt);
+                //_curShape->setPath(aPath->path());
             }
-
-//			if(_modify)
-//			{
-//				resetModify();
-//			}
-//			else
-//			{
-//				GlobalProjectManager* pm = GlobalProjectManager::instance();
-//				anno::dt::Annotation* anno = pm->selectedAnno();
-//				if(NULL == anno)
-//					return;
-//				anno::dt::Segmentation* segm = dynamic_cast<anno::dt::Segmentation*>(anno);
-//				if(NULL == segm)
-//					return;
-//
-//				if (_curShape == NULL)
-//				{
-//					AnnoGraphicsShape* s = new AnnoGraphicsPath(segm);
-//					if (s != NULL)
-//					{
-//						_scene->addAnnoShape(s);
-//						_curShape = static_cast<AnnoGraphicsPath*>(s);
-//						_curShape->setIsForeground(_bFGBrush);
-//					}
-//				}
-//
-//				_bDrag = true;
-//				QPointF pt = img->mapFromScene(event->scenePos());
-//				pt.setX(int(pt.x()));
-//				pt.setY(int(pt.y()));
-//				_curShape->startPathFromPoint(pt);
-//				return;
-//			}
         }
 
         void ToolBrush::mouseReleaseEvent(AnnoGraphicsPixmap *img,
@@ -359,15 +202,6 @@ namespace anno {
                 _curShape->addPointToPath(pt);
 //				_curShape->cpMouseMoveEvent(2, event);
             }
-//			GlobalLogger::instance()->logDebug("ToolPolygon::mouseMoveEvent");
-
-//			if (_bDrag && _curShape)
-//			{
-//				QPointF pt = img->mapFromScene(event->scenePos());
-//				pt.setX(int(pt.x()));
-//				pt.setY(int(pt.y()));
-//				_curShape->addPointToPath(pt);
-//			}
         }
 
         void ToolBrush::hoverEnterEvent(AnnoGraphicsPixmap *img, QGraphicsSceneHoverEvent *event) {

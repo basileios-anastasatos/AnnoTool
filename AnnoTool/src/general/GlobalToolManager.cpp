@@ -244,7 +244,7 @@ namespace anno {
     void GlobalToolManager::runGrabCut() {
         /*
          * anna: Here we process the current annotation (-> segmentation)
-         * We give the bounding box rectangle and/or the FG/BG mask to grabCut algorithm
+         * We give the bounding box rectangle with (or without) the FG/BG mask to GrabCut algorithm
          */
         GlobalProjectManager *pm = GlobalProjectManager::instance();
         anno::dt::Annotation *anno = pm->selectedAnno();

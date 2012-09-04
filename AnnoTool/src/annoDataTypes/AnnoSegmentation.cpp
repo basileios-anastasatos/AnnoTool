@@ -32,7 +32,6 @@ namespace anno {
 
         QString AnnoSegmentation::shapeInfo() const {
             QString res = QString("Type: %1\nx: %2 y: %3\nwidth: %4 height: %5\n").arg("BoundingBox").arg((int)(x())).arg((int)(y())).arg((int)(width())).arg((int)(height()));
-            //res += QString("image path:%1\nx: %2\ny: %3\nwidth: %4\nheight: %5").arg(_segmMaskPath).arg(_segmRealBoundRect.x()).arg(_segmRealBoundRect.y()).arg(_segmRealBoundRect.width()).arg(_segmRealBoundRect.height());
             res += QString("MinMax: x: %1 y: %2\nwidth: %3 height: %4").arg(_segmRealBoundRect.x()).arg(_segmRealBoundRect.y()).arg(_segmRealBoundRect.width()).arg(_segmRealBoundRect.height());
             return res;
         }
