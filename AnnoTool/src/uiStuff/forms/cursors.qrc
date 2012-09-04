@@ -13,5 +13,9 @@
         <file alias="curRect_active" >res/cursors/cursorRect_active.png</file>
         <file alias="curSPoint" >res/cursors/cursorSPoint.png</file>
         <file alias="curSPoint_active" >res/cursors/cursorSPoint_active.png</file>
+        <file alias="curBoundingBox" >res/cursors/cursorBoundingBox.png</file>
+        <file alias="curBoundingBox_active" >res/cursors/cursorBoundingBox_active.png</file>
+        <file alias="curBrush" >res/cursors/cursorBrush.png</file>
+        <file alias="curBrush_active" >res/cursors/cursorBrush_active.png</file>
     </qresource>
 </RCC>

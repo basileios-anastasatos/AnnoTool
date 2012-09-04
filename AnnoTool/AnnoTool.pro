@@ -7,7 +7,7 @@ CONFIG -= exceptions_off \
     debug
 
 #CONFIG -= release
-#CONFIG += debug
+#CONFIG += qt debug
 CONFIG += release
 
 UI_DIR = ./src/uiStuff/gen
@@ -16,6 +16,9 @@ RCC_DIR = ./tmp
 
 # need this as workaround for missing libGL.so
 LIBS += -L/home/andriluk/lib
+
+CONFIG += link_pkgconfig
+PKGCONFIG += opencv
 
 INCLUDEPATH += ./src/annoDataTypes/include \
     ./src/annoFilter/include \
@@ -73,6 +76,9 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoDataTypes/include/AnnoEllipse.h \
     ./src/annoDataTypes/include/AnnoSinglePoint.h \
     ./src/annoDataTypes/include/AnnoPolygon.h \
+    ./src/annoDataTypes/include/AnnoPath.h \
+    ./src/annoDataTypes/include/AnnoSegmentation.h \
+    ./src/annoDataTypes/include/Segmentation.h \
     ./src/annoFilter/include/annoFiltersForward.h \
     ./src/annoFilter/include/AllAnnoFilterRules.h \
     ./src/annoFilter/include/AnnoFilterRule.h \
@@ -101,6 +107,8 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoGraphics/include/AnnoGraphicsEllipse.h \
     ./src/annoGraphics/include/AnnoGraphicsSinglePoint.h \
     ./src/annoGraphics/include/AnnoGraphicsPolygon.h \
+    ./src/annoGraphics/include/AnnoGraphicsSegmentation.h \
+    ./src/annoGraphics/include/AnnoGraphicsPath.h \
     ./src/annoGraphics/include/AnnoGraphicsPixmap.h \
     ./src/annoGraphics/include/AnnoGraphicsScene.h \
     ./src/annoGraphics/include/GraphicsTool.h \
@@ -110,9 +118,12 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/annoGraphics/include/ToolRect.h \
     ./src/annoGraphics/include/ToolEllipse.h \
     ./src/annoGraphics/include/ToolPolygon.h \
+    ./src/annoGraphics/include/ToolBoundingBox.h \
+    ./src/annoGraphics/include/ToolBrush.h \
     ./src/annoGraphics/include/MapperHelper.h \
     ./src/utils/include/PriorityList.h \
     ./src/utils/include/SortedList.h \
+    ./src/utils/include/GrabCut.h \
     ./src/general/include/importGlobals.h \
     ./src/general/include/GlobalToolManager.h \
     ./src/general/include/GlobalConfig.h \
@@ -192,6 +203,9 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoDataTypes/AnnoEllipse.cpp \
     ./src/annoDataTypes/AnnoSinglePoint.cpp \
     ./src/annoDataTypes/AnnoPolygon.cpp \
+    ./src/annoDataTypes/AnnoPath.cpp \
+    ./src/annoDataTypes/AnnoSegmentation.cpp \
+    ./src/annoDataTypes/Segmentation.cpp \
     ./src/annoFilter/AnnoFilterRule.cpp \
     ./src/annoFilter/LogicFilterRule.cpp \
     ./src/annoFilter/AnnoFilterRuleAtom.cpp \
@@ -216,6 +230,8 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoGraphics/AnnoGraphicsEllipse.cpp \
     ./src/annoGraphics/AnnoGraphicsSinglePoint.cpp \
     ./src/annoGraphics/AnnoGraphicsPolygon.cpp \
+    ./src/annoGraphics/AnnoGraphicsSegmentation.cpp \
+    ./src/annoGraphics/AnnoGraphicsPath.cpp \
     ./src/annoGraphics/AnnoGraphicsPixmap.cpp \
     ./src/annoGraphics/AnnoGraphicsScene.cpp \
     ./src/annoGraphics/GraphicsTool.cpp \
@@ -225,9 +241,12 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoGraphics/ToolRect.cpp \
     ./src/annoGraphics/ToolEllipse.cpp \
     ./src/annoGraphics/ToolPolygon.cpp \
+    ./src/annoGraphics/ToolBoundingBox.cpp \
+    ./src/annoGraphics/ToolBrush.cpp \
     ./src/annoGraphics/MapperHelper.cpp \
     ./src/utils/PriorityList.cpp \
     ./src/utils/SortedList.cpp \
+    ./src/utils/GrabCut.cpp \
     ./src/general/GlobalToolManager.cpp \
     ./src/general/GlobalConfig.cpp \
     ./src/general/GlobalImageLoader.cpp \

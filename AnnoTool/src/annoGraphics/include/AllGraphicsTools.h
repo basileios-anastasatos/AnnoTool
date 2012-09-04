@@ -8,6 +8,8 @@
 #include "ToolPolygon.h"
 #include "ToolSinglePoint.h"
 #include "ToolEllipse.h"
+#include "ToolBoundingBox.h"
+#include "ToolBrush.h"
 
 #endif /*ALLGRAPHICSTOOLS_H_*/
 

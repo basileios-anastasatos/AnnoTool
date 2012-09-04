@@ -56,7 +56,7 @@ namespace anno {
                 return;
             }
 
-            if (_view != NULL) {
+            if (_view != NULL && !_prevCursors.isEmpty()) {
                 _view->setCursor(_prevCursors.pop());
             }
             cp->parentShape()->cpMouseReleaseEvent(cp->getIndex(), event);
@@ -88,7 +88,7 @@ namespace anno {
             }
 
             if (GlobalProjectManager::instance()->isAnnoSelected(shape->relatedAnno())) {
-                if (_view != NULL) {
+                if (_view != NULL && !_prevCursors.isEmpty()) {
                     _view->setCursor(_prevCursors.pop());
                 }
             } else if(shape->graphicsItem()->contains(event->pos())) {

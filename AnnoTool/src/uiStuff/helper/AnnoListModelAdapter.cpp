@@ -87,16 +87,18 @@ QVariant AnnoListModelAdapter::data(const QModelIndex &index, int role) const {
             const anno::dt::Annotation *anno = cur->getAnnotation(id);
             if (anno != NULL && index.column() == 0) {
                 if (role == Qt::DecorationRole) {
-                    // Mark parent lock
-                    if(anno->annoId() == GlobalToolManager::instance()->getLockedAnno()) {
-                        return QColor::fromRgb(255, 0, 0);
-                    } else {
-                        if(anno->hasAnnoChildren()) {
-                            return QColor::fromRgb(0, 0, 170);
+                    if(dynamic_cast<anno::dt::Segmentation *>(const_cast<anno::dt::Annotation *>(anno))) {
+                        return QColor::fromRgb(255, 154, 0);
+                    } else // Mark parent lock
+                        if(anno->annoId() == GlobalToolManager::instance()->getLockedAnno()) {
+                            return QColor::fromRgb(255, 0, 0);
                         } else {
-                            return QColor::fromRgb(0, 190, 0);
+                            if(anno->hasAnnoChildren()) {
+                                return QColor::fromRgb(0, 0, 170);
+                            } else {
+                                return QColor::fromRgb(0, 190, 0);
+                            }
                         }
-                    }
                 } else {
                     //QString data = anno->annoIdAsString();
 

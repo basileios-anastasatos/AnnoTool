@@ -8,6 +8,7 @@
 #include "AnnoImageInfo.h"
 #include "AnnoInfo.h"
 #include "Annotation.h"
+#include "Segmentation.h"
 #include "AllAnnoExceptions.h"
 #include "XmlHelper.h"
 

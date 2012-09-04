@@ -107,6 +107,9 @@ class AnnoToolMainWindow : public QMainWindow {
         void on_actionToolRectangle_triggered();
         void on_actionToolPolygon_triggered();
         void on_actionToolEllipse_triggered();
+        void on_actionToolBoundingBox_triggered();
+        void on_actionToolBrush_triggered();
+        void on_actionGrabCut_triggered();
         void onTM_toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset);
 
         // constrctor / destructor

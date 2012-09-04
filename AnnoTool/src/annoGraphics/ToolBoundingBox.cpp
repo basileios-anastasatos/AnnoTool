@@ -1,12 +1,11 @@
-#include "include/ToolRect.h"
+#include "include/ToolBoundingBox.h"
 #include <QUuid>
 
 #include "AnnoGraphicsScene.h"
 #include "AnnoFileData.h"
-#include "Annotation.h"
-#include "AnnoRectangle.h"
-#include "AnnoGraphicsShape.h"
-#include "AnnoGraphicsRect.h"
+#include "Segmentation.h"
+#include "AnnoSegmentation.h"
+#include "AnnoGraphicsSegmentation.h"
 #include "AnnoGraphicsShapeCreator.h"
 #include "importGlobals.h"
 #include "AnnoToolMainWindow.h"
@@ -14,54 +13,54 @@
 namespace anno {
     namespace graphics {
 
-        ToolRect::ToolRect(QGraphicsView *view, AnnoGraphicsScene *scene) :
+        ToolBoundingBox::ToolBoundingBox(QGraphicsView *view, AnnoGraphicsScene *scene) :
             GraphicsTool(view, scene), _curShape(NULL), _curParentAnno(NULL) {
-            _cursorNormal = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curRect")), 0, 0);
-            _cursorActive = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curRect_active")), 0, 0);
+            _cursorNormal = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curBoundingBox")), 0, 0);
+            _cursorActive = QCursor(QPixmap::fromImage(QImage(":/res/cursors/curBoundingBox_active")), 0, 0);
         }
 
-        ToolRect::~ToolRect() {
+        ToolBoundingBox::~ToolBoundingBox() {
         }
 
-        bool ToolRect::handlesCp() const {
+        bool ToolBoundingBox::handlesCp() const {
             return false;
         }
 
-        bool ToolRect::handlesShape() const {
+        bool ToolBoundingBox::handlesShape() const {
             return false;
         }
 
-        bool ToolRect::handlesImage() const {
+        bool ToolBoundingBox::handlesImage() const {
             return true;
         }
 
-        void ToolRect::escape() {
+        void ToolBoundingBox::escape() {
             _scene->removeAnnoShape(_curShape);
             _curShape = NULL;
             _curParentAnno = NULL;
         }
 
-        void ToolRect::handleEscape(QKeyEvent *event) {
+        void ToolBoundingBox::handleEscape(QKeyEvent *event) {
             if (event->key() == Qt::Key_Escape && _curShape != NULL && _scene != NULL) {
                 escape();
             }
         }
 
-        void ToolRect::switchDefaultTool() {
+        void ToolBoundingBox::switchDefaultTool() {
             if (_curShape != NULL && _scene != NULL) {
                 escape();
             }
             GlobalToolManager::instance()->selectToolDefault();
         }
 
-        void ToolRect::toolDeactivate() {
+        void ToolBoundingBox::toolDeactivate() {
             if(_curShape != NULL) {
                 escape();
             }
         }
 
-        void ToolRect::mousePressEvent(AnnoGraphicsShape *shape,
-                                       QGraphicsSceneMouseEvent *event) {
+        void ToolBoundingBox::mousePressEvent(AnnoGraphicsShape *shape,
+                                              QGraphicsSceneMouseEvent *event) {
             if(event->button() != Qt::LeftButton) {
                 return;
             }
@@ -71,8 +70,8 @@ namespace anno {
             }
         }
 
-        void ToolRect::mouseReleaseEvent(AnnoGraphicsShape *shape,
-                                         QGraphicsSceneMouseEvent *event) {
+        void ToolBoundingBox::mouseReleaseEvent(AnnoGraphicsShape *shape,
+                                                QGraphicsSceneMouseEvent *event) {
             if(event->button() != Qt::LeftButton) {
                 return;
             }
@@ -82,15 +81,15 @@ namespace anno {
             }
         }
 
-        void ToolRect::mouseMoveEvent(AnnoGraphicsShape *shape,
-                                      QGraphicsSceneMouseEvent *event) {
+        void ToolBoundingBox::mouseMoveEvent(AnnoGraphicsShape *shape,
+                                             QGraphicsSceneMouseEvent *event) {
             if (shape->parentImage() != NULL) {
                 shape->parentImage()->exMouseMoveEvent(event);
             }
         }
 
-        void ToolRect::mousePressEvent(AnnoGraphicsPixmap *img,
-                                       QGraphicsSceneMouseEvent *event) {
+        void ToolBoundingBox::mousePressEvent(AnnoGraphicsPixmap *img,
+                                              QGraphicsSceneMouseEvent *event) {
             if(event->button() != Qt::LeftButton) {
                 return;
             }
@@ -100,29 +99,29 @@ namespace anno {
                 _view->setCursor(_cursorActive);
             }
 
-            dt::AnnoRectangle *arect = new dt::AnnoRectangle();
+            dt::AnnoSegmentation *arect = new dt::AnnoSegmentation();
             arect->setTopLeft(img->mapFromScene(event->scenePos()));
             arect->setSize(QSizeF(0.0, 0.0));
             QUuid parentId = GlobalToolManager::instance()->getLockedAnno();
-            dt::Annotation *anno = new dt::Annotation();
-            anno->setAnnoId(QUuid::createUuid());
-            anno->setShape(arect);
+            dt::Segmentation *segm = new dt::Segmentation();
+            segm->setAnnoId(QUuid::createUuid());
+            segm->setShape(arect);
             if(!parentId.isNull()) {
                 _curParentAnno = GlobalProjectManager::instance()->selectedFile()->getAnnotation(parentId);
-                anno->setAnnoParent(parentId);
+                segm->setAnnoParent(parentId);
             }
 
-            AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(anno);
+            AnnoGraphicsShape *s = AnnoGraphicsShapeCreator::toGraphicsShape(segm);
             if (s != NULL) {
                 _scene->addAnnoShape(s);
                 _scene->setFocusItem(s->graphicsItem());
-                _scene->selectShape(anno->annoId());
-                _curShape = static_cast<AnnoGraphicsRect *>(s);
+                _scene->selectShape(segm->annoId());
+                _curShape = static_cast<AnnoGraphicsSegmentation *>(s);
             }
         }
 
-        void ToolRect::mouseReleaseEvent(AnnoGraphicsPixmap *img,
-                                         QGraphicsSceneMouseEvent *event) {
+        void ToolBoundingBox::mouseReleaseEvent(AnnoGraphicsPixmap *img,
+                                                QGraphicsSceneMouseEvent *event) {
             if (event->button() == Qt::RightButton) {
                 switchDefaultTool();
                 return;
@@ -136,45 +135,45 @@ namespace anno {
             if (_curShape != NULL) {
                 _curShape->cpMouseReleaseEvent(2, event);
                 dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
-                dt::Annotation *anno = _curShape->relatedAnno();
+                dt::Segmentation *segm = dynamic_cast<dt::Segmentation *>(_curShape->relatedAnno());
                 if(_curParentAnno != NULL) {
-                    _curParentAnno->addAnnoChild(anno->annoId());
+                    _curParentAnno->addAnnoChild(segm->annoId());
                 }
-                curFile->addAnnotation(anno);
-                GlobalProjectManager::instance()->setSelectedAnnoRow(anno->annoId());
+                curFile->addAnnotation(segm);
+                GlobalProjectManager::instance()->setSelectedAnnoRow(segm->annoId());
                 AnnoToolMainWindow::updateUI();
                 _curShape = NULL;
             }
             _curParentAnno = NULL;
         }
 
-        void ToolRect::mouseMoveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneMouseEvent *event) {
+        void ToolBoundingBox::mouseMoveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneMouseEvent *event) {
             if (_curShape != NULL) {
                 _curShape->cpMouseMoveEvent(2, event);
             }
         }
 
-        void ToolRect::hoverEnterEvent(AnnoGraphicsPixmap *img, QGraphicsSceneHoverEvent *event) {
+        void ToolBoundingBox::hoverEnterEvent(AnnoGraphicsPixmap *img, QGraphicsSceneHoverEvent *event) {
             if (_view != NULL) {
                 _view->setCursor(_cursorNormal);
             }
         }
 
-        void ToolRect::hoverLeaveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneHoverEvent *event) {
+        void ToolBoundingBox::hoverLeaveEvent(AnnoGraphicsPixmap *img, QGraphicsSceneHoverEvent *event) {
             if (_view != NULL) {
                 _view->setCursor(Qt::ArrowCursor);
             }
         }
 
-        void ToolRect::keyReleaseEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event) {
+        void ToolBoundingBox::keyReleaseEvent(AnnoGraphicsControlPoint *cp, QKeyEvent *event) {
             handleEscape(event);
         }
 
-        void ToolRect::keyReleaseEvent(AnnoGraphicsShape *shape, QKeyEvent *event) {
+        void ToolBoundingBox::keyReleaseEvent(AnnoGraphicsShape *shape, QKeyEvent *event) {
             handleEscape(event);
         }
 
-        void ToolRect::keyReleaseEvent(AnnoGraphicsPixmap *img, QKeyEvent *event) {
+        void ToolBoundingBox::keyReleaseEvent(AnnoGraphicsPixmap *img, QKeyEvent *event) {
             handleEscape(event);
         }
 

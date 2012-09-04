@@ -676,5 +676,23 @@ bool GlobalProjectManager::isPoseMode() {
     return _poseMode;
 }
 
+int GlobalProjectManager::removeNonEmptyDir(QDir &dir) {
+    int res = 0;
+    QStringList lstDirs  = dir.entryList(QDir::Dirs | QDir::AllDirs | QDir::NoDotAndDotDot);
+    QStringList lstFiles = dir.entryList(QDir::Files);
+    foreach (QString entry, lstFiles) {
+        QString entryAbsPath = dir.absolutePath() + "/" + entry;
+        QFile::remove(entryAbsPath);
+    }
+    foreach (QString entry, lstDirs) {
+        QString entryAbsPath = dir.absolutePath() + "/" + entry;
+        QDir childDir(entryAbsPath);
+        removeNonEmptyDir(childDir);
+    }
+    if (!QDir().rmdir(dir.absolutePath())) {
+        res = 1;
+    }
+    return res;
+}
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

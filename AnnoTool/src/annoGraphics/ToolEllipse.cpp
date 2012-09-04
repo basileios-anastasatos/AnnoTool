@@ -131,7 +131,7 @@ namespace anno {
                 return;
             }
 
-            if (_view != NULL) {
+            if (_view != NULL && !_prevCursors.isEmpty()) {
                 _view->setCursor(_prevCursors.pop());
             }
             if (_curShape != NULL) {

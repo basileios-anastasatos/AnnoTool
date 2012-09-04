@@ -22,7 +22,7 @@ namespace anno {
             // enum of selectable tools
         public:
             enum SelGraphicsTool {
-                GtNone, GtPointer, GtSinglePoint, GtRect, GtPolygon, GtEllipse, GtNone2
+                GtNone, GtPointer, GtSinglePoint, GtRect, GtPolygon, GtEllipse, GtBoundingBox, GtBrush, GtNone2
             };
 
             // Singleton members
@@ -110,6 +110,9 @@ namespace anno {
             void setLastAnno(const QUuid &uuid);
             void resetLockedAnno();
             void resetLastAnno();
+
+            void runGrabCut();
+            void recalculateSegmentation(const anno::dt::Annotation *anno, const QRectF &newRect);
 
         signals:
             void toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset);

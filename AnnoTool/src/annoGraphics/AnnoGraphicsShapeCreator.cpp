@@ -3,7 +3,8 @@
 #include "include/AnnoGraphicsSinglePoint.h"
 #include "include/AnnoGraphicsEllipse.h"
 #include "include/AnnoGraphicsPolygon.h"
-#include "AnnoRectangle.h"
+#include "include/AnnoGraphicsSegmentation.h"
+#include "include/AnnoGraphicsPath.h"
 #include "importGlobals.h"
 
 namespace anno {
@@ -29,12 +30,20 @@ namespace anno {
                             shape = new AnnoGraphicsPolygon(anno);
                             break;
                         }
+                    case dt::ASTypeSegmentation: {
+                            shape = new AnnoGraphicsSegmentation(anno);
+                            break;
+                        }
+                    case dt::ASTypePath: {
+                            shape = new AnnoGraphicsPath(anno);
+                            break;
+                        }
                     default:
-                        GlobalLogger::instance()->logError("Cannot create graphics representation of annotaion! Unknown annotation type!");
+                        GlobalLogger::instance()->logError("Cannot create graphics representation of annotation! Unknown annotation type!");
                         break;
                 }
             } else {
-                GlobalLogger::instance()->logError("Cannot create graphics representation of annotaion!");
+                GlobalLogger::instance()->logError("Cannot create graphics representation of annotation!");
             }
             return shape;
         }

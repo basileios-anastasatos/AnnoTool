@@ -193,6 +193,9 @@ namespace anno {
             void curAnnoModifyReset(::anno::dt::Annotation *anno);
             void curAnnoModifyStateChanged(::anno::dt::Annotation *anno, bool prevState, bool curState);
 
+            //other stuff
+        public:
+            static int removeNonEmptyDir(QDir &dir);
     };
 
     // inlining

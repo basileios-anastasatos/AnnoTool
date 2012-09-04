@@ -1,10 +1,16 @@
 #include "include/GlobalToolManager.h"
 #include "AnnoGraphicsScene.h"
+#include "AnnoGraphicsShapeCreator.h"
 #include "AllGraphicsTools.h"
 #include "ShapeContextMenu.h"
+#include "Segmentation.h"
+#include "GrabCut.h"
 
 #include "GlobalLogger.h"
 using ::logging::GlobalLogger;
+
+#include "qgraphicsview.h"
+#include "qpainter.h"
 
 namespace anno {
 
@@ -128,6 +134,18 @@ namespace anno {
                     GlobalLogger::instance()->logDebug("GlobalToolManager: Selected Tool GtEllipse.");
                     break;
                 }
+            case GtBoundingBox: {
+                    clearTool();
+                    _curTool = new graphics::ToolBoundingBox(_curView, _curScene);
+                    GlobalLogger::instance()->logDebug("GlobalToolManager: Selected Tool GtBoundingBox.");
+                    break;
+                }
+            case GtBrush: {
+                    clearTool();
+                    _curTool = new graphics::ToolBrush(_curView, _curScene);
+                    GlobalLogger::instance()->logDebug("GlobalToolManager: Selected Tool GtBrush.");
+                    break;
+                }
             default:
                 GlobalLogger::instance()->logWarning("GlobalToolManager: Aborted tool selection due to unknown tool type.");
                 return false;
@@ -221,6 +239,111 @@ namespace anno {
 
     void GlobalToolManager::resetLastAnno() {
         _lastAnnoAdded = QUuid();
+    }
+
+    void GlobalToolManager::runGrabCut() {
+        /*
+         * anna: Here we process the current annotation (-> segmentation)
+         * We give the bounding box rectangle with (or without) the FG/BG mask to GrabCut algorithm
+         */
+        GlobalProjectManager *pm = GlobalProjectManager::instance();
+        anno::dt::Annotation *anno = pm->selectedAnno();
+        if(anno != NULL) {
+            anno::dt::Segmentation *segm = dynamic_cast<anno::dt::Segmentation *>(anno);
+            if(segm != NULL) {
+                anno::dt::AnnoShape *annoShape = segm->shape();
+                if(!annoShape) {
+                    return;
+                }
+
+                anno::dt::AnnoShapeType eAnnoShapeType = annoShape->shapeType();
+                if(anno::dt::ASTypeSegmentation == eAnnoShapeType) {
+                    anno::dt::AnnoFileData *curFile = GlobalProjectManager::instance()->selectedFile();
+                    if (!curFile) {
+                        return;
+                    }
+                    QFileInfo fileName = curFile->imageInfo()->imagePath();
+                    if (fileName.isRelative()) {
+                        fileName = GlobalProjectManager::instance()->relToAbs(fileName);
+                    }
+                    QString sFilePath = fileName.filePath();
+                    std::string filePath = (sFilePath.toUtf8().constData());
+
+                    QRectF boundBoxRect = annoShape->boundingRect();
+
+                    if(10 > boundBoxRect.width() || 10 > boundBoxRect.height()) { //nothing to do
+                        return;
+                    }
+
+                    util::InteractiveGrabcut *grabCut = segm->provideGrabCutContext(sFilePath, boundBoxRect);
+
+                    bool bFGPath = false, bBGPath = false;	// look for new paths
+                    const std::vector<QPainterPath> vFGPath = segm->getFGPath();
+                    bFGPath = !vFGPath.empty();
+                    const std::vector<QPainterPath> vBGPath = segm->getBGPath();
+                    bBGPath = !vBGPath.empty();
+
+                    // add new paths to the mask
+                    if(bFGPath) {
+                        std::vector<QPainterPath>::const_iterator itFG = vFGPath.begin(), itFGEnd = vFGPath.end();
+                        for(; itFG != itFGEnd; ++itFG) {
+                            grabCut->addFGPathToMask(*itFG);
+                        }
+                    }
+                    if(bBGPath) {
+                        std::vector<QPainterPath>::const_iterator itBG = vBGPath.begin(), itBGEnd = vBGPath.end();
+                        for(; itBG != itBGEnd; ++itBG) {
+                            grabCut->addBGPathToMask(*itBG);
+                        }
+                    }
+
+                    QRect realRect;
+                    QImage qImgMaskRes;
+                    QImage *qImgRes = grabCut->execute(bFGPath || bBGPath, realRect, qImgMaskRes);
+
+                    ((anno::dt::AnnoSegmentation *)(segm->shape()))->setImage(qImgRes);
+                    ((anno::dt::AnnoSegmentation *)(segm->shape()))->setMask(&qImgMaskRes);
+                    ((anno::dt::AnnoSegmentation *)(segm->shape()))->setRealBoundRect(realRect);
+
+                    // reset the paths
+                    segm->emptyFGPath();
+                    segm->emptyBGPath();
+
+                    segm->setModified(true);
+
+                    _curScene->selectShape(segm->annoId());	// refresh
+                }
+            }
+        }
+    }
+
+    void GlobalToolManager::recalculateSegmentation(const anno::dt::Annotation *anno, const QRectF &newRect) {
+        anno::dt::Segmentation *segm = dynamic_cast<anno::dt::Segmentation *>(const_cast<anno::dt::Annotation *>(anno));
+        if(segm != NULL) {
+            anno::dt::AnnoShape *annoShape = segm->shape();
+            if(!annoShape) {
+                return;
+            }
+
+            anno::dt::AnnoShapeType eAnnoShapeType = annoShape->shapeType();
+            if(anno::dt::ASTypeSegmentation == eAnnoShapeType) {
+                util::InteractiveGrabcut *grabCut = segm->provideGrabCutContext();
+
+                util::InteractiveGrabcut::recalculate(grabCut, newRect);
+
+                QRect realRect;
+                QImage qImgMaskRes;
+                QImage *qImgRes = grabCut->execute(false, realRect, qImgMaskRes);
+
+                ((anno::dt::AnnoSegmentation *)(segm->shape()))->setImage(qImgRes);
+                ((anno::dt::AnnoSegmentation *)(segm->shape()))->setMask(&qImgMaskRes);
+                ((anno::dt::AnnoSegmentation *)(segm->shape()))->setRealBoundRect(realRect);
+
+                segm->setModified(true);
+
+                _curScene->selectShape(segm->annoId());	// refresh
+            }
+        }
     }
 
 }

@@ -278,6 +278,8 @@ void AnnoToolMainWindow::uncheckTools() {
     ui.actionToolRectangle->setChecked(false);
     ui.actionToolPolygon->setChecked(false);
     ui.actionToolEllipse->setChecked(false);
+    ui.actionToolBoundingBox->setChecked(false);
+    ui.actionToolBrush->setChecked(false);
 }
 
 void AnnoToolMainWindow::setToolEnabled(bool enabled) {
@@ -290,11 +292,14 @@ void AnnoToolMainWindow::setToolEnabled(bool enabled) {
     ui.actionToolRectangle->setEnabled(enabled);
     ui.actionToolPolygon->setEnabled(enabled);
     ui.actionToolEllipse->setEnabled(enabled);
+    ui.actionToolBoundingBox->setEnabled(enabled);
+    ui.actionToolBrush->setEnabled(enabled);
 
     ui.actionZtoFront->setEnabled(enabled);
     ui.actionZtoBack->setEnabled(enabled);
     ui.actionRemoveAnnotation->setEnabled(enabled);
     ui.actionSaveCurrentImage->setEnabled(enabled);
+    ui.actionGrabCut->setEnabled(enabled);
     zoomCtrl->setEnabled(enabled);
 }
 
@@ -891,6 +896,21 @@ void AnnoToolMainWindow::on_actionToolEllipse_triggered() {
     GlobalToolManager::instance()->selectTool(GlobalToolManager::GtEllipse);
 }
 
+void AnnoToolMainWindow::on_actionToolBoundingBox_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionToolBoundingBox_triggered");
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtBoundingBox);
+}
+
+void AnnoToolMainWindow::on_actionToolBrush_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionToolBrush_triggered");
+    GlobalToolManager::instance()->selectTool(GlobalToolManager::GtBrush);
+}
+
+void AnnoToolMainWindow::on_actionGrabCut_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionGrabCut_triggered");
+    GlobalToolManager::instance()->runGrabCut();
+}
+
 void AnnoToolMainWindow::onTM_toolSelected(anno::GlobalToolManager::SelGraphicsTool tool, bool reset) {
     if (!reset) {
         switch (tool) {
@@ -928,6 +948,16 @@ void AnnoToolMainWindow::onTM_toolSelected(anno::GlobalToolManager::SelGraphicsT
             case anno::GlobalToolManager::GtEllipse: {
                     uncheckTools();
                     ui.actionToolEllipse->setChecked(true);
+                    break;
+                }
+            case anno::GlobalToolManager::GtBoundingBox: {
+                    uncheckTools();
+                    ui.actionToolBoundingBox->setChecked(true);
+                    break;
+                }
+            case anno::GlobalToolManager::GtBrush: {
+                    uncheckTools();
+                    ui.actionToolBrush->setChecked(true);
                     break;
                 }
             default:
