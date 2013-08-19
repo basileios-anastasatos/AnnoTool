@@ -130,7 +130,11 @@ namespace libAn {
                 }
             }
         }
-
+//     cout << "\tafter loading" << endl;
+//     cout << m_vAnnotations[0][0].m_nTrackID << std::endl;
+//     cout << m_vAnnotations[0][1].m_nTrackID << std::endl;
+//     cout << m_vAnnotations[0][2].m_nTrackID << std::endl;
+//     cout << "\tdone" << endl;
         return;
     }
 

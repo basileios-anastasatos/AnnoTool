@@ -39,13 +39,13 @@ namespace libAn {
                 m_x3(-1), m_x4(-1), m_y3(-1), m_y4(-1),
                 m_dScore(-1), m_nSilhouetteID(-1), m_dScale(1),
                 m_nObjPosX(-1), m_nObjPosY(-1),
-                m_nObjectId(-1), m_dMotionPhase(-1) {};
+                m_nObjectId(-1), m_dMotionPhase(-1), m_nTrackID(-1) {};
 
             AnnoRect(int x1, int y1, int x2, int y2, double score = -1, int sil = -1, float scale = 1): m_x1(x1), m_x2(x2), m_y1(y1), m_y2(y2),
                 m_x3(-1), m_x4(-1), m_y3(-1), m_y4(-1),
                 m_dScore(score), m_nSilhouetteID(sil), m_dScale(scale),
                 m_nObjPosX(-1), m_nObjPosY(-1),
-                m_nObjectId(-1), m_dMotionPhase(-1) {};
+                m_nObjectId(-1), m_dMotionPhase(-1), m_nTrackID(-1) {};
 
             /*       AnnoRect(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, double score=-1, int sil=-1, float scale = 1):m_x1(x1),m_x2(x2),m_y1(y1),m_y2(y2), */
             /* 	m_x3(x3),m_x4(x4),m_y3(y3),m_y4(y4), */
@@ -70,10 +70,14 @@ namespace libAn {
 
             int m_nObjPosX;
             int m_nObjPosY;
+
         public:
             std::vector<AnnoPoint> m_vAnnoPoints;
             int m_nObjectId;
             float m_dMotionPhase;
+            // got tired of writing setter/getter methods
+            int m_nTrackID;
+
 
             void setCoords(int x1, int y1, int x2, int y2) {
                 m_x1 = x1;

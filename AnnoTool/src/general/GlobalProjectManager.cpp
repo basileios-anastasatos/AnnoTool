@@ -245,7 +245,7 @@ namespace anno {
     }
 
     void GlobalProjectManager::setSelectedAnnoRow(int index) {
-        std::cout << "GlobalProjectManager::setSelectedAnnoRow" << std::endl;
+        //std::cout << "GlobalProjectManager::setSelectedAnnoRow" << std::endl;
 
         if (index >= 0 && selectedFile() != NULL && index < selectedFile()->annoCount()) {
             dt::Annotation *anno = selectedFile()->getAnnotation(index);
@@ -278,9 +278,8 @@ namespace anno {
 
                         _lastSelRectCenter = boundingRect.center();
 
-                        std::cout << _lastSelRectCenter.x() <<  " " << _lastSelRectCenter.y() << std::endl;
+                        //std::cout << _lastSelRectCenter.x() <<  " " << _lastSelRectCenter.y() << std::endl;
                     }
-                    /* */
 
                 } else {
                     assert(false && "no shape?");
