@@ -6,9 +6,9 @@ CONFIG -= exceptions_off \
     stl_off \
     debug
 
-CONFIG -= release
-CONFIG += qt debug
-#CONFIG += release
+#CONFIG -= release
+#CONFIG += qt debug
+CONFIG += release
 
 UI_DIR = ./src/uiStuff/gen
 MOC_DIR = ./tmp/moc
