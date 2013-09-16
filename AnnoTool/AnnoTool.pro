@@ -17,6 +17,9 @@ RCC_DIR = ./tmp
 # need this as workaround for missing libGL.so
 LIBS += -L/home/andriluk/lib
 
+# use boost program options
+LIBS += -lboost_program_options
+
 CONFIG += link_pkgconfig
 PKGCONFIG += opencv
 
