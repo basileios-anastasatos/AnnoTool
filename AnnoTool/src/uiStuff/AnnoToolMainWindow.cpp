@@ -415,10 +415,29 @@ void AnnoToolMainWindow::on_actionFileNew_triggered() {
     }
 }
 
+void AnnoToolMainWindow::openAnnoProject(const QString filePath) {
+    if (!filePath.isEmpty()) {
+        const QFileInfo fi(filePath);
+        try {
+            GlobalProjectManager *pm = GlobalProjectManager::instance();
+            pm->loadFromFile(filePath, true);
+            GlobalLogger::instance()->logInfo(QString("Loaded project '%1': %2 classes, %3 AnnotationFiles.").arg(pm->project()->projectName()).arg(pm->classCount()).arg(pm->fileCount()));
+            configUIproject(true);
+            setDocumentName(pm->project()->projectName());
+            updateAnnoWidgets();
+            if(pm->fileCount() > 0) {
+                pm->setSelectedFileRow(0);
+            }
+        } catch(AnnoException *e) {
+            QMessageBox::critical(this, "AnnoTool Exception", e->getTrace());
+            GlobalLogger::instance()->logError(e->getTrace());
+            delete e;
+        }
+    }
+}
+
 void AnnoToolMainWindow::on_actionFileOpen_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionFileOpen_triggered");
-
-    using ::anno::dt::AnnoFileData;
 
     if (checkProjectToClose()) {
         /* MA BEGIN: here we could accumulate extensions supported by the plug-ins */
@@ -428,28 +447,12 @@ void AnnoToolMainWindow::on_actionFileOpen_triggered() {
         /* MA END */
 
 
-        QString fileName = QFileDialog::getOpenFileName(
+        QString filePath = QFileDialog::getOpenFileName(
                                this,
                                QString("Open AnnoTool Project File"),
                                QString("."),
                                QString("AnnoTool Project (%1)").arg(qsExtensions));
-        if (!fileName.isEmpty()) {
-            try {
-                GlobalProjectManager *pm = GlobalProjectManager::instance();
-                pm->loadFromFile(fileName, true);
-                GlobalLogger::instance()->logInfo(QString("Loaded project '%1': %2 classes, %3 AnnotationFiles.").arg(pm->project()->projectName()).arg(pm->classCount()).arg(pm->fileCount()));
-                configUIproject(true);
-                setDocumentName(pm->project()->projectName());
-                updateAnnoWidgets();
-                if(pm->fileCount() > 0) {
-                    pm->setSelectedFileRow(0);
-                }
-            } catch(AnnoException *e) {
-                QMessageBox::critical(this, "AnnoTool Exception", e->getTrace());
-                GlobalLogger::instance()->logError(e->getTrace());
-                delete e;
-            }
-        }
+        openAnnoProject(filePath);
     }
 }
 

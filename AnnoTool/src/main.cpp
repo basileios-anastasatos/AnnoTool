@@ -32,6 +32,12 @@ int main(int argc, char *argv[]) {
 
 
     AnnoToolMainWindow w;
+
+    if (argc > 1) {
+        QString filePath = argv[1];
+        w.openAnnoProject(filePath);
+    }
+
     w.show();
     a.connect(&a, SIGNAL(aboutToQuit()), &w, SLOT(onAppClose()));
     a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
