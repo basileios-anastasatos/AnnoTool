@@ -9,6 +9,8 @@
 
 FilterControl::FilterControl(QWidget *parent) :
     QToolBar(parent), _connected(false) {
+    setWindowTitle("Filter Controls");
+    setObjectName("Filter Controls");
     setupActions(parent);
     setupInputs(this);
     resetUi();
