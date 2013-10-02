@@ -3,6 +3,7 @@
 # automatically generated files and directories
 *.log
 *.o
+*.pro.user
 *.xcodeproj
 .cdtproject
 .cproject
