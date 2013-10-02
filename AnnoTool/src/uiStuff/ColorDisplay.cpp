@@ -2,11 +2,10 @@
 
 #include <QPaintEvent>
 #include <QPainter>
-
-
+#include <QColor>
 
 ColorDisplay::ColorDisplay(QWidget *parent) :
-    QWidget(parent), _curBrush(Qt::white), _borderPen(QColor(0, 0, 0, 192)) {
+    QWidget(parent), _curBrush(QColor(Qt::white)), _borderPen(QColor(0, 0, 0, 192)) {
     _borderPen.setWidth(1);
 }
 

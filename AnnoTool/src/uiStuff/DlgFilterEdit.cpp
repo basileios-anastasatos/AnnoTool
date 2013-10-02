@@ -15,6 +15,7 @@
 #include <QImage>
 #include <QPixmap>
 #include <QIcon>
+#include <QColor>
 
 #include "AnnoFilterHighlighter.h"
 #include "XmlHelper.h"
@@ -99,7 +100,7 @@ void DlgFilterEdit::onColor_currentRowChanged(const QModelIndex &current, const 
         ui.txtBorderWidth->setText(QString::number(sc.getBorderWidth(), 10));
         coloringSettingsEnable(true);
     } else {
-        ui.ceFill->setColor(Qt::white);
+        ui.ceFill->setColor(QColor(Qt::white));
         ui.ceBorder->setColor(Qt::white);
         ui.txtBorderWidth->setText("");
         coloringSettingsEnable(false);

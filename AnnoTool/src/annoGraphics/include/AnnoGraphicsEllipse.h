@@ -4,6 +4,7 @@
 #include <QGraphicsEllipseItem>
 #include "AnnoGraphicsShape.h"
 #include "AnnoEllipse.h"
+#include <QVariant>
 
 class QGraphicsSceneHoverEvent;
 

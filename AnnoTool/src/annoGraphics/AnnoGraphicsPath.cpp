@@ -9,6 +9,7 @@
 #include "importGlobals.h"
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneHoverEvent>
+#include <QVariant>
 
 namespace anno {
     namespace graphics {
@@ -31,7 +32,7 @@ namespace anno {
             setFlag(QGraphicsItem::ItemIsSelectable);
             setFlag(QGraphicsItem::ItemIsFocusable);
             setVisible(true);
-            setAcceptsHoverEvents(true);
+            setAcceptHoverEvents(true);
             setToolTip(_anno->annoInfo());
         }
 

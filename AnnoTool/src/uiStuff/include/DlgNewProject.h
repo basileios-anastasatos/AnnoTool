@@ -1,7 +1,7 @@
 #ifndef DLGNEWPROJECT_H
 #define DLGNEWPROJECT_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "../gen/ui_DlgNewProject.h"
 #include <QFileInfo>
 #include <QUuid>

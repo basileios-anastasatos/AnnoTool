@@ -3,6 +3,7 @@
 #include <QXmlStreamReader>
 #include <QTextStream>
 #include <QDir>
+#include <QString>
 
 #include "importGlobals.h"
 
@@ -330,7 +331,7 @@ namespace anno {
             QFileInfo file(_sourceFile);
             QDir dir(file.absoluteDir());
             QString sDirPath = dir.absolutePath();
-            sDirPath += QString("/%1").arg(imageInfo()->imageId());
+            sDirPath += QString("/%1").arg((imageInfo()->imageId().toString()));
             QDir dirAnno(sDirPath);
             if(dirAnno.exists()) {
                 GlobalProjectManager::removeNonEmptyDir(dirAnno);
@@ -346,7 +347,7 @@ namespace anno {
                             dirAnno.mkdir(sDirPath);
                         }
                         QString sFilePath(sDirPath);
-                        sFilePath += QString("/%1.png").arg(iterSegm->annoId());
+                        sFilePath += QString("/%1.png").arg((iterSegm->annoId().toString()));
 
                         iterSegm->saveSegmentationImage(sFilePath);
                     }

@@ -1,10 +1,10 @@
 #ifndef FILTERCONTROL_H
 #define FILTERCONTROL_H
 
-#include <QtGui/QToolBar>
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
-#include <QtGui/QAction>
+#include <QToolBar>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QAction>
 #include <QUuid>
 
 #include "annoTypesForward.h"

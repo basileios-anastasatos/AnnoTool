@@ -1,7 +1,7 @@
 #ifndef ANNODATAWIDGET_H
 #define ANNODATAWIDGET_H
 
-#include <QtGui/QDockWidget>
+#include <QDockWidget>
 #include "../gen/ui_AnnoDataWidget.h"
 #include "AnnoDataModelAdapter.h"
 #include "AnnoDataClassesModelAdapter.h"

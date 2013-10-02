@@ -2,6 +2,7 @@
 #define ANNOGRAPHICSSINGLEPOINT_H_
 
 #include <QGraphicsItem>
+#include <QVariant>
 #include "AnnoGraphicsShape.h"
 #include "AnnoSinglePoint.h"
 

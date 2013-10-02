@@ -11,7 +11,7 @@ namespace anno {
 
         AnnoGraphicsPixmap::AnnoGraphicsPixmap(const QPixmap &pixmap, QGraphicsItem *parent) :
             QGraphicsPixmapItem(pixmap, parent) {
-            setAcceptsHoverEvents(true);
+            setAcceptHoverEvents(true);
         }
 
         AnnoGraphicsPixmap::~AnnoGraphicsPixmap() {

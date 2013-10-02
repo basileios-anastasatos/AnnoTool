@@ -1,7 +1,7 @@
 #ifndef DLGFILECHOOSER_H
 #define DLGFILECHOOSER_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "../gen/ui_DlgFileChooser.h"
 
 class DlgFileChooser : public QDialog {

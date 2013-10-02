@@ -1,7 +1,7 @@
 #ifndef DLGEDITATTRIBUTESHORT_H
 #define DLGEDITATTRIBUTESHORT_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "ui_DlgEditAttributeShort.h"
 
 class DlgEditAttributeShort: public QDialog {

@@ -1,5 +1,6 @@
 #include "include/AnnoDataClassesModelAdapter.h"
 #include "importGlobals.h"
+#include <QVariant>
 
 AnnoDataClassesModelAdapter::AnnoDataClassesModelAdapter(QObject *parent) :
     QAbstractTableModel(parent) {
@@ -49,7 +50,8 @@ QVariant AnnoDataClassesModelAdapter::headerData(int section, Qt::Orientation or
 }
 
 void AnnoDataClassesModelAdapter::update() {
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 

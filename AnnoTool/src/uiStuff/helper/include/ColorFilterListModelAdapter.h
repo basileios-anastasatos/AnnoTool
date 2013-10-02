@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QList>
+#include <QVariant>
 
 namespace anno {
     namespace filter {

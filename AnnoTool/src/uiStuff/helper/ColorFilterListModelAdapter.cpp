@@ -1,6 +1,7 @@
 #include "include/ColorFilterListModelAdapter.h"
 #include "AnnoFilterManager.h"
 #include "ColorFilterEntry.h"
+#include <QVariant>
 
 
 ColorFilterListModelAdapter::ColorFilterListModelAdapter(anno::filter::AnnoFilterManager *filterMan, QObject *parent) :
@@ -45,7 +46,8 @@ QVariant ColorFilterListModelAdapter::headerData(int section, Qt::Orientation or
 }
 
 void ColorFilterListModelAdapter::update() {
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 

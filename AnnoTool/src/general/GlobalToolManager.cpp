@@ -200,7 +200,7 @@ namespace anno {
 
     void GlobalToolManager::triggerShapeContextMenu(anno::dt::Annotation *anno) const {
         if(_curMenu != NULL) {
-            GlobalLogger::instance()->logDebug(QString("GlobalToolManager: Triggering context menu for [%1].").arg(anno->annoId()));
+            GlobalLogger::instance()->logDebug(QString("GlobalToolManager: Triggering context menu for [%1].").arg(anno->annoId().toString()));
             _curMenu->triggerMenu(anno);
         }
     }

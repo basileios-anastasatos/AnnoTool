@@ -1,3 +1,4 @@
+#include <QString>
 #include "include/AnnoGraphicsScene.h"
 #include "include/AnnoGraphicsShape.h"
 #include "AnnoGraphicsShapeCreator.h"
@@ -87,7 +88,7 @@ namespace anno {
             if (_image != NULL && !_shapes.isEmpty()) {
                 AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
                 if (s != NULL) {
-                    GlobalLogger::instance()->logDebug(QString("AGS: removing shape %1.").arg(annoId));
+                    GlobalLogger::instance()->logDebug(QString("AGS: removing shape %1.").arg(annoId.toString()));
                     s->graphicsItem()->setParentItem(NULL);
                     _shapes.remove(annoId);
                     delete s;
@@ -118,7 +119,7 @@ namespace anno {
             clearSelection();
             AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
             if (s != NULL) {
-                GlobalLogger::instance()->logDebug(QString("AGS: selecting shape %1.").arg(annoId));
+                GlobalLogger::instance()->logDebug(QString("AGS: selecting shape %1.").arg(annoId.toString()));
                 s->graphicsItem()->setSelected(true);
                 _selShape = s;
             }
@@ -127,7 +128,7 @@ namespace anno {
         void AnnoGraphicsScene::bringToFront(const QUuid &annoId) {
             AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
             if (s != NULL) {
-                GlobalLogger::instance()->logDebug(QString("AGS: bringing shape %1 to Zorder top. [z=%2]").arg(annoId).arg(_curMaxZ + 1));
+                GlobalLogger::instance()->logDebug(QString("AGS: bringing shape %1 to Zorder top. [z=%2]").arg(annoId.toString()).arg(_curMaxZ + 1));
                 s->graphicsItem()->setZValue(++_curMaxZ);
             }
         }
@@ -135,7 +136,7 @@ namespace anno {
         void AnnoGraphicsScene::bringToBack(const QUuid &annoId) {
             AnnoGraphicsShape *s = _shapes.value(annoId, NULL);
             if (s != NULL) {
-                GlobalLogger::instance()->logDebug(QString("AGS: bringing shape %1 to Zorder back. [z=%2]").arg(annoId).arg(_curMinZ - 1));
+                GlobalLogger::instance()->logDebug(QString("AGS: bringing shape %1 to Zorder back. [z=%2]").arg(annoId.toString()).arg(_curMinZ - 1));
                 s->graphicsItem()->setZValue(--_curMinZ);
             }
         }

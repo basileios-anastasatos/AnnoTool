@@ -11,6 +11,7 @@
 #include <QGraphicsSceneContextMenuEvent>
 #include <QMenu>
 #include "importGlobals.h"
+#include <QVariant>
 
 #include "AnnoAvClassList.h"
 
@@ -212,7 +213,7 @@ namespace anno {
         void AnnoGraphicsRect::setupAppearance() {
             setFlag(QGraphicsItem::ItemIsSelectable);
             setFlag(QGraphicsItem::ItemIsFocusable);
-            setAcceptsHoverEvents(true);
+            setAcceptHoverEvents(true);
             setVisible(true);
             setToolTip(_anno->annoInfo());
         }

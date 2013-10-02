@@ -1,7 +1,7 @@
 #ifndef DLGIMPORTER_H
 #define DLGIMPORTER_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "../gen/ui_DlgImporter.h"
 
 namespace anno {

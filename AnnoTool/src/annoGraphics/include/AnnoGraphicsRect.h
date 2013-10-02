@@ -2,6 +2,7 @@
 #define ANNOGRAPHICSRECT_H_
 
 #include <QGraphicsRectItem>
+#include <QVariant>
 #include "AnnoGraphicsShape.h"
 #include "AnnoRectangle.h"
 

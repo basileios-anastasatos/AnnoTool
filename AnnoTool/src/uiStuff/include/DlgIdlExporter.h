@@ -1,7 +1,7 @@
 #ifndef DLGIDLEXPORTER_H
 #define DLGIDLEXPORTER_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "ui_DlgIdlExporter.h"
 #include "annoFiltersForward.h"
 

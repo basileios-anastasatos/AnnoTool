@@ -1,7 +1,7 @@
 #ifndef DLGFILTEREDIT_H
 #define DLGFILTEREDIT_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "../gen/ui_DlgFilterEdit.h"
 #include <QItemSelection>
 

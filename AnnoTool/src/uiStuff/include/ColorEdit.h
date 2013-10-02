@@ -1,7 +1,7 @@
 #ifndef COLOREDIT_H
 #define COLOREDIT_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include "../gen/ui_ColorEdit.h"
 
 #include <QColor>

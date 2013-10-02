@@ -1,7 +1,7 @@
 #ifndef ANNOFILELISTWIDGET_H
 #define ANNOFILELISTWIDGET_H
 
-#include <QtGui/QDockWidget>
+#include <QDockWidget>
 #include <QUuid>
 #include <QMenu>
 #include "../gen/ui_AnnoFileListWidget.h"

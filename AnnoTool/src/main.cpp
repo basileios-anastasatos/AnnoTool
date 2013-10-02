@@ -2,6 +2,7 @@
 #include <QtGui>
 #include <QApplication>
 #include <QString>
+#include <QStringList>
 #include <string>
 #include <iostream>
 #include "importGlobals.h"
@@ -9,6 +10,7 @@
 #include "IdlExporterPlugin.h"
 
 #include <boost/program_options.hpp>
+#include <cstring>
 
 namespace po = boost::program_options;
 
@@ -54,7 +56,27 @@ int main(int argc, char *argv[]) {
          // po::command_line_style::allow_guessing       |
             po::command_line_style::allow_dash_for_short |
             (0 & ~0));
-        po::store(po::parse_command_line(a.argc(), a.argv(), desc, style), vm);
+
+        // Copy a.arguments() to argv
+        const QStringList qargv = a.arguments();
+        const int argc = qargv.size();
+        char **argv = new char *[argc];
+
+        for (int ii = 0; ii < argc; ++ii) {
+            const char *ss = qargv.at(ii).toStdString().c_str();
+            const int ll = strlen(ss) + 1;
+            argv[ii] = new char[ll];
+            memcpy(argv[ii], ss, ll);
+        }
+         
+        po::store(po::parse_command_line(argc, argv, desc, style), vm);
+
+        // Delete argv
+        for (int ii = 0; ii < argc; ++ii) {
+            delete argv[ii];
+        }
+        delete argv;
+
         po::notify(vm);
     } catch (po::error &ee) {
         std::cerr << "Error while parsing the command line." << "\n";

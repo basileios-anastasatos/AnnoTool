@@ -1,7 +1,7 @@
 #ifndef DLGEDITCLASS_H
 #define DLGEDITCLASS_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "ui_DlgEditClass.h"
 
 class DlgEditClass: public QDialog {

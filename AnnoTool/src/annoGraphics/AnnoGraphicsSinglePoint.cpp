@@ -7,6 +7,7 @@
 #include <QBrush>
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
+#include <QVariant>
 
 #include <iostream>
 
@@ -44,7 +45,7 @@ namespace anno {
             /** MA: use keyboard to label occluded annopoints */
             setFlag(QGraphicsItem::ItemIsFocusable);
 
-            setAcceptsHoverEvents(true);
+            setAcceptHoverEvents(true);
             setVisible(true);
             setToolTip(_anno->annoInfo());
         }

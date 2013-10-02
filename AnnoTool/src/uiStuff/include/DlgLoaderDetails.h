@@ -1,7 +1,7 @@
 #ifndef DLGLOADERDETAILS_H
 #define DLGLOADERDETAILS_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "ui_DlgLoaderDetails.h"
 
 class DlgLoaderDetails : public QDialog {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QGraphicsRectItem>
+#include <QVariant>
 #include "AnnoGraphicsShape.h"
 #include "AnnoSegmentation.h"
 

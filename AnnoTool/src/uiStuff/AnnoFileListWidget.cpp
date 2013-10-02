@@ -17,7 +17,7 @@ AnnoFileListWidget::AnnoFileListWidget(QWidget *parent) :
     ui.lstFiles->header()->setStretchLastSection(false);
     ui.lstFiles->setColumnWidth(0, 150);
     ui.lstFiles->setColumnWidth(1, 50);
-    ui.lstFiles->header()->setResizeMode(0, QHeaderView::Stretch);
+    ui.lstFiles->header()->setSectionResizeMode(0, QHeaderView::Stretch);
 }
 
 AnnoFileListWidget::~AnnoFileListWidget() {

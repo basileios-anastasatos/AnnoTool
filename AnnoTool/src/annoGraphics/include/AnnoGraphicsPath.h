@@ -2,6 +2,7 @@
 
 #include <QGraphicsPathItem>
 #include <QPainterPath>
+#include <QVariant>
 #include "AnnoGraphicsShape.h"
 #include "AnnoPath.h"
 

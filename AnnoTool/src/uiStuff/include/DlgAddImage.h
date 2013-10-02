@@ -1,7 +1,7 @@
 #ifndef DLGADDIMAGE_H
 #define DLGADDIMAGE_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <QPair>
 #include "../gen/ui_DlgAddImage.h"
 

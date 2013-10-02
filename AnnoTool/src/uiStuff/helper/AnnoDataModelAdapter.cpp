@@ -1,5 +1,6 @@
 #include "include/AnnoDataModelAdapter.h"
 #include "importGlobals.h"
+#include <QVariant>
 
 AnnoDataModelAdapter::AnnoDataModelAdapter(QObject *parent) :
     QAbstractTableModel(parent) {
@@ -57,7 +58,8 @@ QVariant AnnoDataModelAdapter::headerData(int section, Qt::Orientation orientati
 }
 
 void AnnoDataModelAdapter::update() {
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

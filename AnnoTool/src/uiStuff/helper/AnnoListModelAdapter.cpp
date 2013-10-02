@@ -1,6 +1,8 @@
 #include "include/AnnoListModelAdapter.h"
 #include "importGlobals.h"
 #include "XmlHelper.h"
+#include <QVariant>
+#include <QMimeData>
 
 
 AnnoListModelAdapter::AnnoListModelAdapter(QObject *parent) :
@@ -315,7 +317,8 @@ QModelIndex AnnoListModelAdapter::parent(const QModelIndex &index) const {
 }
 
 void AnnoListModelAdapter::update() {
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 

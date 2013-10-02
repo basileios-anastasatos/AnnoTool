@@ -3,6 +3,7 @@
 
 #include <QGraphicsItem>
 #include <QPainterPath>
+#include <QVariant>
 #include "AnnoGraphicsShape.h"
 #include "AnnoPolygon.h"
 

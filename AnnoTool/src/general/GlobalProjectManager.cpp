@@ -327,7 +327,7 @@ namespace anno {
                 }
                 ++j;
             }
-            GlobalLogger::instance()->logDebug(QString("Selected annotation by uuid [%1], has index [%2]").arg(uuid).arg(j));
+            GlobalLogger::instance()->logDebug(QString("Selected annotation by uuid [%1], has index [%2]").arg(uuid.toString()).arg(j));
             setSelectedAnnoRow(index);
         }
     }

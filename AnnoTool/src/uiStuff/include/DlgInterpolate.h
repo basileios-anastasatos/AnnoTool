@@ -1,7 +1,7 @@
 #ifndef DLGINTERPOLATE_H
 #define DLGINTERPOLATE_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "ui_DlgInterpolate.h"
 
 class DlgInterpolate : public QDialog {

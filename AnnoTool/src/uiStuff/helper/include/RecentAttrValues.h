@@ -2,6 +2,7 @@
 #define RECENTATTRVALUES_H_
 
 #include <QSet>
+#include <QString>
 
 class RecentAttrValues {
     public:

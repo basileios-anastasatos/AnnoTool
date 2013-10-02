@@ -1,10 +1,11 @@
 #include "ColorEdit.h"
 #include <QColorDialog>
 #include <QIntValidator>
+#include <QColor>
 
 
 ColorEdit::ColorEdit(QWidget *parent)
-    : QWidget(parent), _curColor(Qt::white), _byteValidator(NULL) {
+    : QWidget(parent), _curColor(QColor(Qt::white)), _byteValidator(NULL) {
     ui.setupUi(this);
 
     _byteValidator = new QIntValidator(0, 255, this);

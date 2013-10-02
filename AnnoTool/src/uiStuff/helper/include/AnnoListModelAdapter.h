@@ -2,6 +2,8 @@
 #define ANNOLISTMODELADAPTER_H_
 
 #include <QAbstractItemModel>
+#include <QVariant>
+#include <QMimeData>
 
 namespace anno {
     namespace dt {

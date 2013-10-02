@@ -1,7 +1,7 @@
 #ifndef DLGPROJECTDETAILS_H
 #define DLGPROJECTDETAILS_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "../gen/ui_DlgProjectDetails.h"
 
 class DlgProjectDetails : public QDialog {

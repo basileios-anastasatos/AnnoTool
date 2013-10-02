@@ -2,6 +2,7 @@
 #define ANNOFILELISTMODELADAPTER_H_
 
 #include <QAbstractTableModel>
+#include <QVariant>
 
 class AnnoFileListModelAdapter : public QAbstractTableModel {
         Q_OBJECT

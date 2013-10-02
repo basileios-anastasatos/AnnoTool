@@ -2,6 +2,7 @@
 #define ANNODATACLASSESMODELADAPTER_H_
 
 #include <QAbstractTableModel>
+#include <QVariant>
 
 class AnnoDataClassesModelAdapter : public QAbstractTableModel {
         Q_OBJECT

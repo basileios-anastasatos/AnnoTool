@@ -1,7 +1,7 @@
 #ifndef ZOOMCONTROL_H
 #define ZOOMCONTROL_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include "../gen/ui_ZoomControl.h"
 
 class ZoomControl : public QWidget {

@@ -134,7 +134,7 @@ namespace anno {
 
         void AnnoGraphicsControlPoint::setupAppearance() {
             setVisible(true);
-            setAcceptsHoverEvents(true);
+            setAcceptHoverEvents(true);
             QPen pen(QColor(160, 160, 160, 255));
             pen.setWidth(1);
             setPen(pen);

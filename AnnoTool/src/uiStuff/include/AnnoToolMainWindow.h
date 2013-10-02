@@ -1,8 +1,8 @@
 #ifndef ANNOTOOLMAINWINDOW_H
 #define ANNOTOOLMAINWINDOW_H
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QToolBar>
+#include <QMainWindow>
+#include <QToolBar>
 #include "../gen/ui_AnnoToolMainWindow.h"
 #include "AnnoGraphicsScene.h"
 #include "GlobalToolManager.h"

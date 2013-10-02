@@ -1,7 +1,7 @@
 #ifndef ANNOLISTWIDGET_H
 #define ANNOLISTWIDGET_H
 
-#include <QtGui/QDockWidget>
+#include <QDockWidget>
 #include <QUuid>
 #include "../gen/ui_AnnoListWidget.h"
 #include "AnnoListModelAdapter.h"

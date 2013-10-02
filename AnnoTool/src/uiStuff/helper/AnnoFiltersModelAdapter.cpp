@@ -1,6 +1,7 @@
 #include "include/AnnoFiltersModelAdapter.h"
 #include "AnnoFilterManager.h"
 #include "AnnoFilter.h"
+#include <QVariant>
 
 AnnoFiltersModelAdapter::AnnoFiltersModelAdapter(anno::filter::AnnoFilterManager *filterMan, QObject *parent) :
     QAbstractListModel(parent), _filterMan(filterMan) {
@@ -40,7 +41,8 @@ QVariant AnnoFiltersModelAdapter::headerData(int section, Qt::Orientation orient
 }
 
 void AnnoFiltersModelAdapter::update() {
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 

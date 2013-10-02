@@ -1,7 +1,7 @@
 #ifndef DLGEDITATTRIBUTE_H
 #define DLGEDITATTRIBUTE_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "../gen/ui_DlgEditAttribute.h"
 #include "annoTypesForward.h"
 

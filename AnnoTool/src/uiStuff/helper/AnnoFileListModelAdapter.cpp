@@ -1,5 +1,6 @@
 #include "include/AnnoFileListModelAdapter.h"
 #include "GlobalProjectManager.h"
+#include <QVariant>
 
 using ::anno::GlobalProjectManager;
 
@@ -57,7 +58,8 @@ QVariant AnnoFileListModelAdapter::headerData(int section,
 }
 
 void AnnoFileListModelAdapter::update() {
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 

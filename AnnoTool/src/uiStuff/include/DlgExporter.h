@@ -1,7 +1,7 @@
 #ifndef DLGIMEXPORTER_H
 #define DLGIMEXPORTER_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include "../gen/ui_DlgExporter.h"
 
 namespace anno {

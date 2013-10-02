@@ -11,6 +11,7 @@
 #include <QGraphicsSceneContextMenuEvent>
 #include <QMenu>
 #include "importGlobals.h"
+#include <QVariant>
 
 #include "AnnoAvClassList.h"
 #include "Segmentation.h"
@@ -223,7 +224,7 @@ namespace anno {
         void AnnoGraphicsSegmentation::setupAppearance() {
             setFlag(QGraphicsItem::ItemIsSelectable);
             setFlag(QGraphicsItem::ItemIsFocusable);
-            setAcceptsHoverEvents(true);
+            setAcceptHoverEvents(true);
             setVisible(true);
             setToolTip(_anno->annoInfo());
             _bShowMask = false;
