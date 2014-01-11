@@ -1,0 +1,32 @@
+xml2atp.sh usage example
+------------------------
+
+The command
+
+  xml2atp.sh \
+    sun09 \
+    /BS/databases/sun09/Annotations/static_sun09_database \
+    /BS/databases/sun09/Images/static_sun09_database;
+
+creates the directories:
+
+  sun09
+  sun09/annotations
+
+the project file:
+
+  sun09/sun09.atp
+
+the class file:
+
+  sun09/classes.atc
+
+as well as 12059 .ata files in the
+
+  sun09/annotations
+
+directory, corresponding to the 12059 .xml files in the
+
+  /BS/databases/sun09/Annotations/static_sun09_database
+
+directory.
