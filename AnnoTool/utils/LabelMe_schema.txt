@@ -1,0 +1,31 @@
+The syntax of the original XML files was empirically found to be the following:
+
+annotation: 1
+    filename: 1, basename
+    folder:   1, path
+    source:   1
+        sourceImage:      1, name of image collection
+	sourceAnnotation: 1, annotation tool
+    imagesize: ?
+        nrows: 1, natural
+        ncols: 1, natural
+    scenedescription: ?, string
+    object: *
+	name:     ?, string
+        deleted:  1, bool
+        verified: ?, bool
+        date:     ?, date
+        id:       ?, natural
+        polygon: 1
+	    username: ?, string
+            pt: *
+                x: 1, integer
+                y: 1, integer
+        viewpoint: ?
+            azimuth: 1, natural
+
+Legend:
+
+  *: zero or more occurences
+  ?: at most one occurence
+  1: exactly one occurence
