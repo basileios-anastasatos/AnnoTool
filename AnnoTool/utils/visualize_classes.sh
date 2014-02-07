@@ -15,9 +15,13 @@ function get_class_file() {
 
 readonly DIR=$(dirname "${0:?}");
 readonly ATP_IN="${1:?}"; shift;
-readonly ATC=$(dirname "${ATP_IN:?}")/$(get_class_file);
+readonly ATC_IN=$(dirname "${ATP_IN:?}")/$(get_class_file);
 readonly TMP=$(mktemp);
-readonly ATP_OUT="${ATP_IN%.*}.visualize_classes.atp";
 
-"${DIR:?}"/visualize_classes.awk "${ATC:?}" > "${TMP:?}";
-sed '/<annoProject\>/r '"${TMP:?}" "${ATP_IN:?}" > "${ATP_OUT}";
+for COLOUR_SPACE in RGB HSL; do
+    ATP_OUT="${ATP_IN%.*}.visualize_classes.${COLOUR_SPACE:?}.atp";
+    echo -e "\n${ATP_OUT:?}" > /dev/stderr;
+    "${DIR:?}"/visualize_classes.awk \
+        -v "colour_space=${COLOUR_SPACE:?}" "${ATC_IN:?}" > "${TMP:?}";
+    sed '/<annoProject\>/r '"${TMP:?}"      "${ATP_IN:?}" > "${ATP_OUT}";
+done;

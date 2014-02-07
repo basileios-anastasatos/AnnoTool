@@ -13,6 +13,12 @@ function coefficient(nn, dd) {
     return int((nn % (cube_edge ^ dd))) / (cube_edge ^ dd);
 }
 
+function class2rgb(nn, aa) {
+    aa["R"] = 256 * coefficient(nn, 1);
+    aa["G"] = 256 * coefficient(nn, 2);
+    aa["B"] = 256 * coefficient(nn, 3);
+}
+
 function class2hsl(nn, aa) {
     aa["H"] = 360 * coefficient(nn, 1);
     aa["S"] =       coefficient(nn, 2);
@@ -100,7 +106,7 @@ function xml_text_element(tag, text) {
 function generate_filters(        ii) {
     xml_open_tag("annoFilters");
     for (ii = 0; ii < nclasses; ++ii) {
-        xml_open_tag("annoFilter", "name", ("visualize " class[ii]));
+        xml_open_tag("annoFilter", "name", ("visualize class '" class[ii] "'"));
         xml_open_tag("filterRule");
         xml_open_and_close_tag("hasClass", "name", class[ii]);
         xml_close_tag("filterRule");
@@ -113,10 +119,20 @@ BEGIN { base_width = 4; }
 function generate_colour_rules(        ii, hh, ss, ll, aa) {
     xml_open_tag("annoColorRules");
     for (ii = 0; ii < nclasses; ++ii) {
-        class2hsl(ii, aa);
-        hsl2rgb(aa);
+        if (colour_space == "HSL") {
+            class2hsl(ii, aa);
+            hsl2rgb(aa);
+        } else if (colour_space == "RGB") {
+            class2rgb(ii, aa);
+        } else if (colour_space = "") {
+            info("Undefined colour space");
+            exit(1);
+        } else {
+            info("Unknown colour space: " colour_space);
+            exit(1);
+        }
 
-        xml_open_tag("colorRule", "filterName", ("visualize " class[ii]));
+        xml_open_tag("colorRule", "filterName", ("visualize class '" class[ii] "'"));
 
         xml_open_tag("visualShapeConfig");
 
@@ -139,15 +155,16 @@ function generate_colour_rules(        ii, hh, ss, ll, aa) {
     xml_close_tag("annoColorRules");
 }
 
-BEGIN { nclasses = 0; }
+BEGIN { nclasses = 0; delete class; }
 /<classDef id="[^"]+"/ {
     class[nclasses++] = gensub(/.*<classDef id="([^"]+)".*/, "\\1", 1);
 }
 
 END {
-    cube_edge =         nclasses ** (1/3);
-    info("nclasses = "  nclasses);
-    info("cube_edge = " cube_edge);
+    cube_edge = nclasses ** (1/3);
+    info("nclasses     = " nclasses);
+    info("∛n̅c̅l̅̅̅a̅s̅s̅e̅s̅    = " cube_edge);
+    info("colour space = " colour_space);
     generate_filters();
     generate_colour_rules();
 }
