@@ -42,7 +42,7 @@ function hsl2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
     # blue       ∊ [0, 256) ∩ ℕ
     cc = (1 - abs((2 * aa["L"]) - 1)) * aa["S"];
     xx = cc * (1 - abs(((aa["H"] / 60) % 2) - 1));
-    mm = aa["L"] - (cc / 2);
+    mm = (aa["L"] - (cc / 2)) / 2;
     zz = int(aa["H"] / 60);
     tt[0] = tt[1] =  0;
     tt[2] = tt[5] = xx;
@@ -51,9 +51,9 @@ function hsl2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
     gg = tt[(zz + 2) % 6];
     rr = tt[(zz + 4) % 6];
 
-    aa["R"] = int(255 * (rr + (mm / 2)));
-    aa["G"] = int(255 * (gg + (mm / 2)));
-    aa["B"] = int(255 * (bb + (mm / 2)));
+    aa["R"] = int(255 * (rr + mm));
+    aa["G"] = int(255 * (gg + mm));
+    aa["B"] = int(255 * (bb + mm));
 }
 
 # SOURCE: http://www.rapidtables.com/convert/color/hsv-to-rgb.htm
@@ -66,7 +66,7 @@ function hsv2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
     # blue       ∊ [0, 256) ∩ ℕ
     cc = aa["V"] * aa["S"];
     xx = cc * (1 - abs(((aa["H"] / 60) % 2) - 1));
-    mm = aa["V"] - cc;
+    mm = (aa["V"] - cc) / 2;
     zz = int(aa["H"] / 60);
     tt[0] = tt[1] =  0;
     tt[2] = tt[5] = xx;
@@ -75,9 +75,9 @@ function hsv2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
     gg = tt[(zz + 2) % 6];
     rr = tt[(zz + 4) % 6];
 
-    aa["R"] = int(255 * (rr + (mm / 2)));
-    aa["G"] = int(255 * (gg + (mm / 2)));
-    aa["B"] = int(255 * (bb + (mm / 2)));
+    aa["R"] = int(255 * (rr + mm));
+    aa["G"] = int(255 * (gg + mm));
+    aa["B"] = int(255 * (bb + mm));
 }
 
 function rgba2hex(aa, alpha) {
