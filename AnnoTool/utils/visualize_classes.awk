@@ -25,6 +25,12 @@ function class2hsl(nn, aa) {
     aa["L"] =       coefficient(nn, 3);
 }
 
+function class2hsv(nn, aa) {
+    aa["H"] = 360 * coefficient(nn, 1);
+    aa["S"] =       coefficient(nn, 2);
+    aa["V"] =       coefficient(nn, 3);
+}
+
 # SOURCE: http://www.rapidtables.com/convert/color/hsl-to-rgb.htm
 # SOURCE: http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSL
 function hsl2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
@@ -50,11 +56,38 @@ function hsl2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
     aa["B"] = int(255 * (bb + (mm / 2)));
 }
 
+# SOURCE: http://www.rapidtables.com/convert/color/hsv-to-rgb.htm
+function hsv2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
+    # hue        ∊ [0, 360)
+    # saturation ∊ [0,   1]
+    # value      ∊ [0,   1]
+    # red        ∊ [0, 256) ∩ ℕ
+    # green      ∊ [0, 256) ∩ ℕ
+    # blue       ∊ [0, 256) ∩ ℕ
+    cc = aa["V"] * aa["S"];
+    xx = cc * (1 - abs(((aa["H"] / 60) % 2) - 1));
+    mm = aa["V"] - cc;
+    zz = int(aa["H"] / 60);
+    tt[0] = tt[1] =  0;
+    tt[2] = tt[5] = xx;
+    tt[3] = tt[4] = cc;
+    bb = tt[zz];
+    gg = tt[(zz + 2) % 6];
+    rr = tt[(zz + 4) % 6];
+
+    aa["R"] = int(255 * (rr + (mm / 2)));
+    aa["G"] = int(255 * (gg + (mm / 2)));
+    aa["B"] = int(255 * (bb + (mm / 2)));
+}
+
 function rgba2hex(aa, alpha) {
     return sprintf("%02x%02x%02x%02x", 255 * alpha, aa["R"], aa["G"], aa["B"]);
 }
 
-BEGIN { ntags = 0; delete tag_stack; }
+BEGIN {
+    ntags = 0;
+    delete tag_stack;
+}
 function push(tag) {
     tag_stack[++ntags] = tag;
 }
@@ -115,13 +148,26 @@ function generate_filters(        ii) {
     xml_close_tag("annoFilters");
 }
 
-BEGIN { base_width = 4; }
+function halve_distance(rr) {
+    return (rr + 1) / 2;
+}
+
+BEGIN {
+    base_width            = 4;
+    alpha_normal_fill     = 0.5;
+    alpha_normal_border   = halve_distance(alpha_normal_fill);
+    alpha_selected_fill   = halve_distance(alpha_normal_fill);
+    alpha_selected_border = halve_distance(alpha_selected_fill);
+}
 function generate_colour_rules(        ii, hh, ss, ll, aa) {
     xml_open_tag("annoColorRules");
     for (ii = 0; ii < nclasses; ++ii) {
-        if (colour_space == "HSL") {
+        if        (colour_space == "HSL") {
             class2hsl(ii, aa);
             hsl2rgb(aa);
+        } else if (colour_space == "HSV") {
+            class2hsv(ii, aa);
+            hsv2rgb(aa);
         } else if (colour_space == "RGB") {
             class2rgb(ii, aa);
         } else if (colour_space = "") {
@@ -138,14 +184,14 @@ function generate_colour_rules(        ii, hh, ss, ll, aa) {
 
         xml_open_tag("normalState");
         xml_text_element("borderWidth", base_width);
-        xml_text_element("borderColor", rgba2hex(aa, 0.8));
-        xml_text_element("fillColor",   rgba2hex(aa, 0.6));
+        xml_text_element("borderColor", rgba2hex(aa, alpha_normal_border));
+        xml_text_element("fillColor",   rgba2hex(aa, alpha_normal_fill));
         xml_close_tag("normalState");
 
         xml_open_tag("selectedState");
         xml_text_element("borderWidth", (base_width * 2));
-        xml_text_element("borderColor", rgba2hex(aa, 0.9));
-        xml_text_element("fillColor",   rgba2hex(aa, 0.7));
+        xml_text_element("borderColor", rgba2hex(aa, alpha_selected_border));
+        xml_text_element("fillColor",   rgba2hex(aa, alpha_selected_fill));
         xml_close_tag("selectedState");
 
         xml_close_tag("visualShapeConfig");
@@ -155,7 +201,10 @@ function generate_colour_rules(        ii, hh, ss, ll, aa) {
     xml_close_tag("annoColorRules");
 }
 
-BEGIN { nclasses = 0; delete class; }
+BEGIN {
+    nclasses = 0;
+    delete class;
+}
 /<classDef id="[^"]+"/ {
     class[nclasses++] = gensub(/.*<classDef id="([^"]+)".*/, "\\1", 1);
 }

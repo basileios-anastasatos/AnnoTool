@@ -17,11 +17,12 @@ readonly DIR=$(dirname "${0:?}");
 readonly ATP_IN="${1:?}"; shift;
 readonly ATC_IN=$(dirname "${ATP_IN:?}")/$(get_class_file);
 readonly TMP=$(mktemp);
+readonly COLOUR_SPACES="${1:-HSL HSV RGB}"; shift;
 
-for COLOUR_SPACE in RGB HSL; do
+for COLOUR_SPACE in ${COLOUR_SPACES:?}; do
     ATP_OUT="${ATP_IN%.*}.visualize_classes.${COLOUR_SPACE:?}.atp";
     echo -e "\n${ATP_OUT:?}" > /dev/stderr;
     "${DIR:?}"/visualize_classes.awk \
-        -v "colour_space=${COLOUR_SPACE:?}" "${ATC_IN:?}" > "${TMP:?}";
+       -v "colour_space=${COLOUR_SPACE:?}" "${ATC_IN:?}" > "${TMP:?}";
     sed '/<annoProject\>/r '"${TMP:?}"      "${ATP_IN:?}" > "${ATP_OUT}";
 done;
