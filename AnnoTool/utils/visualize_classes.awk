@@ -9,9 +9,19 @@ function abs(nn) {
     return (nn >= 0) ? nn : -nn;
 }
 
+function coefficient(nn, dd) {
+    return int((nn % (cube_edge ^ dd))) / (cube_edge ^ dd);
+}
+
+function class2hsl(nn, aa) {
+    aa["H"] = 360 * coefficient(nn, 1);
+    aa["S"] =       coefficient(nn, 2);
+    aa["L"] =       coefficient(nn, 3);
+}
+
 # SOURCE: http://www.rapidtables.com/convert/color/hsl-to-rgb.htm
 # SOURCE: http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSL
-function hsla2rgba(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
+function hsl2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
     # hue        ∊ [0, 360)
     # saturation ∊ [0,   1]
     # lightness  ∊ [0,   1]
@@ -34,8 +44,8 @@ function hsla2rgba(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
     aa["B"] = int(255 * (bb + (mm / 2)));
 }
 
-function rgba2hex(aa) {
-    return sprintf("%02x%02x%02x%02x", 255 * aa["A"], aa["R"], aa["G"], aa["B"]);
+function rgba2hex(aa, alpha) {
+    return sprintf("%02x%02x%02x%02x", 255 * alpha, aa["R"], aa["G"], aa["B"]);
 }
 
 BEGIN { ntags = 0; delete tag_stack; }
@@ -87,7 +97,7 @@ function xml_text_element(tag, text) {
     pop(tag);
 }
 
-function annoFilters(        ii) {
+function generate_filters(        ii) {
     xml_open_tag("annoFilters");
     for (ii = 0; ii < nclasses; ++ii) {
         xml_open_tag("annoFilter", "name", ("visualize " class[ii]));
@@ -100,31 +110,26 @@ function annoFilters(        ii) {
 }
 
 BEGIN { base_width = 4; }
-function annoColorRules(        ii, hh, ss, ll, aa) {
-    PI = 3.14159265;
-    dd = sqrt(nclasses);
+function generate_colour_rules(        ii, hh, ss, ll, aa) {
     xml_open_tag("annoColorRules");
     for (ii = 0; ii < nclasses; ++ii) {
-        aa["H"] = 360 * int(ii / dd) * dd / nclasses;
-        aa["S"] = (ii % dd) / dd;
+        class2hsl(ii, aa);
+        hsl2rgb(aa);
+
         xml_open_tag("colorRule", "filterName", ("visualize " class[ii]));
 
         xml_open_tag("visualShapeConfig");
 
         xml_open_tag("normalState");
         xml_text_element("borderWidth", base_width);
-        aa["L"] = aa["A"] = 5/6; hsla2rgba(aa);
-        xml_text_element("borderColor", rgba2hex(aa));
-        aa["L"] = aa["A"] = 4/6; hsla2rgba(aa);
-        xml_text_element("fillColor", rgba2hex(aa));
+        xml_text_element("borderColor", rgba2hex(aa, 0.8));
+        xml_text_element("fillColor",   rgba2hex(aa, 0.6));
         xml_close_tag("normalState");
 
         xml_open_tag("selectedState");
         xml_text_element("borderWidth", (base_width * 2));
-        aa["L"] = aa["A"] = 7/8; hsla2rgba(aa);
-        xml_text_element("borderColor", rgba2hex(aa));
-        aa["L"] = aa["A"] = 6/8; hsla2rgba(aa);
-        xml_text_element("fillColor", rgba2hex(aa));
+        xml_text_element("borderColor", rgba2hex(aa, 0.9));
+        xml_text_element("fillColor",   rgba2hex(aa, 0.7));
         xml_close_tag("selectedState");
 
         xml_close_tag("visualShapeConfig");
@@ -140,7 +145,9 @@ BEGIN { nclasses = 0; }
 }
 
 END {
-    info("nclasses = " nclasses);
-    annoFilters();
-    annoColorRules();
+    cube_edge =         nclasses ** (1/3);
+    info("nclasses = "  nclasses);
+    info("cube_edge = " cube_edge);
+    generate_filters();
+    generate_colour_rules();
 }
