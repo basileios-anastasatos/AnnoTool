@@ -10,7 +10,7 @@ function abs(nn) {
 }
 
 function coefficient(nn, dd) {
-    return int((nn % (cube_edge ^ dd))) / (cube_edge ^ dd);
+    return int((nn % (stride ^ dd))) / (stride ^ dd);
 }
 
 function class2rgb(nn, aa) {
@@ -148,16 +148,10 @@ function generate_filters(        ii) {
     xml_close_tag("annoFilters");
 }
 
-function halve_distance(rr) {
-    return (rr + 1) / 2;
-}
-
 BEGIN {
-    base_width            = 4;
-    alpha_normal_fill     = 0.5;
-    alpha_normal_border   = halve_distance(alpha_normal_fill);
-    alpha_selected_fill   = halve_distance(alpha_normal_fill);
-    alpha_selected_border = halve_distance(alpha_selected_fill);
+    if (selected_width == "") {
+        selected_width = (2 * normal_width);
+    }
 }
 function generate_colour_rules(        ii, hh, ss, ll, aa) {
     xml_open_tag("annoColorRules");
@@ -183,15 +177,15 @@ function generate_colour_rules(        ii, hh, ss, ll, aa) {
         xml_open_tag("visualShapeConfig");
 
         xml_open_tag("normalState");
-        xml_text_element("borderWidth", base_width);
-        xml_text_element("borderColor", rgba2hex(aa, alpha_normal_border));
-        xml_text_element("fillColor",   rgba2hex(aa, alpha_normal_fill));
+        xml_text_element("borderWidth", normal_width);
+        xml_text_element("borderColor", rgba2hex(aa, 1));
+        xml_text_element("fillColor",   rgba2hex(aa, fill_alpha));
         xml_close_tag("normalState");
 
         xml_open_tag("selectedState");
-        xml_text_element("borderWidth", (base_width * 2));
-        xml_text_element("borderColor", rgba2hex(aa, alpha_selected_border));
-        xml_text_element("fillColor",   rgba2hex(aa, alpha_selected_fill));
+        xml_text_element("borderWidth", selected_width);
+        xml_text_element("borderColor", rgba2hex(aa, 1));
+        xml_text_element("fillColor",   rgba2hex(aa, fill_alpha));
         xml_close_tag("selectedState");
 
         xml_close_tag("visualShapeConfig");
@@ -210,10 +204,13 @@ BEGIN {
 }
 
 END {
-    cube_edge = nclasses ** (1/3);
-    info("nclasses     = " nclasses);
-    info("∛n̅c̅l̅̅̅a̅s̅s̅e̅s̅    = " cube_edge);
-    info("colour space = " colour_space);
+    stride = nclasses ** (1/3);
+    info("nclasses       = " nclasses);
+    info("stride         = " stride);
+    info("colour space   = " colour_space);
+    info("normal width   = " normal_width);
+    info("selected width = " selected_width);
+    info("flll alpha     = " fill_alpha);
     generate_filters();
     generate_colour_rules();
 }
