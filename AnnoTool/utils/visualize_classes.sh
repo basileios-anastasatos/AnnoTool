@@ -7,63 +7,74 @@ function cleanup() {
 
 trap cleanup 1 2 3 9 15;
 
-readonly DIR=$(dirname "${0:?}");
-
 function get_class_file() {
     sed 's/\r/\n/g' "${ATP_IN:?}" |
     xargs echo |
     sed -n -e 's@.*<classPath>[[:blank:]]*<file>\([^>]\+\)</file>[[:blank:]]*</classPath>.*@\1@p';
 }
 
+readonly DEFAULT_COLOUR_METHOD=RGB_index;
+readonly DEFAULT_NORMAL_WIDTH=4;
+readonly DEFAULT_FILL_ALPHA=0.5;
+
 function usage() {
-    [ "${@}" ] &&
-    echo "Fatal: ${@:?}" > /dev/stderr;
+    readonly local EXIT_CODE="${1:-0}";
+    echo -n -e "${2:+${2:?}\n\n}" > /dev/stderr;
 
     cat > /dev/stderr <<-EOF
-	usage: $0 options
+	Usage: $0 arguments
 
-	OPTIONS:
-	 -h                         show this message
-	 -p <project.atp>           (required)
-	 -c <colour spaces>         (default: HSL HSV RGB)
-	 -w <normal border width>   (default: 4)
-	 -W <selected border width> (default: twice the normal width)
-	 -a <fill alpha>:           (default: 0.5)
+	REQUIRED ARGUMENT:
+	 -p <project.atp>
+
+    HELP:
+	 -h
+
+    OPTIONAL ARGUMENTS:         VALUES    DEFAULT
+	 -c <colour method>         RGB_index ${DEFAULT_COLOUR_METHOD:?}
+	                            HSL_space
+	                            HSV_space
+	                            RGB_space
+	 -w <normal border width>   ≥ 1       ${DEFAULT_NORMAL_WIDTH:?}
+	 -W <selected border width> ≥ 1       2·<normal border width>
+	 -a <fill alpha>:           [0, 1]    ${DEFAULT_FILL_ALPHA}
+
+    OUTPUT FILE:
+     <project>.visualize_classes.<colour_method>.atp
 	EOF
 
-    if [ "${@}" ]; then
-        exit 1;
-    else
-        exit 0;
-    fi;
+    exit ${EXIT_CODE:?};
 }
 
 while getopts ":hp:c:w:W:a:" OPTION; do
     case "${OPTION:?}" in
         h) usage;;
         p) ATP_IN="${OPTARG:?}";;
-        c) COLOUR_SPACES="${OPTARG:?}";;
+        c) COLOUR_METHOD="${OPTARG:?}";;
         w) NORMAL_WIDTH="${OPTARG:?}";;
         W) SELECTED_WIDTH="${OPTARG:?}";;
         a) FILL_ALPHA="${OPTARG:?}";;
-        ?) usage "unrecognized argument ${OPTARG:?}";;
+        ?) usage 1 "Fatal: unrecognized argument ${OPTARG:?}";;
     esac;
 done;
 
 [ "${ATP_IN}" ] ||
-usage "no project file given";
+usage 1 "Fatal: no project file given";
 
+readonly DIR=$(dirname "${0:?}");
 readonly ATC_IN=$(dirname "${ATP_IN:?}")/$(get_class_file);
+readonly RGB_index="${DIR:?}/RGB_index.txt";
 readonly TMP=$(mktemp);
 
-for COLOUR_SPACE in ${COLOUR_SPACES:-HSL HSV RGB}; do
-    ATP_OUT="${ATP_IN%.*}.visualize_classes.${COLOUR_SPACE:?}.atp";
-    echo -e "\n${ATP_OUT:?}" > /dev/stderr;
-    "${DIR:?}"/visualize_classes.awk         \
-       -v "colour_space=${COLOUR_SPACE:?}"   \
-       -v "normal_width=${NORMAL_WIDTH:-4}"  \
-       -v "selected_width=${SELECTED_WIDTH}" \
-       -v "fill_alpha=${FILL_ALPHA:-0.5}"    \
-       "${ATC_IN:?}" > "${TMP:?}" &&
-    sed '/<annoProject\>/r '"${TMP:?}" "${ATP_IN:?}" > "${ATP_OUT}";
-done;
+ATP_OUT="${ATP_IN%.*}.visualize_classes.${COLOUR_METHOD:-${DEFAULT_COLOUR_METHOD:?}}.atp";
+echo -e "\n${ATP_OUT:?}" > /dev/stderr;
+gawk --re-interval                         \
+     --non-decimal-data                    \
+     -f "${DIR:?}"/visualize_classes.awk   \
+     -v "colour_method=${COLOUR_METHOD:-${DEFAULT_COLOUR_METHOD:?}}"   \
+     -v "RGB_index_filename=${RGB_index}"           \
+     -v "normal_width=${NORMAL_WIDTH:-${DEFAULT_NORMAL_WIDTH:?}}"  \
+     -v "selected_width=${SELECTED_WIDTH:-$(expr ${NORMAL_WIDTH:-${DEFAULT_NORMAL_WIDTH:?}} \* 2)}" \
+     -v "fill_alpha=${FILL_ALPHA:-${DEFAULT_FILL_ALPHA:?}}"    \
+     "${ATC_IN:?}" > "${TMP:?}" &&
+sed -e "/<annoProject\>/r ${TMP:?}" "${ATP_IN:?}" > "${ATP_OUT}";

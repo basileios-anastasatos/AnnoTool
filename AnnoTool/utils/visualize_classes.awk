@@ -31,6 +31,30 @@ function class2hsv(nn, aa) {
     aa["V"] =       coefficient(nn, 3);
 }
 
+function read_RGB_index(filename) {
+    ncolours = 0;
+    delete RGB_index;
+    while (getline < filename) {
+        if ($0 ~ /^#/) {
+            continue;
+        } else if ($0 ~ /^[0-9]+\t[0-9]+\t[0-9]+\t/) {
+            RGB_index[ncolours, "R"] = $1;
+            RGB_index[ncolours, "G"] = $2;
+            RGB_index[ncolours, "B"] = $3;
+            ++ncolours;
+        } else {
+            info("Unrecognized line: " $0);
+            exit(1);
+        }
+    }
+}
+
+function class2indexed_rgb(ii, aa) {
+    aa["R"] = RGB_index[(ii % ncolours), "R"];
+    aa["R"] = RGB_index[(ii % ncolours), "G"];
+    aa["B"] = RGB_index[(ii % ncolours), "B"];
+}
+
 # SOURCE: http://www.rapidtables.com/convert/color/hsl-to-rgb.htm
 # SOURCE: http://en.wikipedia.org/wiki/HSL_and_HSV#From_HSL
 function hsl2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
@@ -148,27 +172,24 @@ function generate_filters(        ii) {
     xml_close_tag("annoFilters");
 }
 
-BEGIN {
-    if (selected_width == "") {
-        selected_width = (2 * normal_width);
-    }
-}
 function generate_colour_rules(        ii, hh, ss, ll, aa) {
     xml_open_tag("annoColorRules");
     for (ii = 0; ii < nclasses; ++ii) {
-        if        (colour_space == "HSL") {
+        if        (colour_method == "HSL_space") {
             class2hsl(ii, aa);
             hsl2rgb(aa);
-        } else if (colour_space == "HSV") {
+        } else if (colour_method == "HSV_space") {
             class2hsv(ii, aa);
             hsv2rgb(aa);
-        } else if (colour_space == "RGB") {
+        } else if (colour_method == "RGB_space") {
             class2rgb(ii, aa);
-        } else if (colour_space = "") {
-            info("Undefined colour space");
+        } else if (colour_method == "RGB_index") {
+            class2indexed_rgb(ii, aa);
+        } else if (colour_method = "") {
+            info("Undefined colour method");
             exit(1);
         } else {
-            info("Unknown colour space: " colour_space);
+            info("Unknown colour method: " colour_method);
             exit(1);
         }
 
@@ -203,11 +224,18 @@ BEGIN {
     class[nclasses++] = gensub(/.*<classDef id="([^"]+)".*/, "\\1", 1);
 }
 
+BEGIN {
+    if (colour_method == "RGB_index") {
+        read_RGB_index(RGB_index);
+    }
+}
+
 END {
     stride = nclasses ** (1/3);
     info("nclasses       = " nclasses);
     info("stride         = " stride);
-    info("colour space   = " colour_space);
+    info("colour method  = " colour_method);
+    info("RGB index      = " RGB_index);
     info("normal width   = " normal_width);
     info("selected width = " selected_width);
     info("flll alpha     = " fill_alpha);
