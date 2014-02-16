@@ -73,3 +73,7 @@ function xml_text_element(tag, text) {
     iprint("<" tag ">" text "</" tag ">");
     pop(tag);
 }
+
+function xml_extract_text(tag) {
+    return trim(gensub(".*<" tag ">([^<]*)<\\/" tag ">.*", "\\1", "1"));
+}

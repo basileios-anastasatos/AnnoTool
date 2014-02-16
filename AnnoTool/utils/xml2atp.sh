@@ -47,7 +47,13 @@ END
 readonly TMP=$(mktemp);
 rm -f "${TMP:?}";
 
-for XML in "${ANNOTATIONS_DIR:?}/"*.xml; do
+function cleanup() {
+    rm "${TMP:?}";
+}
+
+trap cleanup 1 2 3 9 15;
+
+for XML in $(ls "${ANNOTATIONS_DIR:?}/"*.xml | head); do
     msg "Processing ${XML:?}";
     FILE_UUID=$(uuid);
     cat "${XML:?}"       |
@@ -56,20 +62,18 @@ for XML in "${ANNOTATIONS_DIR:?}/"*.xml; do
         -e "s//'/g"  |
     xmllint --format -   |
     tee -a "${TMP:?}"    |
-    "${DIR:?}/xml2ata.awk" \
-        -v file_uuid="${FILE_UUID:?}" \
-        -v complex_uuid="${COMPLEX_UUID:?}" \
-        -v images_dir="${IMAGES_DIR:?}" \
-        > "${PROJECT_NAME:?}/annotations/annotations_{${FILE_UUID:?}}.ata";
+    gawk -f "${DIR:?}/library.awk"           \
+         -f "${DIR:?}/xml_library.awk"       \
+         -f "${DIR:?}/xml2ata.awk"           \
+         -v file_uuid="${FILE_UUID:?}"       \
+         -v complex_uuid="${COMPLEX_UUID:?}" \
+         -v images_dir="${IMAGES_DIR:?}"     \
+         > "${PROJECT_NAME:?}/annotations/annotations_{${FILE_UUID:?}}.ata";
 done;
 
 readonly CLASS_FILE="${PROJECT_NAME:?}/classes.atc";
-msg  "Creating class file"                        ${CLASS_FILE:?};
-echo '<?xml version="1.0" encoding="UTF-8"?>' >> "${CLASS_FILE:?}";
-echo '<annoClassDefinitions>'                 >> "${CLASS_FILE:?}";
-cat "${TMP:?}" |
-sed -n \
-    -e 's@.*<name>[[:space:]]*\([^>]*[^[:space:]]\)[[:space:]]*</name>.*@    <classDef id="\1"/>@p' |
-sort -u                        >> "${CLASS_FILE:?}";
-echo '</annoClassDefinitions>' >> "${CLASS_FILE:?}";
-rm "${TMP:?}";
+msg  "Creating class file" ${CLASS_FILE:?};
+gawk -f library.awk     \
+     -f xml_library.awk \
+     -f xml2atc.awk     \
+     "${TMP:?}" > "${CLASS_FILE:?}";
