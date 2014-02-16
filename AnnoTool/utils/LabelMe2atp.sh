@@ -53,7 +53,7 @@ function cleanup() {
 
 trap cleanup 1 2 3 9 15;
 
-for XML in $(ls "${ANNOTATIONS_DIR:?}/"*.xml | head); do
+for XML in "${ANNOTATIONS_DIR:?}/"*.xml; do
     msg "Processing ${XML:?}";
     FILE_UUID=$(uuid);
     cat "${XML:?}"       |
@@ -64,7 +64,7 @@ for XML in $(ls "${ANNOTATIONS_DIR:?}/"*.xml | head); do
     tee -a "${TMP:?}"    |
     gawk -f "${DIR:?}/library.awk"           \
          -f "${DIR:?}/xml_library.awk"       \
-         -f "${DIR:?}/xml2ata.awk"           \
+         -f "${DIR:?}/LabelMe2ata.awk"       \
          -v file_uuid="${FILE_UUID:?}"       \
          -v complex_uuid="${COMPLEX_UUID:?}" \
          -v images_dir="${IMAGES_DIR:?}"     \
@@ -75,5 +75,5 @@ readonly CLASS_FILE="${PROJECT_NAME:?}/classes.atc";
 msg  "Creating class file" ${CLASS_FILE:?};
 gawk -f library.awk     \
      -f xml_library.awk \
-     -f xml2atc.awk     \
+     -f LabelMe2atc.awk \
      "${TMP:?}" > "${CLASS_FILE:?}";

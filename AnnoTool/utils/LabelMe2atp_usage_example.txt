@@ -3,7 +3,7 @@ xml2atp.sh usage example
 
 The command
 
-  xml2atp.sh \
+  LabelMe2atp.sh \
     sun09 \
     /BS/databases/sun09/Annotations/static_sun09_database \
     /BS/databases/sun09/Images/static_sun09_database;
