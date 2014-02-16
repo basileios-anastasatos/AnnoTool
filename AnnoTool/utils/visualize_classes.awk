@@ -1,14 +1,6 @@
 #! /usr/bin/gawk -f
 # vim:ts=4:sts=4:sw=4:tw=80:expandtab
 
-function info(msg) {
-    print msg > "/dev/stderr";
-}
-
-function abs(nn) {
-    return (nn >= 0) ? nn : -nn;
-}
-
 function coefficient(nn, dd) {
     return int((nn % (stride ^ dd))) / (stride ^ dd);
 }
@@ -105,59 +97,8 @@ function hsv2rgb(aa,        cc, xx, mm, zz, tt, rr, gg, bb) {
 }
 
 function rgba2hex(aa, alpha) {
-    return sprintf("%02x%02x%02x%02x", 255 * alpha, aa["R"], aa["G"], aa["B"]);
-}
-
-BEGIN {
-    ntags = 0;
-    delete tag_stack;
-}
-function push(tag) {
-    tag_stack[++ntags] = tag;
-}
-function pop(tag) {
-    if (tag_stack[ntags] != tag) {
-        info("XML mismatch error: " tag_stack[ntags] " != " tag);
-        exit(1);
-    }
-    delete tag_stack[ntags--];
-}
-
-function iprint(ss,        ii) {
-    for (ii = 0; ii < ntags; ++ii) {
-        printf("    "); # 4 blanks
-    }
-    printf("%s\n", ss);
-}
-
-function xml_open_tag(tag, property, value) {
-    push(tag);
-    if (property != "") {
-        iprint("<" tag " " property "=\"" value "\">");
-    } else {
-        iprint("<" tag ">");
-    }
-}
-
-function xml_open_and_close_tag(tag, property, value) {
-    push(tag);
-    if (property != "") {
-        iprint("<" tag " " property "=\"" value "\"/>");
-    } else {
-        iprint("<" tag "/>");
-    }
-    pop(tag);
-}
-
-function xml_close_tag(tag) {
-    iprint("</" tag ">");
-    pop(tag);
-}
-
-function xml_text_element(tag, text) {
-    push(tag);
-    iprint("<" tag ">" text "</" tag ">");
-    pop(tag);
+    return sprintf("%02x%02x%02x%02x", int(255 * alpha),
+                   aa["R"], aa["G"], aa["B"]);
 }
 
 function generate_filters(        ii) {
@@ -226,7 +167,7 @@ BEGIN {
 
 BEGIN {
     if (colour_method == "RGB_index") {
-        read_RGB_index(RGB_index);
+        read_RGB_index(RGB_index_filename);
     }
 }
 
@@ -235,7 +176,7 @@ END {
     info("nclasses       = " nclasses);
     info("stride         = " stride);
     info("colour method  = " colour_method);
-    info("RGB index      = " RGB_index);
+    info("RGB index      = " RGB_index_filename);
     info("normal width   = " normal_width);
     info("selected width = " selected_width);
     info("flll alpha     = " fill_alpha);

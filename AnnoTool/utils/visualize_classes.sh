@@ -70,7 +70,9 @@ ATP_OUT="${ATP_IN%.*}.visualize_classes.${COLOUR_METHOD:-${DEFAULT_COLOUR_METHOD
 echo -e "\n${ATP_OUT:?}" > /dev/stderr;
 gawk --re-interval                         \
      --non-decimal-data                    \
-     -f "${DIR:?}"/visualize_classes.awk   \
+     -f "${DIR:?}/library.awk"             \
+     -f "${DIR:?}/xml_library.awk"         \
+     -f "${DIR:?}/visualize_classes.awk"  \
      -v "colour_method=${COLOUR_METHOD:-${DEFAULT_COLOUR_METHOD:?}}"   \
      -v "RGB_index_filename=${RGB_index}"           \
      -v "normal_width=${NORMAL_WIDTH:-${DEFAULT_NORMAL_WIDTH:?}}"  \
