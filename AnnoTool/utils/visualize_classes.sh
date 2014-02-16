@@ -59,7 +59,7 @@ while getopts ":hp:c:w:W:a:" OPTION; do
 done;
 
 [ "${ATP_IN}" ] ||
-usage 1 "Fatal: no project file given";
+usage 2 "Fatal: no project file given";
 
 readonly DIR=$(dirname "${0:?}");
 readonly ATC_IN=$(dirname "${ATP_IN:?}")/$(get_class_file);
