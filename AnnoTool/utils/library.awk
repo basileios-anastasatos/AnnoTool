@@ -42,3 +42,16 @@ function trim(ss) {
     return gensub(/^[[:space:]]*/, "", "1",
            gensub(/[[:space:]]*$/, "", "1", ss));
 }
+
+function min(rr, qq) {
+    return ((rr + 0) <= (qq + 0)) ? rr : qq;
+}
+
+function max(rr, qq) {
+    return ((rr + 0) >= (qq + 0)) ? rr : qq;
+}
+
+function ceiling(rr,        qq) {
+    qq = int(rr);
+    return (qq == rr) ? qq : qq + 1;
+}

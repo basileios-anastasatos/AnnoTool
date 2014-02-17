@@ -68,9 +68,13 @@ function xml_close_tag(tag) {
     pop(tag);
 }
 
-function xml_text_element(tag, text) {
+function xml_text_element(tag, text, property0, value0) {
     push(tag);
-    iprint("<" tag ">" text "</" tag ">");
+    if (property0 != "") {
+        iprint("<" tag " " property0 "=\"" value0 "\">" text "</" tag ">");
+    } else {
+        iprint("<" tag ">" text "</" tag ">");
+    }
     pop(tag);
 }
 
