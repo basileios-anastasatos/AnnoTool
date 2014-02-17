@@ -1,10 +1,14 @@
 # vim:ts=4:sts=4:sw=4:tw=80:expandtab
 
+BEGIN {
+    min_score = "+inf";
+    max_score = "-inf";
+}
 function process_rectangle(        aa, xx, yy, ww, hh, score, ss, nrect) {
     match($0, /^\(([-0-9.]+),([-0-9.]+),([-0-9.]+),([-0-9.]+)\)(:([-0-9.]+))?[,;.]$/, aa);
 
-    xx = 1.0 * aa[1];
-    yy = 1.0 * aa[2];
+    xx = aa[1] + 0;
+    yy = aa[2] + 0;
     ww = aa[3] - xx;
     hh = aa[4] - yy;
 
@@ -23,37 +27,37 @@ function process_rectangle(        aa, xx, yy, ww, hh, score, ss, nrect) {
     }
     if (! (ss in rect2idx)) {
         assert((mode == "G") || (mode == "D"), "mode ∊ {G, D}");
-        nrect = nrectangles[image];
+        nrect = nrectangles[image]++;
         rect2idx[ss] = nrect;
         rectangle[image, nrect, "xx"] = xx;
         rectangle[image, nrect, "yy"] = yy;
         rectangle[image, nrect, "ww"] = ww;
         rectangle[image, nrect, "hh"] = hh;
-        status[image, nrect] = (status[image, nrect] mode);
-        ++nrectangles[image];
     } else {
         nrect = rect2idx[ss];
-        status[image, nrect] = (status[image, nrect] mode);
     }
-    if ((mode == "D") && (score != "null")) {
-        scores[image, nrect] = score;
+    status[image, nrect] = (status[image, nrect] mode);
+    if ((score != "null") && ((mode == "G") || (mode == "D"))) {
+        scores[image, nrect, mode] = score;
+        min_score = min(min_score, score);
+        max_score = max(max_score, score);
     }
 }
 
 BEGIN {
     delete status2class;
     status2class["G"]   = "ground truth";
-    status2class["DT"]  = "true positive";
-    status2class["GDT"] = "ground truth and true positive";
+    status2class["DT"]  = \
+    status2class["GDT"] = "true positive";
     status2class["DF"]  = "false positive";
     status2class["GM"]  = "missing recall";
 }
-function get_class_name(image, ii,        ss) {
-    ss = status[image, ii];
-    if (ss in status2class) {
-        return status2class[ss];
-    } else {
+function get_class_name(image, rect,        ss) {
+    ss = status[image, rect];
+    if (!(ss in status2class)) {
         fatal("Illegal status: " ss);
+    } else {
+        return status2class[ss];
     }
 }
 
@@ -66,21 +70,38 @@ BEGIN {
     nclasses = 0;
     delete class;
     delete colours;
-    register_class("ground truth",                   "0000ff"); # blue
-    register_class("true positive",                  "008000"); # green
-    register_class("ground truth and true positive", "ffc0cb"); # pink
-    register_class("false positive",                 "ff0000"); # red
-    register_class("missing recall",                 "ffff00"); # yellow
+    register_class("ground truth",   "0000ff"); # blue
+    register_class("true positive",  "008000"); # green
+    register_class("false positive", "ff0000"); # red
+    register_class("missing recall", "ffff00"); # yellow
 }
 
-function generate_filters(        ii) {
+function generate_filters(        ii, jj, ff) {
     xml_open_tag("annoFilters");
     for (ii = 0; ii < nclasses; ++ii) {
-        xml_open_tag("annoFilter", "name", class[ii]);
-        xml_open_tag("filterRule");
-        xml_open_and_close_tag("hasClass", "name", class[ii]);
-        xml_close_tag("filterRule");
-        xml_close_tag("annoFilter");
+        if ((class[ii] != "ground truth") && (filter_score == 1)) {
+            for (jj = 0 ; jj < nscore_classes; ++jj) {
+                ff = sprintf("%s %s", class[ii], score_class[jj]);
+                xml_open_tag("annoFilter", "name", ff);
+                xml_open_tag("filterRule");
+                xml_open_tag("and");
+                xml_open_and_close_tag("hasClass", "name", class[ii]);
+                xml_open_and_close_tag("scoreCmp", "value",
+                     score_class_left[jj], "op", "gte");
+                xml_open_and_close_tag("scoreCmp", "value",
+                     score_class_left[jj + 1], "op",
+                     (jj + 1 == nscore_classes) ? "lte" : "lt");
+                xml_close_tag("and");
+                xml_close_tag("filterRule");
+                xml_close_tag("annoFilter");
+            }
+        } else {
+            xml_open_tag("annoFilter", "name", class[ii]);
+            xml_open_tag("filterRule");
+            xml_open_and_close_tag("hasClass", "name", class[ii]);
+            xml_close_tag("filterRule");
+            xml_close_tag("annoFilter");
+        }
     }
     xml_close_tag("annoFilters");
 }
@@ -89,33 +110,59 @@ function rgba2hex(rgb, alpha) {
     return sprintf("%02x%s", int(alpha * 255), rgb);
 }
 
-function generate_colour_rules(        ii, hh, ss, ll, aa) {
+function generate_colour_rule(filter_name, colour, base_width, selected_width) {
+    xml_open_tag("colorRule", "filterName", filter_name);
+
+    xml_open_tag("visualShapeConfig");
+
+    xml_open_tag("normalState");
+    xml_text_element("borderWidth", base_width);
+    xml_text_element("borderColor", rgba2hex(colour, 1));
+    xml_text_element("fillColor",   rgba2hex(colour, fill_alpha));
+    xml_close_tag("normalState");
+
+    xml_open_tag("selectedState");
+    xml_text_element("borderWidth", selected_width);
+    xml_text_element("borderColor", rgba2hex(colour, 1));
+    xml_text_element("fillColor",   rgba2hex(colour, fill_alpha));
+    xml_close_tag("selectedState");
+
+    xml_close_tag("visualShapeConfig");
+
+    xml_close_tag("colorRule");
+}
+
+function generate_colour_rules(        ii, jj, ff) {
     xml_open_tag("annoColorRules");
     for (ii = 0; ii < nclasses; ++ii) {
-        xml_open_tag("colorRule", "filterName", class[ii]);
-
-        xml_open_tag("visualShapeConfig");
-
-        xml_open_tag("normalState");
-        xml_text_element("borderWidth", normal_width);
-        xml_text_element("borderColor", rgba2hex(colours[class[ii]], 1));
-        xml_text_element("fillColor",   rgba2hex(colours[class[ii]], fill_alpha));
-        xml_close_tag("normalState");
-
-        xml_open_tag("selectedState");
-        xml_text_element("borderWidth", selected_width);
-        xml_text_element("borderColor", rgba2hex(colours[class[ii]], 1));
-        xml_text_element("fillColor",   rgba2hex(colours[class[ii]], fill_alpha));
-        xml_close_tag("selectedState");
-
-        xml_close_tag("visualShapeConfig");
-
-        xml_close_tag("colorRule");
+        if ((class[ii] != "ground truth") && (filter_score == 1)) {
+            for (jj = 0; jj < nscore_classes; ++jj) {
+                ff = sprintf("%s %s", class[ii], score_class[jj]);
+                generate_colour_rule(ff, colours[class[ii]],
+                                    (jj + 1), (jj + 1) * 2);
+            }
+        } else {
+            generate_colour_rule(class[ii], colours[class[ii]],
+                                 normal_width, selected_width);
+        }
     }
     xml_close_tag("annoColorRules");
 }
 
-function generate_annotation_file(image,        ii, nrect, uuid, file) {
+function get_score(image, rect, class,        mode) {
+    if ((class == "ground truth") || (class == "missing recall")) {
+        mode = "G";
+    } else {
+        mode = "D";
+    }
+    if ((image, rect, mode) in scores) {
+        return scores[image, rect, mode];
+    } else {
+        return "null";
+    }
+}
+
+function generate_ata(image,        ii, nrect, uuid, file, class, score) {
     uuid = get_uuid();
     file = (annotations_dir "/annotations_{" uuid "}.ata");
     xml_start(file);
@@ -135,11 +182,14 @@ function generate_annotation_file(image,        ii, nrect, uuid, file) {
     for (ii = 0; ii < nrect; ++ii) {
         xml_open_tag("annotation", "uuid", get_uuid());
         xml_open_tag("annoClass");
-        xml_open_and_close_tag("class", "id", get_class_name(image, ii));
+        class = get_class_name(image, ii);
+        xml_open_and_close_tag("class", "id", class);
         xml_close_tag("annoClass");
-        if ((image, ii) in scores) {
-            xml_open_and_close_tag("attributeValues", "__score",
-                                                      scores[image, ii]);
+        score = get_score(image, ii, class);
+        if (score != "null") {
+            xml_open_tag("attributeValues");
+            xml_text_element("attribute", score, "name", "__score");
+            xml_close_tag("attributeValues");
         } else {
             xml_open_and_close_tag("attributeValues");
         }
@@ -174,7 +224,7 @@ function generate_atp() {
     xml_end(atp);
 }
 
-function generate_atc(        ii) {
+function generate_atc(        ii, jj) {
     xml_start(atc);
     xml_header();
     xml_open_tag("annoClassDefinitions");
@@ -185,16 +235,50 @@ function generate_atc(        ii) {
     xml_end(atc);
 }
 
-function generate_project(        ii, jj, nfiles) {
+function compute_score_classes(        ii, ll, rr) {
+    score_span = max_score - min_score;
+    score_class_left[0] = ll = min_score;
+    for (ii = 0; ii + 1 < nscore_classes; ++ii) {
+        rr = min_score + (ii + 1) / nscore_classes * score_span;
+        score_class     [ii    ] = sprintf("[%g,%g)", ll, rr);
+        score_class_left[ii + 1] = rr;
+        ll = rr;
+    }
+    rr = max_score;
+    score_class     [ii    ] = sprintf("[%g,%g]", ll, rr);
+    score_class_left[ii + 1] = rr;
+}
+
+END {
     nfiles = 1 + 1 + nimages;
+    current_file = 0;
+}
+function show_progress() {
+    info("File " ++current_file "/" nfiles);
+}
+
+BEGIN {
+    filter_score = 0;
+}
+function generate_project(        ii, jj, nfiles) {
     complex_uuid = get_uuid();
-    info("File 1/" nfiles);
+
+    info("min_score = " min_score);
+    info("max_score = " max_score);
+    if ((nscore_classes > 1) && ((min_score + 0) < (max_score + 0))) {
+        filter_score = 1;
+        compute_score_classes();
+    }
+
+    show_progress();
     generate_atp();
-    info("File 2/" nfiles);
+
+    show_progress();
     generate_atc();
+
     for (ii = 0; ii < nimages; ++ii) {
-        info("File " (ii + 3) "/" nfiles);
-        generate_annotation_file(images[ii]);
+        show_progress();
+        generate_ata(images[ii]);
     }
 }
 
@@ -215,9 +299,8 @@ BEGIN {
 /^"[^"]+"[:;]$/ {
     image = gensub(/^"([^"]+)":$/, "\\1", 1);
     if (mode == "G") {
-        images[nimages] = image;
+        images[nimages++] = image;
         nrectangles[image] = 0;
-        ++nimages;
     }
 }
 
