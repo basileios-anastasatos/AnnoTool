@@ -26,23 +26,23 @@ readonly PROJECT_NAME="${1:?}";    shift;
 readonly ANNOTATIONS_DIR="${1:?}"; shift;
 readonly IMAGES_DIR="${1:?}";      shift;
 
-mkdir "${PROJECT_NAME:?}";
-mkdir "${PROJECT_NAME:?}/annotations";
+[ -d "${ANNOTATIONS_DIR:?}" ] ||
+fatal "${ANNOTATIONS_DIR:?} does not exist or is not a directory";
+
+[ -d "${IMAGES_DIR:?}" ] ||
+fatal "${IMAGES_DIR:?} does not exist or is not a directory";
+
+mkdir -p "${PROJECT_NAME:?}/annotations";
 
 readonly PROJECT_FILE="${PROJECT_NAME:?}/${PROJECT_NAME:?}.atp";
 readonly COMPLEX_UUID=$(uuid);
 msg "Creating project file ${PROJECT_FILE:?}";
-cat >                     "${PROJECT_FILE:?}" <<-END
-	<?xml version="1.0" encoding="UTF-8"?>
-	<annoProject name="${PROJECT_NAME:?}" uuid="${COMPLEX_UUID:?}">
-	    <classPath>
-	        <file>classes.atc</file>
-	    </classPath>
-	    <searchPath>
-	        <dir>annotations</dir>
-	    </searchPath>
-	</annoProject>
-END
+gawk -f "${DIR:?}/library.awk"     \
+     -f "${DIR:?}/xml_library.awk" \
+     -f "${DIR:?}/LabelMe2atp.awk" \
+     -v project_name="${PROJECT_NAME:?}" \
+     -v complex_uuid="${COMPLEX_UUID:?}" \
+     > "${PROJECT_FILE:?}";
 
 readonly TMP=$(mktemp);
 rm -f "${TMP:?}";
@@ -73,7 +73,8 @@ done;
 
 readonly CLASS_FILE="${PROJECT_NAME:?}/classes.atc";
 msg  "Creating class file" ${CLASS_FILE:?};
-gawk -f library.awk     \
-     -f xml_library.awk \
-     -f LabelMe2atc.awk \
-     "${TMP:?}" > "${CLASS_FILE:?}";
+gawk -f "${DIR:?}/library.awk"     \
+     -f "${DIR:?}/xml_library.awk" \
+     -f "${DIR:?}/LabelMe2atc.awk" \
+     "${TMP:?}" \
+     > "${CLASS_FILE:?}";

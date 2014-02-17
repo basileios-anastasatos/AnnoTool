@@ -27,7 +27,7 @@ BEGIN {
     pty[nobj, npt[nobj]] = xml_extract_text("y");
 }
 
-function generate_image_annotation_file(        ii, jj) {
+function generate_ata(        ii, jj) {
     xml_header();
     xml_open_tag("imageAnnotationFile");
     xml_open_tag("imageInfo");
@@ -61,5 +61,5 @@ function generate_image_annotation_file(        ii, jj) {
 }
 
 END {
-    generate_image_annotation_file();
+    generate_ata();
 }

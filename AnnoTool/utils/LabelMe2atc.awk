@@ -9,7 +9,7 @@
     }
 }
 
-function generate_class_file(        ii, jj) {
+function generate_atc(        ii, jj) {
     asort(name);
     xml_header();
     xml_open_tag("annoClassDefinitions");
@@ -20,5 +20,5 @@ function generate_class_file(        ii, jj) {
 }
 
 END {
-    generate_class_file();
+    generate_atc();
 }
