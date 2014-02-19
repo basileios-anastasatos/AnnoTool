@@ -2,7 +2,7 @@
 # vim:ts=4:sts=4:sw=4:tw=80:expandtab
 
 function process() {
-    echo "DATA ${1:?}";
+    echo "MODE ${1:?}";
     if file "${2:?}" |
        grep -q ': gzip compressed data'; then
         zcat "${2:?}";

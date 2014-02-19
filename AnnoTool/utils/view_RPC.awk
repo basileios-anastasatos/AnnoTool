@@ -12,11 +12,7 @@ function process_rectangle(        aa, xx, yy, ww, hh, score, ss, nrect) {
     ww = aa[3] - xx;
     hh = aa[4] - yy;
 
-    if (6 in aa) {
-        score = aa[6];
-    } else {
-        score = "null";
-    }
+    score = (6 in aa) ? aa[6] : "null";
 
     ss = (image ":" xx "," yy "," ww "," hh);
     if (mode == "G") {
@@ -37,8 +33,8 @@ function process_rectangle(        aa, xx, yy, ww, hh, score, ss, nrect) {
         nrect = rect2idx[ss];
     }
     status[image, nrect] = (status[image, nrect] mode);
-    if ((score != "null") && ((mode == "G") || (mode == "D"))) {
-        scores[image, nrect, mode] = score;
+    if ((mode == "D") && (score != "null")) {
+        scores[image, nrect] = score;
         min_score = min(min_score, score);
         max_score = max(max_score, score);
     }
@@ -79,7 +75,7 @@ BEGIN {
 function generate_filters(        ii, jj, ff) {
     xml_open_tag("annoFilters");
     for (ii = 0; ii < nclasses; ++ii) {
-        if ((class[ii] != "ground truth") && (filter_score == 1)) {
+        if ((class[ii] ~ /positive/) && (filter_score == 1)) {
             for (jj = 0 ; jj < nscore_classes; ++jj) {
                 ff = sprintf("%s %s", class[ii], score_class[jj]);
                 xml_open_tag("annoFilter", "name", ff);
@@ -135,7 +131,7 @@ function generate_colour_rule(filter_name, colour, base_width, selected_width) {
 function generate_colour_rules(        ii, jj, ff) {
     xml_open_tag("annoColorRules");
     for (ii = 0; ii < nclasses; ++ii) {
-        if ((class[ii] != "ground truth") && (filter_score == 1)) {
+        if ((class[ii] ~ /positive/) && (filter_score == 1)) {
             for (jj = 0; jj < nscore_classes; ++jj) {
                 ff = sprintf("%s %s", class[ii], score_class[jj]);
                 generate_colour_rule(ff, colours[class[ii]],
@@ -149,20 +145,7 @@ function generate_colour_rules(        ii, jj, ff) {
     xml_close_tag("annoColorRules");
 }
 
-function get_score(image, rect, class,        mode) {
-    if ((class == "ground truth") || (class == "missing recall")) {
-        mode = "G";
-    } else {
-        mode = "D";
-    }
-    if ((image, rect, mode) in scores) {
-        return scores[image, rect, mode];
-    } else {
-        return "null";
-    }
-}
-
-function generate_ata(image,        ii, nrect, uuid, file, class, score) {
+function generate_ata(image,        ii, nrect, uuid, file, class) {
     uuid = get_uuid();
     file = (annotations_dir "/annotations_{" uuid "}.ata");
     xml_start(file);
@@ -185,10 +168,9 @@ function generate_ata(image,        ii, nrect, uuid, file, class, score) {
         class = get_class_name(image, ii);
         xml_open_and_close_tag("class", "id", class);
         xml_close_tag("annoClass");
-        score = get_score(image, ii, class);
-        if (score != "null") {
+        if ((image, ii) in scores) {
             xml_open_tag("attributeValues");
-            xml_text_element("attribute", score, "name", "__score");
+            xml_text_element("attribute", scores[image, ii], "name", "__score");
             xml_close_tag("attributeValues");
         } else {
             xml_open_and_close_tag("attributeValues");
@@ -291,7 +273,7 @@ BEGIN {
     delete scores;
 }
 
-/^DATA [GDTFM]$/ {
+/^MODE [GDTFM]$/ {
     mode = $2;
 }
 
