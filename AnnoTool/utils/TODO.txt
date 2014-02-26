@@ -1,0 +1,9 @@
+Optionally map the scores to the width of the border line.
+The user could even provide a mapping function himself.
+
+Show the score of the rectangle over which the mouse pointer hovers
+in a small window on the main toolbar.
+
+Show the score at the top left of the rectangle.
+
+Filter the score of the classes with min_score < max_score.

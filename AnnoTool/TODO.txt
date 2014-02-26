@@ -1,0 +1,24 @@
+# vim:ts=2:sts=2:sw=2:tw=80:expandtab
+
+view_RPC
+
+  Optionally map the scores to the width of the border line.
+  The user could even provide a mapping function himself.
+
+  Show the score of the rectangle over which the mouse pointer hovers
+  in a small window on the main toolbar.
+
+  Show the score at the top left of the rectangle.
+
+AnnoTool
+
+  Synchronize
+    master
+    master_for_MS_Windows
+    GrabCut
+    GrabCut_for_MS_Windows
+
+    utils
+    header paths working with both Qt 4 and Qt 5
+
+    command line options
