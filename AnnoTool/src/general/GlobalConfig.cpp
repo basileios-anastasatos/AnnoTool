@@ -527,9 +527,9 @@ namespace anno {
         }
     }
 
-    graphics::VisualShapeConfig GlobalConfig::getShapeConfig(QString s, graphics::VisualShapeConfig defaultValue) const {
-        if (_settingsShapeConfig.contains(s)) {
-            return _settingsShapeConfig[s];
+    graphics::VisualShapeConfig GlobalConfig::getShapeConfig(const QString &key, const graphics::VisualShapeConfig &defaultValue) const {
+        if (_settingsShapeConfig.contains(key)) {
+            return _settingsShapeConfig[key];
         } else {
             return defaultValue;
         }

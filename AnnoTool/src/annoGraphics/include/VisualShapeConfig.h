@@ -14,6 +14,9 @@ namespace anno {
     namespace graphics {
 
         class VisualShapeConfig {
+            public:
+                static const QString XML_VISUALSHAPECONFIG;
+
             private:
                 QPen _borderNormal;
                 QPen _borderSelected;

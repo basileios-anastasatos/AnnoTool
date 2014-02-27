@@ -8,6 +8,7 @@
 #include <QUuid>
 #include "AllAnnoExceptions.h"
 #include "AnnoFilter.h"
+#include "AnnoFilterManager.h"
 #include "ColorFilterEntry.h"
 
 class QXmlStreamWriter;
@@ -28,6 +29,7 @@ namespace anno {
                 static const QString XML_FILTERS;
                 static const QString XML_SINGLEFILTER;
                 static const QString XML_LINK;
+                static const QString XML_COLORRULES;
 
             private:
                 QString _sourceFile;
@@ -85,8 +87,8 @@ namespace anno {
 
             public:
                 void writeToFile() const throw(IOException *, XmlException *);
-                static AnnoProject *fromFile(const QString &path) throw(IOException *,
-                        XmlException *);
+                static AnnoProject *fromFile(const QString &path, filter::AnnoFilterManager *filterMan)
+                    throw(IOException *, XmlException *);
 
                 void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 static AnnoProject *fromXml(QXmlStreamReader &reader)

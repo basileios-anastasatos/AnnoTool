@@ -4,11 +4,19 @@
 #include "annoTypesForward.h"
 #include "VisualShapeConfig.h"
 
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
+
 namespace anno {
     namespace filter {
         class AnnoFilter;
 
         class ColorFilterEntry {
+                // some useful constants
+            public:
+                static const QString XML_SINGLECOLORRULE;
+                static const QString XML_FILTERNAME;
+
             private:
                 AnnoFilter *_filter;
                 graphics::VisualShapeConfig _shapeConfig;
@@ -24,6 +32,12 @@ namespace anno {
                 void setColoring(const graphics::VisualShapeConfig &config);
 
                 AnnoFilter *getFilter() const;
+
+                // Xml Interface
+            public:
+                void toXml(QXmlStreamWriter &writer) const;
+                void loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
+                static ColorFilterEntry *fromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
         };
 
     }

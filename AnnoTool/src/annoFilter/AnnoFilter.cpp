@@ -11,6 +11,8 @@ using anno::helper::XmlHelper;
 
 namespace anno {
     namespace filter {
+        const QString AnnoFilter::XML_SINGLEFILTER("annoFilter");
+
         AnnoFilter::AnnoFilter(QObject *parent) :
             QObject(parent), _active(false), _rule(NULL), _fileData(NULL) {
         }
@@ -216,7 +218,7 @@ namespace anno {
         }
 
         void AnnoFilter::toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
-            writer.writeStartElement("annoFilter");
+            writer.writeStartElement(XML_SINGLEFILTER);
             writer.writeAttribute("name", _name);
             if(!_comment.isEmpty()) {
                 writer.writeTextElement("comment", _comment);
@@ -231,8 +233,8 @@ namespace anno {
 
         void AnnoFilter::loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
             QString curParent = reader.name().toString();
-            if(!reader.isStartElement() || curParent != "annoFilter") {
-                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "annoFilter", curParent);
+            if(!reader.isStartElement() || curParent != XML_SINGLEFILTER) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, XML_SINGLEFILTER, curParent);
             }
 
             QString filterName = reader.attributes().value("name").toString();
@@ -255,7 +257,7 @@ namespace anno {
                 _rule = pRule;
             }
 
-            XmlHelper::skipToEndElement("annoFilter", reader);
+            XmlHelper::skipToEndElement(XML_SINGLEFILTER, reader);
             reader.readNext();
         }
 

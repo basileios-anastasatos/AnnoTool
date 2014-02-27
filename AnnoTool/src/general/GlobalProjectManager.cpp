@@ -98,8 +98,9 @@ namespace anno {
             throw new IllegalStateException(__FILE__, __LINE__, "There is aleady a current project loaded.");
         }
 
-        _project = new dt::AnnoProject(projectPath, projectUuid);
-        _filterMan = new filter::AnnoFilterManager(_project);
+//      _project = new dt::AnnoProject(projectPath, projectUuid);
+        _filterMan = new filter::AnnoFilterManager();
+        _project = dt::AnnoProject::fromFile(projectPath, _filterMan);
         _classList = new dt::AnnoAvClassList();
         _fileList = new QList<dt::AnnoFileData *>();
         _fileListMod = new QList<dt::AnnoFileData *>();
@@ -601,9 +602,8 @@ namespace anno {
             //sortAnnoFiles();
             setupAllSignals();
         } else {
-
-            _project = dt::AnnoProject::fromFile(path);
-            _filterMan = new filter::AnnoFilterManager(_project);
+            _filterMan = new filter::AnnoFilterManager();
+            _project = dt::AnnoProject::fromFile(path, _filterMan);
             _classList = new dt::AnnoAvClassList();
             _fileList = new QList<dt::AnnoFileData *>();
             _fileListMod = new QList<dt::AnnoFileData *>();

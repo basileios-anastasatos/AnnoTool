@@ -3,22 +3,30 @@
 #include "AfrSwitch.h"
 #include "AfrScoreAdv.h"
 #include "importGlobals.h"
-#include "XmlHelper.h"
 #include "AnnoProject.h"
 #include "ColorFilterEntry.h"
-
-using anno::helper::XmlHelper;
-
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 
 namespace anno {
     namespace filter {
 
         AnnoFilterManager::AnnoFilterManager(dt::AnnoProject *project, QObject *parent) :
-            QObject(parent), _commonEnabled(false), _scoreEnabled(false), _commonFilter(NULL), _emptyFilter(NULL), _scoreFilter(NULL), _unifiedFilter(NULL), _curFilter(NULL), _scoreLink(NULL), _scoreRule(NULL), _coloringEnabled(false) {
-            _filters = project->filters();
-            _colorRules = project->colorRules();
+            QObject(parent),
+            _commonEnabled(false),
+            _scoreEnabled(false),
+            _filters(NULL),
+            _commonFilter(NULL),
+            _emptyFilter(NULL),
+            _scoreFilter(NULL),
+            _unifiedFilter(NULL),
+            _curFilter(NULL),
+            _scoreLink(NULL),
+            _scoreRule(NULL),
+            _coloringEnabled(false),
+            _colorRules(NULL) {
+            if (project) {
+                _filters = project->filters();
+                _colorRules = project->colorRules();
+            }
             _emptyFilter = new AnnoFilter("#_Auto_Empty_Filter_#", "Automatic generated empty filter.", new AfrSwitch(true));
             _scoreLink = new AfrAnd(false);
             _scoreRule = new AfrScoreAdv(0.0, 10000.0, true, true, false);
@@ -28,6 +36,18 @@ namespace anno {
             _unifiedFilter = new AnnoFilter("#_Auto_Unified_Filter_#", "Automatic generated unified filter.", _scoreLink);
 
             connect(GlobalProjectManager::instance(), SIGNAL(curAnnoFileSelChanged(int, QUuid, ::anno::dt::AnnoFileData *)), this, SLOT(onPM_annoFileSelectChanged(int, QUuid, ::anno::dt::AnnoFileData *)));
+        }
+
+        void AnnoFilterManager::setProject(dt::AnnoProject *project) throw (anno::exc::AnnoException) {
+            if (!project) {
+                throw new anno::exc::AnnoException(__FILE__, __LINE__, "Invalid argument to AnnoFilterManager::setProject()");
+            }
+            if (!_filters) {
+                _filters = project->filters();
+            }
+            if (!_colorRules) {
+                _colorRules = project->colorRules();
+            }
         }
 
         AnnoFilterManager::~AnnoFilterManager() {
@@ -131,43 +151,6 @@ namespace anno {
                 return _scoreRule->getUpper();
             }
             return 42.4242;
-        }
-
-        void AnnoFilterManager::saveFilterstoXml(QXmlStreamWriter &writer) const throw(exc::XmlException *) {
-            writer.writeStartElement("annoFilters");
-            QList<AnnoFilter *> filterList = _filters->values();
-            foreach(AnnoFilter * f, filterList) {
-                f->toXml(writer);
-            }
-            writer.writeEndElement();
-        }
-
-        void AnnoFilterManager::loadFiltersFromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            QString curParent = reader.name().toString();
-            if(!reader.isStartElement() || curParent != "annoFilters") {
-                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "annoFilters", curParent);
-            }
-
-            XmlHelper::skipToNextStartElement(true, reader);
-            while(!reader.atEnd()) {
-                if(reader.isStartElement() && reader.name().toString() == "annoFilter") {
-                    AnnoFilter *pFilter = AnnoFilter::fromXml(reader);
-                    if(pFilter == NULL) {
-                        throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Filter Tag <%1>").arg(reader.name().toString()));
-                    }
-                    if(_filters->contains(pFilter->getName())) {
-                        throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Double filter name encountered <%1>").arg(pFilter->getName()));
-                    }
-                    _filters->insert(pFilter->getName(), pFilter);
-
-                    continue;
-                } else if(reader.isEndElement() && reader.name().toString() == "annoFilters") {
-                    reader.readNext();
-                    break;
-                }
-                reader.readNext();
-            }
-
         }
 
         void AnnoFilterManager::setCommonEnabled(bool enable) {
@@ -412,7 +395,7 @@ namespace anno {
             return entry;
         }
 
-        QList<ColorFilterEntry *> AnnoFilterManager::getAllColorRules() {
+        QList<ColorFilterEntry *> AnnoFilterManager::getAllColorRules() const {
             return *_colorRules;
         }
 

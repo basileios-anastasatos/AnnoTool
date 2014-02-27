@@ -4,6 +4,9 @@
 #include <QTextStream>
 #include <QListIterator>
 #include "XmlHelper.h"
+#include "GlobalLogger.h"
+#include "GlobalProjectManager.h"
+#include "AnnoFilterManager.h"
 
 //namespace AnnoTool
 namespace anno {
@@ -16,7 +19,7 @@ namespace anno {
         const QString AnnoProject::XML_CLASSPATH("classPath");
         const QString AnnoProject::XML_SEARCHPATH("searchPath");
         const QString AnnoProject::XML_FILTERS("annoFilters");
-        const QString AnnoProject::XML_SINGLEFILTER("annoFilter");
+        const QString AnnoProject::XML_COLORRULES("annoColorRules");
         const QString AnnoProject::XML_LINK("link");
 
         AnnoProject::AnnoProject(const QString &path) {
@@ -29,10 +32,10 @@ namespace anno {
         }
 
         AnnoProject::~AnnoProject() {
-            if(!_colorRules.isEmpty()) {
+            if(!colorRules()->isEmpty()) {
                 qDeleteAll(_colorRules);
             }
-            if(!_filters.isEmpty()) {
+            if(!filters()->isEmpty()) {
                 qDeleteAll(_filters);
             }
         }
@@ -131,7 +134,7 @@ namespace anno {
 
             QXmlStreamReader reader(&file);
             reader.setNamespaceProcessing(true);
-            if (!XmlHelper::skipToStartElement("annoProject", reader)) {
+            if (!XmlHelper::skipToStartElement(XML_PROJECT, reader)) {
                 throw new XmlFormatException(__FILE__, __LINE__, QString("Cannot load from [%1]. Invalid XML format.").arg(_sourceFile));
             }
 
@@ -141,17 +144,19 @@ namespace anno {
 
         bool AnnoProject::isXmlComponent(const QString &cmpName) {
             return (cmpName == XML_SEARCHPATH ||
-                    cmpName == XML_CLASSPATH ||
-                    cmpName == XML_FILTERS ||
-                    cmpName == XML_LINK
+                    cmpName == XML_CLASSPATH  ||
+                    cmpName == XML_FILTERS    ||
+                    cmpName == XML_LINK       ||
+                    cmpName == XML_COLORRULES
                    );
         }
 
         bool AnnoProject::isXmlComponent(const QStringRef &cmpName) {
             return (cmpName == XML_SEARCHPATH ||
-                    cmpName == XML_CLASSPATH ||
-                    cmpName == XML_FILTERS ||
-                    cmpName == XML_LINK
+                    cmpName == XML_CLASSPATH  ||
+                    cmpName == XML_FILTERS    ||
+                    cmpName == XML_LINK       ||
+                    cmpName == XML_COLORRULES
                    );
         }
 
@@ -176,7 +181,6 @@ namespace anno {
             bool sawSearchPath = false;
             bool sawClassPath = false;
             bool sawLink = false;
-            bool sawFilters = false;
 
             XmlHelper::skipToNextStartElement(true, reader);
             while(isXmlComponent(reader.name())) {
@@ -196,12 +200,7 @@ namespace anno {
                     loadClassPath(reader);
                     sawClassPath = true;
                 } else if(curName == XML_FILTERS) {
-                    if(sawFilters) {
-                        throw new XmlFormatException(__FILE__, __LINE__, QString("Invalid XML structure, double <%1> tag").arg(XML_FILTERS));
-                    }
-
                     loadFilters(reader);
-                    sawFilters = true;
                 } else if(curName == XML_LINK) {
                     if(sawLink) {
                         throw new XmlFormatException(__FILE__, __LINE__, QString("Invalid XML structure, double <%1> tag").arg(XML_LINK));
@@ -209,6 +208,8 @@ namespace anno {
 
                     loadLinks(reader);
                     sawLink = true;
+                } else if (curName == XML_COLORRULES) {
+                    loadColorRules(reader);
                 }
 
                 XmlHelper::skipToNextStartElement(false, reader);
@@ -290,20 +291,21 @@ namespace anno {
             file.close();
         }
 
-        AnnoProject *AnnoProject::fromFile(const QString &path) throw(IOException *,
-                XmlException *) {
+        AnnoProject *AnnoProject::fromFile(const QString &path, filter::AnnoFilterManager *filterMan)
+                throw(IOException *, XmlException *) {
             AnnoProject *data = new AnnoProject(path);
+            filterMan->setProject(data); // Complete the initialization of the filter manager
             data->loadFromFile();
             return data;
         }
 
         void AnnoProject::toXml(QXmlStreamWriter &writer) const
         throw(XmlException *) {
-            writer.writeStartElement("annoProject");
+            writer.writeStartElement(XML_PROJECT);
             writer.writeAttribute("name", _projectName);
             writer.writeAttribute("uuid", uuidAsString());
             if (!_classPaths.isEmpty()) {
-                writer.writeStartElement("classPath");
+                writer.writeStartElement(XML_CLASSPATH);
                 QListIterator<QFileInfo> i(_classPaths);
                 while (i.hasNext()) {
                     writer.writeTextElement("file", i.next().filePath());
@@ -311,7 +313,7 @@ namespace anno {
                 writer.writeEndElement();
             }
             if (!_links.isEmpty()) {
-                writer.writeStartElement("link");
+                writer.writeStartElement(XML_LINK);
                 QListIterator<QUuid> i(_links);
                 while (i.hasNext()) {
                     writer.writeTextElement("uuid", XmlHelper::uuidAsString(i.next()));
@@ -321,7 +323,7 @@ namespace anno {
             if (_searchPaths.isEmpty()) {
                 throw new XmlFormatException(__FILE__, __LINE__, "No search path elements. Writing this XML would result in invalid XML file structure.");
             } else {
-                writer.writeStartElement("searchPath");
+                writer.writeStartElement(XML_SEARCHPATH);
                 QListIterator<QFileInfo> i(_searchPaths);
                 while (i.hasNext()) {
                     writer.writeTextElement("dir", i.next().filePath());
@@ -339,11 +341,11 @@ namespace anno {
 
         void AnnoProject::loadClassPath(QXmlStreamReader &reader)
         throw(XmlException *) {
-            QString tagList("classPath");
+            QString tagList(XML_CLASSPATH);
             QString tagFile("file");
 
             if (!reader.isStartElement() || reader.name() != tagList) {
-                throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML. Was expecting classPath");
+                throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML. Was expecting " + XML_CLASSPATH);
             }
 
             while (!reader.atEnd()) {
@@ -360,11 +362,11 @@ namespace anno {
 
         void AnnoProject::loadSearchPath(QXmlStreamReader &reader)
         throw(XmlException *) {
-            QString tagList("searchPath");
+            QString tagList(XML_SEARCHPATH);
             QString tagDir("dir");
 
             if (!reader.isStartElement() || reader.name() != tagList) {
-                throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML. Was expecting searchPath");
+                throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML. Was expecting " + XML_SEARCHPATH);
             }
 
             while (!reader.atEnd()) {
@@ -380,11 +382,11 @@ namespace anno {
         }
 
         void AnnoProject::loadLinks(QXmlStreamReader &reader) throw(XmlException *) {
-            QString tagList("link");
+            QString tagList(XML_LINK);
             QString tagUuid("uuid");
 
             if (!reader.isStartElement() || reader.name() != tagList) {
-                throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML. Was expecting link");
+                throw new XmlFormatException(__FILE__, __LINE__, "Invalid XML. Was expecting " + XML_LINK);
             }
 
             while (!reader.atEnd()) {
@@ -407,7 +409,7 @@ namespace anno {
 
             XmlHelper::skipToNextStartElement(true, reader);
             while(!reader.atEnd()) {
-                if(reader.isStartElement() && reader.name() == XML_SINGLEFILTER) {
+                if(reader.isStartElement() && reader.name() == filter::AnnoFilter::XML_SINGLEFILTER) {
                     filter::AnnoFilter *pFilter = filter::AnnoFilter::fromXml(reader);
                     if(pFilter == NULL) {
                         throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Filter Tag <%1>").arg(reader.name().toString()));
@@ -428,19 +430,42 @@ namespace anno {
 
         void AnnoProject::saveFilters(QXmlStreamWriter &writer) const throw(XmlException *) {
             writer.writeStartElement(XML_FILTERS);
-            QList<filter::AnnoFilter *> filterList = _filters.values();
-            foreach(filter::AnnoFilter * f, filterList) {
+            foreach(filter::AnnoFilter *f, _filters.values()) {
                 f->toXml(writer);
             }
             writer.writeEndElement();
         }
 
         void AnnoProject::loadColorRules(QXmlStreamReader &reader) throw(XmlException *) {
-            //TODO loadColorRules
+            QString curParent = reader.name().toString();
+            if(!reader.isStartElement() || curParent != XML_COLORRULES) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, XML_COLORRULES, curParent);
+            }
+
+            XmlHelper::skipToNextStartElement(true, reader);
+            while(!reader.atEnd()) {
+                if(reader.isStartElement() && reader.name() == filter::ColorFilterEntry::XML_SINGLECOLORRULE) {
+                    filter::ColorFilterEntry *pColor = filter::ColorFilterEntry::fromXml(reader);
+                    if(pColor == NULL) {
+                        throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Color Rule Tag<%1>").arg(reader.name().toString()));
+                    }
+                    _colorRules.append(pColor);
+
+                    continue;
+                } else if(reader.isEndElement() && reader.name().toString() == XML_COLORRULES) {
+                    reader.readNext();
+                    break;
+                }
+                reader.readNext();
+            }
         }
 
         void AnnoProject::saveColorRules(QXmlStreamWriter &writer) const throw(XmlException *) {
-            //TODO saveColorRules
+            writer.writeStartElement(XML_COLORRULES);
+            foreach(filter::ColorFilterEntry *c, _colorRules) {
+                c->toXml(writer);
+            }
+            writer.writeEndElement();
         }
 
         void AnnoProject::print() const {

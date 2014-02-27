@@ -51,7 +51,8 @@ CONFIG(release) {
   message(Release build)
 }
 
-HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
+HEADERS += \
+    ./src/uiStuff/include/DlgInterpolate.h \
     ./src/general/include/GlobalInfo.h \
     ./src/annoExceptions/include/AnnoException.h \
     ./src/annoExceptions/include/NullPointerException.h \
@@ -128,6 +129,7 @@ HEADERS += ./src/uiStuff/include/DlgInterpolate.h \
     ./src/utils/include/SortedList.h \
     ./src/utils/include/GrabCut.h \
     ./src/general/include/importGlobals.h \
+    ./src/general/include/AnnoQApplication.h \
     ./src/general/include/GlobalToolManager.h \
     ./src/general/include/GlobalConfig.h \
     ./src/general/include/GlobalImageLoader.h \

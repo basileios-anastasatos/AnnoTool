@@ -1,7 +1,10 @@
 #include "include/AnnoFilterXmlLoader.h"
 #include "AllAnnoExceptions.h"
 #include "AllAnnoFilterRules.h"
+#include "AnnoProject.h"
 #include "XmlHelper.h"
+#include "AnnoFilter.h"
+
 using anno::helper::XmlHelper;
 
 #include <QXmlStreamReader>
@@ -42,8 +45,8 @@ namespace anno {
         AnnoFilter *AnnoFilterXmlLoader::loadFilter(QXmlStreamReader &reader) throw(exc::XmlException *) {
             QString curName = reader.name().toString();
 
-            if(!reader.isStartElement() || curName != "annoFilter") {
-                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "annoFilter", curName);
+            if(!reader.isStartElement() || curName != AnnoFilter::XML_SINGLEFILTER) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, AnnoFilter::XML_SINGLEFILTER, curName);
             }
 
             AnnoFilter *pFilter = AnnoFilter::fromXml(reader);

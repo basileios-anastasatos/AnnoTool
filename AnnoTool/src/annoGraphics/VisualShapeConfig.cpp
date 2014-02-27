@@ -11,6 +11,7 @@ using anno::helper::XmlHelper;
 namespace anno {
 
     namespace graphics {
+        const QString VisualShapeConfig::XML_VISUALSHAPECONFIG("visualShapeConfig");
 
         VisualShapeConfig::VisualShapeConfig() :
             _borderNormal(QColor(230, 230, 230)), _borderSelected(QColor(255, 255, 255)),
@@ -54,7 +55,7 @@ namespace anno {
         }
 
         void VisualShapeConfig::toXml(QXmlStreamWriter &writer) const {
-            writer.writeStartElement("visualShapeConfig");
+            writer.writeStartElement(XML_VISUALSHAPECONFIG);
             writer.writeStartElement("normalState");
             writer.writeTextElement("borderWidth", QString::number(_borderNormal.width(), 10));
             writer.writeTextElement("borderColor", XmlHelper::colorAsArgbString(_borderNormal.color()));
@@ -129,13 +130,13 @@ namespace anno {
 
 
         void VisualShapeConfig::loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            if (!reader.isStartElement() || reader.name() != "visualShapeConfig") {
-                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, "visualShapeConfig", reader.name().toString());
+            if (!reader.isStartElement() || reader.name() != XML_VISUALSHAPECONFIG) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, XML_VISUALSHAPECONFIG, reader.name().toString());
             }
 
             loadState(reader);
             loadState(reader);
-            XmlHelper::skipToEndElement("visualShapeConfig", reader);
+            XmlHelper::skipToEndElement(XML_VISUALSHAPECONFIG, reader);
             reader.readNext();
         }
 

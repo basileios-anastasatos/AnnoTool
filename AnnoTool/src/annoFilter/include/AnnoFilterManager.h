@@ -12,10 +12,6 @@
 #include "AnnoFilter.h"
 #include "VisualShapeConfig.h"
 
-class QXmlStreamReader;
-class QXmlStreamWriter;
-
-
 namespace anno {
     namespace filter {
         class ColorFilterEntry;
@@ -52,7 +48,9 @@ namespace anno {
                 void onPM_annoFileSelectChanged(int row, QUuid imageId, ::anno::dt::AnnoFileData *annoFile);
 
             public:
-                AnnoFilterManager(dt::AnnoProject *project, QObject *parent = NULL);
+                AnnoFilterManager(dt::AnnoProject *project = NULL, QObject *parent = NULL);
+                // Complete the initialization of the object
+                void setProject(dt::AnnoProject *project) throw (anno::exc::AnnoException);
                 virtual ~AnnoFilterManager();
 
                 // score filter access
@@ -87,7 +85,7 @@ namespace anno {
                 void setColoringEnable(bool state);
 
                 ColorFilterEntry *getColorRule(int index);
-                QList<ColorFilterEntry *> getAllColorRules();
+                QList<ColorFilterEntry *> getAllColorRules() const;
                 void addColorRule(ColorFilterEntry *rule);
                 void insertColorRule(int index, ColorFilterEntry *rule);
                 void removeColorRule(int index, bool delRule = true);
@@ -96,12 +94,6 @@ namespace anno {
                 void decColorRule(int index);
 
                 void updateColoring();
-
-
-                // XML interface for stored filters.
-            public:
-                void saveFilterstoXml(QXmlStreamWriter &writer) const throw(exc::XmlException *);
-                void loadFiltersFromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
 
             public slots:
                 void setCommonEnabled(bool enable);

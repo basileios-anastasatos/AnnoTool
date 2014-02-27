@@ -97,7 +97,7 @@ namespace anno {
             double getDouble(QString s, double defaultValue) const;
             QString getString(QString s, QString defaultValue) const;
             QFileInfo getFile(QString s, QFileInfo defaultValue) const;
-            graphics::VisualShapeConfig getShapeConfig(QString s, graphics::VisualShapeConfig defaultValue) const;
+            graphics::VisualShapeConfig getShapeConfig(const QString &key, const graphics::VisualShapeConfig &defaultValue) const;
 
             // Load & Save interface
         public:

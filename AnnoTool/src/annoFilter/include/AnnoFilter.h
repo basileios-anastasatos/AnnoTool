@@ -19,6 +19,10 @@ namespace anno {
         class AnnoFilter : public QObject {
                 Q_OBJECT
 
+                // some useful constants
+            public:
+                static const QString XML_SINGLEFILTER;
+
             private:
                 // Flag indicating whether the filter is active or not.
                 bool _active;
