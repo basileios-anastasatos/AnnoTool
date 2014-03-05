@@ -599,7 +599,7 @@ namespace anno {
             importer->exec(QFileInfo(path), silent);
             std::cout << "GlobalProjectManager::loadFromFile, importer end" << std::endl;
 
-            //sortAnnoFiles();
+            sortAnnoFiles();
             setupAllSignals();
         } else {
             _filterMan = new filter::AnnoFilterManager();
@@ -611,7 +611,7 @@ namespace anno {
             if (loadSub) {
                 loadClassDefs();
                 loadAnnoFiles();
-                //sortAnnoFiles();
+                sortAnnoFiles();
                 setupAllSignals();
             }
         }
