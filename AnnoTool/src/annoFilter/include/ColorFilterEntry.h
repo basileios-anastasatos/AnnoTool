@@ -33,6 +33,8 @@ namespace anno {
 
                 AnnoFilter *getFilter() const;
 
+                bool isGlobal(void) const;
+
                 // Xml Interface
             public:
                 void toXml(QXmlStreamWriter &writer) const;

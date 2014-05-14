@@ -566,7 +566,7 @@ namespace anno {
         /* MA: either use native format, or use importer to load idl/al */
 
         if (path.endsWith(".idl", Qt::CaseInsensitive) ||
-                path.endsWith(".al", Qt::CaseInsensitive)) {
+            path.endsWith(".al",  Qt::CaseInsensitive)) {
 
             /* MA: how do we choose the right plugin? */
             GlobalImExportManager *im = GlobalImExportManager::instance();
@@ -591,6 +591,7 @@ namespace anno {
             /* MA: init others */
 
             _filterMan = new filter::AnnoFilterManager(_project);
+            _project->loadGlobalFilters();
             _classList = new dt::AnnoAvClassList();
             _fileList = new QList<dt::AnnoFileData *>();
             _fileListMod = new QList<dt::AnnoFileData *>();
@@ -664,6 +665,10 @@ namespace anno {
                 _fileListMod->clear();
             }
         }
+    }
+
+    void GlobalProjectManager::saveGlobalFilters(void) const throw(IOException *, XmlException *) {
+        _project->saveGlobalFilters();
     }
 
 }

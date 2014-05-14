@@ -30,6 +30,7 @@ namespace anno {
                 static const QString XML_SINGLEFILTER;
                 static const QString XML_LINK;
                 static const QString XML_COLORRULES;
+                static const QString XML_GLOBALFILTERS;
 
             private:
                 QString _sourceFile;
@@ -39,7 +40,7 @@ namespace anno {
                 QList<QFileInfo> _searchPaths;
                 QUuid _uuid;
                 QMap<QString, filter::AnnoFilter *> _filters;
-                QList<filter::ColorFilterEntry *> _colorRules;
+                QList<filter::ColorFilterEntry *>   _colorRules;
 
             private:
                 void loadFromFile() throw(IOException *, XmlException *);
@@ -47,12 +48,15 @@ namespace anno {
                 void loadClassPath(QXmlStreamReader &reader) throw(XmlException *);
                 void loadSearchPath(QXmlStreamReader &reader) throw(XmlException *);
                 void loadLinks(QXmlStreamReader &reader) throw(XmlException *);
-                void loadFilters(QXmlStreamReader &reader) throw(XmlException *);
-                void saveFilters(QXmlStreamWriter &writer) const throw(XmlException *);
+                void loadFilters(QXmlStreamReader &reader, bool global = false) throw(XmlException *);
+                void saveFilters(QXmlStreamWriter &writer, bool global = false) const throw(XmlException *);
                 void loadColorRules(QXmlStreamReader &reader) throw(XmlException *);
-                void saveColorRules(QXmlStreamWriter &writer) const throw(XmlException *);
+                void saveColorRules(QXmlStreamWriter &writer, bool global = false) const throw(XmlException *);
                 bool isXmlComponent(const QString &cmpName);
                 bool isXmlComponent(const QStringRef &cmpName);
+
+            public:
+                void saveGlobalFilters(void) const throw(IOException *, XmlException *);
 
             public:
                 AnnoProject(const QString &path);
@@ -74,8 +78,10 @@ namespace anno {
                 QString projectName() const;
                 void setProjectName(const QString &name);
 
-                QMap<QString, filter::AnnoFilter *> *filters();
-                QList<filter::ColorFilterEntry *> *colorRules();
+                const QMap<QString, filter::AnnoFilter *> *filters()    const;
+                QMap<QString, filter::AnnoFilter *>       *filters();
+                const QList<filter::ColorFilterEntry *>   *colorRules() const;
+                QList<filter::ColorFilterEntry *>         *colorRules();
 
             public:
                 QUuid uuid() const;
@@ -89,6 +95,7 @@ namespace anno {
                 void writeToFile() const throw(IOException *, XmlException *);
                 static AnnoProject *fromFile(const QString &path, filter::AnnoFilterManager *filterMan)
                     throw(IOException *, XmlException *);
+                void loadGlobalFilters(void) throw(IOException *, XmlException *);
 
                 void toXml(QXmlStreamWriter &writer) const throw(XmlException *);
                 static AnnoProject *fromXml(QXmlStreamReader &reader)

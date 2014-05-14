@@ -75,6 +75,11 @@ namespace anno {
             XmlHelper::skipToEndElement(XML_SINGLECOLORRULE, reader);
             reader.readNext();
         }
+
+        bool ColorFilterEntry::isGlobal(void) const {
+            return (getFilter() != NULL) &&
+                    getFilter()->isGlobal();
+        }
     }
 }
 

@@ -73,7 +73,9 @@ namespace anno {
 
             // internal loading/saving stuff
         private:
-            QDir configDir();
+        public:
+            QDir configDir() const;
+        private:
             QFileInfo configFile();
             void loadDefaults();
             void clearConfig();

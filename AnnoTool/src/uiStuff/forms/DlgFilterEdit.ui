@@ -57,6 +57,19 @@
              <number>1</number>
             </property>
             <item>
+             <widget class="QCheckBox" name="cbIsGlobal">
+              <property name="toolTip">
+               <string>Mark the filter as global or local to the project.</string>
+              </property>
+              <property name="text">
+               <string>Global</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool> // It depends!
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QToolButton" name="btFiltersAdd">
               <property name="sizePolicy">
                <sizepolicy vsizetype="Fixed" hsizetype="Fixed">

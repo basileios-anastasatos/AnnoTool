@@ -173,6 +173,7 @@ namespace anno {
                     XmlException *, IllegalStateException *);
             void saveToFile(bool saveSub = false) const throw(IOException *,
                     IllegalStateException *, XmlException *);
+            void saveGlobalFilters(void) const throw(IOException *, XmlException *);
 
         signals:
             void curAnnoFileSelChanged(int curIndex, QUuid uuid, ::anno::dt::AnnoFileData *curAnnoFile);

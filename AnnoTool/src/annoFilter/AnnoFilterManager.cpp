@@ -107,13 +107,11 @@ namespace anno {
                     _curFilter = _commonFilter;
                     connectFilterSignals();
                 }
+            } else if(_scoreEnabled) {
+                _curFilter = _scoreFilter;
+                connectFilterSignals();
             } else {
-                if(_scoreEnabled) {
-                    _curFilter = _scoreFilter;
-                    connectFilterSignals();
-                } else {
-                    _curFilter = _emptyFilter;
-                }
+                _curFilter = _emptyFilter;
             }
         }
 

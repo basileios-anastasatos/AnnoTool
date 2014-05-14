@@ -45,6 +45,7 @@ DlgFilterEdit::DlgFilterEdit(anno::filter::AnnoFilterManager *filterMan, QWidget
 
     connect(ui.lstFilters->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(onLst_currentRowChanged(const QModelIndex &, const QModelIndex &)));
     connect(ui.lstColors->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(onColor_currentRowChanged(const QModelIndex &, const QModelIndex &)));
+    connect(ui.cbIsGlobal, SIGNAL(stateChanged(int)), this, SLOT(toggleGlobal(int)));
 }
 
 DlgFilterEdit::~DlgFilterEdit() {
@@ -62,6 +63,7 @@ void DlgFilterEdit::onLst_currentRowChanged(const QModelIndex &current, const QM
     if(current.row() >= 0 && current.row() < filterList.size()) {
         _curFilter = filterList[current.row()];
         ui.txtFilterName->setText(_curFilter->getName());
+        setGlobal(_curFilter->isGlobal());
 
         QString strXml;
         QXmlStreamWriter writer(&strXml);
@@ -108,7 +110,7 @@ void DlgFilterEdit::onColor_currentRowChanged(const QModelIndex &current, const 
 }
 
 void DlgFilterEdit::on_actionFilterAdd_triggered() {
-    anno::filter::AnnoFilter *f = new anno::filter::AnnoFilter();
+    anno::filter::AnnoFilter *f = new anno::filter::AnnoFilter(NULL, isGlobal());
     f->setName(NEWFILTER);
     if(!_filterMan->addFilter(f)) {
         delete f;
@@ -116,6 +118,16 @@ void DlgFilterEdit::on_actionFilterAdd_triggered() {
     } else {
         int idx = _filterMan->getAllFilters().indexOf(f);
         ui.lstFilters->setCurrentIndex(_model->index(idx));
+    }
+}
+
+void DlgFilterEdit::toggleGlobal(int value) {
+    QList<anno::filter::AnnoFilter *> filterList = _filterMan->getAllFilters();
+    QModelIndex current = ui.lstFilters->currentIndex();
+    if (current.row() >= 0 &&
+        current.row() <  filterList.size()) {
+        _curFilter = filterList[current.row()];
+        _curFilter->setGlobal(isGlobal());
     }
 }
 

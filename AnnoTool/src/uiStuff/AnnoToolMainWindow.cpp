@@ -255,6 +255,7 @@ bool AnnoToolMainWindow::checkProjectToClose() {
 void AnnoToolMainWindow::configUIproject(bool open) {
     ui.actionFileClose->setEnabled(open);
     ui.actionFileSave->setEnabled(open);
+    ui.actionGlobalFiltersSave->setEnabled(open);
     ui.actionFileImport->setEnabled(open);
     ui.actionFileExport->setEnabled(open);
     ui.actionProjectDetails->setEnabled(open);
@@ -446,13 +447,17 @@ void AnnoToolMainWindow::on_actionFileOpen_triggered() {
         qsExtensions += " *.al *.idl";
         /* MA END */
 
-
         QString filePath = QFileDialog::getOpenFileName(
                                this,
                                QString("Open AnnoTool Project File"),
                                QString("."),
                                QString("AnnoTool Project (%1)").arg(qsExtensions));
-        openAnnoProject(filePath);
+        QMessageBox::StandardButton loadGlobalFilters = QMessageBox::question(
+            this,
+            "Load global filters?",
+            "Load global filters?",
+            QMessageBox::Yes | QMessageBox::No);
+        openAnnoProject(filePath, (loadGlobalFilters == QMessageBox::Yes));
     }
 }
 
@@ -493,6 +498,23 @@ void AnnoToolMainWindow::on_actionFileSave_triggered() {
         GlobalLogger::instance()->logError("Cannot save data, project is invalid!");
     }
 }
+
+void AnnoToolMainWindow::on_actionGlobalFiltersSave_triggered() {
+    GlobalLogger::instance()->logDebug("MW: actionGlobalFiltersSave_triggered");
+    if (GlobalProjectManager::instance()->isValid()) {
+        try {
+            GlobalProjectManager::instance()->saveGlobalFilters();
+            updateUI();
+        } catch(AnnoException *e) {
+            QMessageBox::critical(this, "AnnoTool Exception", e->getTrace());
+            GlobalLogger::instance()->logError(e->getTrace());
+            delete e;
+        }
+    } else {
+        GlobalLogger::instance()->logError("Cannot save global filters!");
+    }
+}
+
 
 void AnnoToolMainWindow::on_actionFileImport_triggered() {
     DlgImporter *dlg = new DlgImporter(this);

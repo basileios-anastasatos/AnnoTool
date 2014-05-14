@@ -7,6 +7,11 @@
 #include "GlobalLogger.h"
 #include "GlobalProjectManager.h"
 #include "AnnoFilterManager.h"
+#include <QStringList>
+#include <QDir>
+#include "GlobalConfig.h"
+#include <iostream>
+#include <QDebug>
 
 //namespace AnnoTool
 namespace anno {
@@ -21,6 +26,7 @@ namespace anno {
         const QString AnnoProject::XML_FILTERS("annoFilters");
         const QString AnnoProject::XML_COLORRULES("annoColorRules");
         const QString AnnoProject::XML_LINK("link");
+        const QString AnnoProject::XML_GLOBALFILTERS("annoGlobalFilters");
 
         AnnoProject::AnnoProject(const QString &path) {
             _sourceFile = path;
@@ -32,12 +38,8 @@ namespace anno {
         }
 
         AnnoProject::~AnnoProject() {
-            if(!colorRules()->isEmpty()) {
-                qDeleteAll(_colorRules);
-            }
-            if(!filters()->isEmpty()) {
-                qDeleteAll(_filters);
-            }
+            qDeleteAll(_colorRules);
+            qDeleteAll(_filters);
         }
 
         void AnnoProject::addToClassPath(const QString &file) {
@@ -100,8 +102,16 @@ namespace anno {
             return _projectName;
         }
 
+        const QMap<QString, filter::AnnoFilter *> *AnnoProject::filters() const {
+            return &_filters;
+        }
+
         QMap<QString, filter::AnnoFilter *> *AnnoProject::filters() {
             return &_filters;
+        }
+
+        const QList<filter::ColorFilterEntry *> *AnnoProject::colorRules() const {
+            return &_colorRules;
         }
 
         QList<filter::ColorFilterEntry *> *AnnoProject::colorRules() {
@@ -122,6 +132,42 @@ namespace anno {
 
         QString AnnoProject::uuidAsString() const {
             return XmlHelper::uuidAsString(_uuid);
+        }
+
+        void AnnoProject::loadGlobalFilters(void) throw(IOException *, XmlException *) {
+            QDir  configDir(GlobalConfig::instance()->configDir());
+            QFile file     (configDir.absoluteFilePath("GlobalFilters.xml"));
+            if (!file.exists()) {
+                return;
+            } else if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                throw new IOException(__FILE__, __LINE__, QString("Cannot load from [%1]. File cannot be opened.").arg(_sourceFile));
+            }
+
+            QXmlStreamReader reader(&file);
+            reader.setNamespaceProcessing(true);
+            if (!XmlHelper::skipToStartElement(XML_GLOBALFILTERS, reader)) {
+                throw new XmlFormatException(__FILE__, __LINE__, QString("Cannot load from [%1]. Invalid XML format.").arg(_sourceFile));
+            }
+
+            if (!reader.isStartElement() || reader.name() != XML_GLOBALFILTERS) {
+                throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, XML_GLOBALFILTERS, reader.name().toString());
+            }
+
+            XmlHelper::skipToNextStartElement(true, reader);
+            for ( ; isXmlComponent(reader.name()); XmlHelper::skipToNextStartElement(false, reader)) {
+                QStringRef curName = reader.name();
+                if (curName == XML_FILTERS) {
+                    loadFilters(reader, true);
+                } else if (curName == XML_COLORRULES) {
+                    loadColorRules(reader);
+                }
+            }
+
+            if(reader.isStartElement()) {
+                throw new XmlFormatException(__FILE__, __LINE__, QString("Invalid XML structure, was expecting no more starting tags but found <%1>.").arg(reader.name().toString()));
+            }
+
+            file.close();
         }
 
         void AnnoProject::loadFromFile() throw(IOException *, XmlException *) {
@@ -295,6 +341,9 @@ namespace anno {
                 throw(IOException *, XmlException *) {
             AnnoProject *data = new AnnoProject(path);
             filterMan->setProject(data); // Complete the initialization of the filter manager
+
+            data->loadGlobalFilters();
+
             data->loadFromFile();
             return data;
         }
@@ -330,12 +379,8 @@ namespace anno {
                 }
                 writer.writeEndElement();
             }
-            if(!_filters.isEmpty()) {
-                saveFilters(writer);
-            }
-            if(!_colorRules.isEmpty()) {
-                saveColorRules(writer);
-            }
+            if(!filters()->isEmpty()) { saveFilters(writer); }
+            if(!colorRules()->isEmpty()) { saveColorRules(writer); }
             writer.writeEndElement();
         }
 
@@ -401,7 +446,7 @@ namespace anno {
             }
         }
 
-        void AnnoProject::loadFilters(QXmlStreamReader &reader) throw(XmlException *) {
+        void AnnoProject::loadFilters(QXmlStreamReader &reader, bool global) throw(XmlException *) {
             QString curParent = reader.name().toString();
             if(!reader.isStartElement() || curParent != XML_FILTERS) {
                 throw XmlHelper::genExpStreamPos(__FILE__, __LINE__, XML_FILTERS, curParent);
@@ -410,14 +455,15 @@ namespace anno {
             XmlHelper::skipToNextStartElement(true, reader);
             while(!reader.atEnd()) {
                 if(reader.isStartElement() && reader.name() == filter::AnnoFilter::XML_SINGLEFILTER) {
-                    filter::AnnoFilter *pFilter = filter::AnnoFilter::fromXml(reader);
+                    filter::AnnoFilter *pFilter = filter::AnnoFilter::fromXml(reader, global);
                     if(pFilter == NULL) {
                         throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Filter Tag <%1>").arg(reader.name().toString()));
                     }
-                    if(_filters.contains(pFilter->getName())) {
+                    // TODO: allow a local filter to overwrite a global one
+                    if(filters()->contains(pFilter->getName())) {
                         throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Double filter name encountered <%1>").arg(pFilter->getName()));
                     }
-                    _filters.insert(pFilter->getName(), pFilter);
+                    filters()->insert(pFilter->getName(), pFilter);
 
                     continue;
                 } else if(reader.isEndElement() && reader.name().toString() == XML_FILTERS) {
@@ -428,10 +474,12 @@ namespace anno {
             }
         }
 
-        void AnnoProject::saveFilters(QXmlStreamWriter &writer) const throw(XmlException *) {
+        void AnnoProject::saveFilters(QXmlStreamWriter &writer, bool global) const throw(XmlException *) {
             writer.writeStartElement(XML_FILTERS);
-            foreach(filter::AnnoFilter *f, _filters.values()) {
-                f->toXml(writer);
+            foreach(filter::AnnoFilter *f, filters()->values()) {
+                if (f->isGlobal() == global) {
+                    f->toXml(writer);
+                }
             }
             writer.writeEndElement();
         }
@@ -449,7 +497,7 @@ namespace anno {
                     if(pColor == NULL) {
                         throw new exc::XmlFormatException(__FILE__, __LINE__, QString("Encountered unknown Color Rule Tag<%1>").arg(reader.name().toString()));
                     }
-                    _colorRules.append(pColor);
+                    colorRules()->append(pColor);
 
                     continue;
                 } else if(reader.isEndElement() && reader.name().toString() == XML_COLORRULES) {
@@ -460,12 +508,33 @@ namespace anno {
             }
         }
 
-        void AnnoProject::saveColorRules(QXmlStreamWriter &writer) const throw(XmlException *) {
+        void AnnoProject::saveColorRules(QXmlStreamWriter &writer, bool global) const throw(XmlException *) {
             writer.writeStartElement(XML_COLORRULES);
-            foreach(filter::ColorFilterEntry *c, _colorRules) {
-                c->toXml(writer);
+            foreach(filter::ColorFilterEntry *c, *colorRules()) {
+                if (c->isGlobal() == global) {
+                    c->toXml(writer);
+                }
             }
             writer.writeEndElement();
+        }
+
+        void AnnoProject::saveGlobalFilters(void) const throw(IOException *, XmlException *) {
+            QDir  configDir(GlobalConfig::instance()->configDir());
+            QFile file     (configDir.absoluteFilePath("GlobalFilters.xml"));
+            if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                throw new IOException(__FILE__, __LINE__, QString("Cannot write to [%1]. File cannot be opened.").arg(file.fileName()));
+            }
+
+            QXmlStreamWriter writer(&file);
+            writer.setAutoFormatting(true);
+            writer.writeStartDocument();
+            writer.writeStartElement(XML_GLOBALFILTERS);
+            if (!filters   ()->isEmpty()) { saveFilters   (writer, true); }
+            if (!colorRules()->isEmpty()) { saveColorRules(writer, true); }
+            writer.writeEndElement();
+            writer.writeEndDocument();
+            file.flush();
+            file.close();
         }
 
         void AnnoProject::print() const {

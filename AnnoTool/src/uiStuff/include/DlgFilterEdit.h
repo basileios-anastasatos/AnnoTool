@@ -47,6 +47,7 @@ class DlgFilterEdit: public QDialog {
         void on_actionColorRem_triggered();
         void on_actionColorUp_triggered();
         void on_actionColorDown_triggered();
+        void toggleGlobal(int);
 
         void on_ceFill_colorChanged(QColor color);
         void on_ceBorder_colorChanged(QColor color);
@@ -61,6 +62,16 @@ class DlgFilterEdit: public QDialog {
         void on_btAttr_clicked();
         void on_btScore_clicked();
         void on_btSwitch_clicked();
+
+    private:
+
+        bool isGlobal() const {
+            return ui.cbIsGlobal->isChecked();
+        }
+
+        void setGlobal(bool value) {
+            ui.cbIsGlobal->setChecked(value);
+        }
 
     public:
         DlgFilterEdit(anno::filter::AnnoFilterManager *filterMan, QWidget *parent = 0);

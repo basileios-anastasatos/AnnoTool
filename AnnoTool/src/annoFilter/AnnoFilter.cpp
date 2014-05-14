@@ -13,8 +13,8 @@ namespace anno {
     namespace filter {
         const QString AnnoFilter::XML_SINGLEFILTER("annoFilter");
 
-        AnnoFilter::AnnoFilter(QObject *parent) :
-            QObject(parent), _active(false), _rule(NULL), _fileData(NULL) {
+        AnnoFilter::AnnoFilter(QObject *parent, bool isGlobal) :
+            QObject(parent), _active(false), _global(isGlobal), _rule(NULL), _fileData(NULL) {
         }
 
         AnnoFilter::AnnoFilter(AnnoFilterRule *rule, dt::AnnoFileData *fileData,
@@ -261,12 +261,11 @@ namespace anno {
             reader.readNext();
         }
 
-        AnnoFilter *AnnoFilter::fromXml(QXmlStreamReader &reader) throw(exc::XmlException *) {
-            AnnoFilter *filter = new AnnoFilter();
+        AnnoFilter *AnnoFilter::fromXml(QXmlStreamReader &reader, bool isGlobal) throw(exc::XmlException *) {
+            AnnoFilter *filter = new AnnoFilter(NULL, isGlobal);
             filter->loadFromXml(reader);
             return filter;
         }
-
 
     }
 }

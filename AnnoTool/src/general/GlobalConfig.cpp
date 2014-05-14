@@ -170,7 +170,7 @@ namespace anno {
         return _me;
     }
 
-    QDir GlobalConfig::configDir() {
+    QDir GlobalConfig::configDir() const {
         QString configDirPath("%1/%2");
         configDirPath = configDirPath.arg(QDir::homePath()).arg(ANNOTOOL_CONFIG_DIR);
         return QDir(configDirPath);

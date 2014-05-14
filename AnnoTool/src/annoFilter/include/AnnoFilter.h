@@ -27,7 +27,10 @@ namespace anno {
                 // Flag indicating whether the filter is active or not.
                 bool _active;
 
-                // Filer name (should be unique)
+                // Flag indicating whether the filter is global or not.
+                bool _global;
+
+                // Filter name (should be unique)
                 QString _name;
 
                 // Filter comment
@@ -55,7 +58,7 @@ namespace anno {
                 bool disconnectSignals();
 
             public:
-                AnnoFilter(QObject *parent = NULL);
+                AnnoFilter(QObject *parent = NULL, bool isGlobal = false);
                 AnnoFilter(AnnoFilterRule *rule, dt::AnnoFileData *fileData = NULL, QObject *parent = NULL);
                 AnnoFilter(const QString &name, AnnoFilterRule *rule, dt::AnnoFileData *fileData = NULL, QObject *parent = NULL);
                 AnnoFilter(const QString &name, const QString &comment, AnnoFilterRule *rule, dt::AnnoFileData *fileData = NULL, QObject *parent = NULL);
@@ -66,6 +69,8 @@ namespace anno {
                 // Applies the filter to the data.
                 bool applyFilter(bool partial = false);
                 void resetFilter();
+                bool isGlobal() const;
+                void setGlobal(bool global);
                 bool isActive() const;
                 void deactivate();
                 bool hasRule() const;
@@ -98,7 +103,7 @@ namespace anno {
             public:
                 void toXml(QXmlStreamWriter &writer) const throw(exc::XmlException *);
                 void loadFromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
-                static AnnoFilter *fromXml(QXmlStreamReader &reader) throw(exc::XmlException *);
+                static AnnoFilter *fromXml(QXmlStreamReader &reader, bool isGlobal = false) throw(exc::XmlException *);
 
             signals:
                 void filterBegin(int preAnnoCount);
@@ -114,6 +119,14 @@ namespace anno {
         // ----------------------------------------------------------------------------------
         inline bool AnnoFilter::isActive() const {
             return _active;
+        }
+
+        inline bool AnnoFilter::isGlobal() const {
+            return _global;
+        }
+
+        inline void AnnoFilter::setGlobal(bool global) {
+            _global = global;
         }
 
         inline bool AnnoFilter::hasRule() const {
