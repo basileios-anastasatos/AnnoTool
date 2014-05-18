@@ -7,22 +7,27 @@ BEGIN {
 function process_rectangle(        aa, xx, yy, ww, hh, score, ss, nrect) {
     match($0, /^\(([-0-9.]+),([-0-9.]+),([-0-9.]+),([-0-9.]+)\)(:([-0-9.]+))?[,;.]$/, aa);
 
-    xx = aa[1] + 0;
-    yy = aa[2] + 0;
-    ww = aa[3] - xx;
-    hh = aa[4] - yy;
+    xx = round(aa[1] + 0);
+    yy = round(aa[2] + 0);
+    ww = round(aa[3] - xx);
+    hh = round(aa[4] - yy);
 
     score = (6 in aa) ? aa[6] : "null";
 
     ss = (image ":" xx "," yy "," ww "," hh);
-    if (mode == "G") {
+    if ((mode == "G") ||
+        (mode == "I")) {
         assert(! (ss in rect2idx), ("! " ss " in rect2idx"));
     }
-    if ((mode == "T") || (mode == "F") || (mode == "M")) {
+    if ((mode == "T") ||
+        (mode == "F") ||
+        (mode == "M")) {
         assert((ss in rect2idx), (ss " in rect2idx"));
     }
     if (! (ss in rect2idx)) {
-        assert((mode == "G") || (mode == "D"), "mode ∊ {G, D}");
+        assert((mode == "G") ||
+               (mode == "I") ||
+               (mode == "D"), "mode ∊ {G, I, D}");
         nrect = nrectangles[image]++;
         rect2idx[ss] = nrect;
         rectangle[image, nrect, "xx"] = xx;
@@ -43,15 +48,19 @@ function process_rectangle(        aa, xx, yy, ww, hh, score, ss, nrect) {
 BEGIN {
     delete status2class;
     status2class["G"]   = "ground truth";
+    status2class["D"]   = "ignored detection";
+    status2class["I"]   = "ignored ground truth";
     status2class["DT"]  = \
     status2class["GDT"] = "true positive";
     status2class["DF"]  = "false positive";
     status2class["GM"]  = "missing recall";
+    # Current illegal statuses: ???
 }
 function get_class_name(image, rect,        ss) {
     ss = status[image, rect];
     if (!(ss in status2class)) {
-        fatal("Illegal status: " ss);
+        info("Illegal status: " ss);
+        return "Illegal status";
     } else {
         return status2class[ss];
     }
@@ -66,10 +75,12 @@ BEGIN {
     nclasses = 0;
     delete class;
     delete colours;
-    register_class("ground truth",   "0000ff"); # blue
-    register_class("true positive",  "008000"); # green
-    register_class("false positive", "ff0000"); # red
-    register_class("missing recall", "ffff00"); # yellow
+    register_class("ground truth",         "0000ff"); # blue
+    register_class("true positive",        "008000"); # green
+    register_class("false positive",       "ff0000"); # red
+    register_class("missing recall",       "ffff00"); # yellow
+    register_class("ignored ground truth", "00ffff"); # cyan
+    register_class("ignored detection",    "ff00ff"); # magenta
 }
 
 function generate_filters(        ii, jj, ff) {
@@ -163,9 +174,12 @@ function generate_ata(image,        ii, nrect, uuid, file, class) {
     xml_open_tag("imageAnnotations");
     nrect = nrectangles[image];
     for (ii = 0; ii < nrect; ++ii) {
+        class = get_class_name(image, ii);
+        if (class == "Illegal status") {
+            continue;
+        }
         xml_open_tag("annotation", "uuid", get_uuid());
         xml_open_tag("annoClass");
-        class = get_class_name(image, ii);
         xml_open_and_close_tag("class", "id", class);
         xml_close_tag("annoClass");
         if ((image, ii) in scores) {
@@ -273,21 +287,32 @@ BEGIN {
     delete scores;
 }
 
-/^MODE [GDTFM]$/ {
+/^MODE [GDTFMI]$/ {
     mode = $2;
+    next;
 }
 
 
-/^"[^"]+"[:;]$/ {
-    image = gensub(/^"([^"]+)":$/, "\\1", 1);
+/^"[^"]+"[:;.]$/ {
+    image = gensub(/^"([^"]+)"[;.:]$/, "\\1", 1);
     if (mode == "G") {
         images[nimages++] = image;
         nrectangles[image] = 0;
     }
+    next;
 }
 
 /^\([-0-9.]+,[-0-9.]+,[-0-9.]+,[-0-9.]+\)(:[-0-9.]+)?[,;.]$/ {
     process_rectangle();
+    next;
+}
+
+/^;$/ {
+    next;
+}
+
+{
+    info("UNMATCHED: " $0);
 }
 
 END {

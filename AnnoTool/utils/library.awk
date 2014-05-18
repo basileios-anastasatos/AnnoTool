@@ -55,3 +55,11 @@ function ceiling(rr,        qq) {
     qq = int(rr);
     return (qq == rr) ? qq : qq + 1;
 }
+
+function sign(rr) {
+    return (rr > 0.0) ? 1.0 : (rr == 0.0) ? 0 : -1.0;
+}
+
+function round(rr) {
+    return sign(rr) * int(abs(rr) + 0.5);
+}
