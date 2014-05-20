@@ -27,10 +27,10 @@ function usage() {
 	REQUIRED ARGUMENT:
 	 -p <project.atp>
 
-    HELP:
+	HELP:
 	 -h
 
-    OPTIONAL ARGUMENTS:         VALUES    DEFAULT
+	OPTIONAL ARGUMENTS:         VALUES    DEFAULT
 	 -c <colour method>         RGB_index ${DEFAULT_COLOUR_METHOD:?}
 	                            HSL_space
 	                            HSV_space
@@ -39,8 +39,8 @@ function usage() {
 	 -W <selected border width> ≥ 1       2·<normal border width>
 	 -a <fill alpha>:           [0, 1]    ${DEFAULT_FILL_ALPHA}
 
-    OUTPUT FILE:
-     <project>.visualize_classes.<colour_method>.atp
+	OUTPUT FILE:
+	 <project>.visualize_classes.<colour_method>.atp
 	EOF
 
     exit ${EXIT_CODE:?};
