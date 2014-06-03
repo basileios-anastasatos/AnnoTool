@@ -11,6 +11,7 @@
 #include "AfrScore.h"
 #include "AfrScoreAdv.h"
 #include "AfrSwitch.h"
+#include "AfrShape.h"
 
 #endif /* ALLANNOFILTERRULES_H_ */
 

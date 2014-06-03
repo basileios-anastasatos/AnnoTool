@@ -13,6 +13,7 @@ namespace anno {
         class AfrScore;
         class AfrScoreAdv;
         class AfrSwitch;
+        class AfrShape;
 
         class AnnoFilterRule;
         class AnnoFilter;

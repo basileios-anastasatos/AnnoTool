@@ -639,6 +639,7 @@
                    </property>
                   </widget>
                  </item>
+<!--
                  <item>
                   <widget class="QPushButton" name="btSwitch">
                    <property name="maximumSize">
@@ -649,6 +650,20 @@
                    </property>
                    <property name="text">
                     <string>&lt;switch&gt;</string>
+                   </property>
+                  </widget>
+                 </item>
+-->
+                 <item>
+                  <widget class="QPushButton" name="btShape">
+                   <property name="maximumSize">
+                    <size>
+                     <width>75</width>
+                     <height>22</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>&lt;hasShape&gt;</string>
                    </property>
                   </widget>
                  </item>

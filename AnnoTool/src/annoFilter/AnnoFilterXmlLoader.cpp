@@ -35,8 +35,12 @@ namespace anno {
                 pRule = AfrAttributeValue::fromXml(reader);
             } else if (AfrScore::isXmlName(curName)) {
                 pRule = AfrScore::fromXml(reader);
+#if 0
             } else if (AfrSwitch::isXmlName(curName)) {
                 pRule = AfrSwitch::fromXml(reader);
+#endif
+            } else if (AfrShape::isXmlName(curName)) {
+                pRule = AfrShape::fromXml(reader);
             }
 
             return pRule;

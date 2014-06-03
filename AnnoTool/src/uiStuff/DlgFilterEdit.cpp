@@ -305,11 +305,14 @@ void DlgFilterEdit::on_btScore_clicked() {
     ui.txtFilterRule->insertPlainText("<scoreCmp value=\"your_value\" op=\"gt\" />");
 }
 
+#if 0
 void DlgFilterEdit::on_btSwitch_clicked() {
     ui.txtFilterRule->insertPlainText("<switch state=\"1\" />");
 }
+#endif
 
-
-
+void DlgFilterEdit::on_btShape_clicked() {
+    ui.txtFilterRule->insertPlainText("<hasShape name=\"your_name\" />");
+}
 
 // vim:ts=4:sts=4:sw=4:tw=80:expandtab

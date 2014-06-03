@@ -99,6 +99,7 @@ HEADERS += \
     ./src/annoFilter/include/AfrScoreAdv.h \
     ./src/annoFilter/include/AfrClass.h \
     ./src/annoFilter/include/AfrAttributeValue.h \
+    ./src/annoFilter/include/AfrShape.h \
     ./src/annoFilter/include/AnnoFilterXmlLoader.h \
     ./src/annoFilter/include/ColorFilterEntry.h \
     ./src/annoGraphics/include/AllGraphicsTools.h \
@@ -225,6 +226,7 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/annoFilter/AfrScoreAdv.cpp \
     ./src/annoFilter/AfrClass.cpp \
     ./src/annoFilter/AfrAttributeValue.cpp \
+    ./src/annoFilter/AfrShape.cpp \
     ./src/annoFilter/AnnoFilterXmlLoader.cpp \
     ./src/annoFilter/ColorFilterEntry.cpp \
     ./src/annoGraphics/VisualShapeConfig.cpp \

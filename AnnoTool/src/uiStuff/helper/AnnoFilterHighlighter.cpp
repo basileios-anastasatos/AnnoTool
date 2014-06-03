@@ -50,7 +50,9 @@ void AnnoFilterHighlighter::initAtomRules() {
     _rules.append(rule);
     rule.pattern = QRegExp(QString("\\b%1\\b").arg(anno::filter::AfrScore::xmlName()));
     _rules.append(rule);
-    rule.pattern = QRegExp(QString("\\b%1\\b").arg(anno::filter::AfrSwitch::xmlName()));
+//  rule.pattern = QRegExp(QString("\\b%1\\b").arg(anno::filter::AfrSwitch::xmlName()));
+//  _rules.append(rule);
+    rule.pattern = QRegExp(QString("\\b%1\\b").arg(anno::filter::AfrShape::xmlName()));
     _rules.append(rule);
 }
 

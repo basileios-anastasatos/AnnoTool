@@ -61,7 +61,8 @@ class DlgFilterEdit: public QDialog {
         void on_btClass_clicked();
         void on_btAttr_clicked();
         void on_btScore_clicked();
-        void on_btSwitch_clicked();
+//      void on_btSwitch_clicked();
+        void on_btShape_clicked();
 
     private:
 
