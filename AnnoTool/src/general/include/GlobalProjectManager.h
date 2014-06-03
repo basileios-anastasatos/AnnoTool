@@ -169,7 +169,7 @@ namespace anno {
             static QString defAnnoFileName(const QUuid &uuid);
 
         public:
-            void loadFromFile(const QString &path, bool loadSub = true) throw(IOException *,
+            void loadFromFile(const QString &path, bool loadSub = true, bool globalFilters = true) throw(IOException *,
                     XmlException *, IllegalStateException *);
             void saveToFile(bool saveSub = false) const throw(IOException *,
                     IllegalStateException *, XmlException *);

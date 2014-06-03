@@ -13,10 +13,12 @@ int main(int argc, char *argv[]) {
     // Parse command line options
     const std::string help_message(
         "Usage:\n"
-        "  -h|--help           : print this help message and exit\n"
-        "  -o|--open <filename>: open <filename>\n"
+        "  -h|--help             : print this help message and exit\n"
+        "  -o|--open <filename>  : open <filename>\n"
+        "  -G|--noglobalfilters  : do not load global filters\n"
     );
     QString project_file;
+    bool    globalFilters = true;
     for (int ii = 1; ii < argc; ++ii) {
         std::string ss(argv[ii]);
         if ((ss == "-h") ||
@@ -33,6 +35,9 @@ int main(int argc, char *argv[]) {
                 std::cerr << help_message;
                 return -1;
             }
+        } else if ((ss == "-G") ||
+                   (ss == "--noglobalfilters")) {
+            globalFilters = false;
         } else {
             std::cerr << "Error: Unrecognized argument " << argv[ii] << std::endl;
             std::cerr << help_message;
@@ -68,7 +73,7 @@ int main(int argc, char *argv[]) {
 
     // Process command line options
     if (!project_file.isNull()) {
-         w.openAnnoProject(project_file);
+         w.openAnnoProject(project_file, globalFilters);
     }
     w.show();
     a.connect(&a, SIGNAL(aboutToQuit()), &w, SLOT(onAppClose()));

@@ -557,7 +557,7 @@ namespace anno {
         }
     }
 
-    void GlobalProjectManager::loadFromFile(const QString &path, bool loadSub)
+    void GlobalProjectManager::loadFromFile(const QString &path, bool loadSub, bool globalFilters)
     throw(IOException *, XmlException *, IllegalStateException *) {
         if (isValid()) {
             throw new IllegalStateException(__FILE__, __LINE__, "Cannot load from given file. Current data is already valid.");
@@ -591,7 +591,9 @@ namespace anno {
             /* MA: init others */
 
             _filterMan = new filter::AnnoFilterManager(_project);
-            _project->loadGlobalFilters();
+            if (globalFilters) {
+                _project->loadGlobalFilters();
+            }
             _classList = new dt::AnnoAvClassList();
             _fileList = new QList<dt::AnnoFileData *>();
             _fileListMod = new QList<dt::AnnoFileData *>();
@@ -604,7 +606,7 @@ namespace anno {
             setupAllSignals();
         } else {
             _filterMan = new filter::AnnoFilterManager();
-            _project = dt::AnnoProject::fromFile(path, _filterMan);
+            _project = dt::AnnoProject::fromFile(path, _filterMan, globalFilters);
             _classList = new dt::AnnoAvClassList();
             _fileList = new QList<dt::AnnoFileData *>();
             _fileListMod = new QList<dt::AnnoFileData *>();

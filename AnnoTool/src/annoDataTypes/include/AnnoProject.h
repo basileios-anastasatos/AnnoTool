@@ -93,7 +93,7 @@ namespace anno {
 
             public:
                 void writeToFile() const throw(IOException *, XmlException *);
-                static AnnoProject *fromFile(const QString &path, filter::AnnoFilterManager *filterMan)
+                static AnnoProject *fromFile(const QString &path, filter::AnnoFilterManager *filterMan, bool globalFilters = true)
                     throw(IOException *, XmlException *);
                 void loadGlobalFilters(void) throw(IOException *, XmlException *);
 

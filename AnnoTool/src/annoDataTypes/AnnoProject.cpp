@@ -171,11 +171,18 @@ namespace anno {
         }
 
         void AnnoProject::loadFromFile() throw(IOException *, XmlException *) {
-            QFile file(_sourceFile);
-            if (!file.exists()) {
-                throw new IOException(__FILE__, __LINE__, QString("Cannot load from [%1]. File does not exist.").arg(_sourceFile));
-            } else if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-                throw new IOException(__FILE__, __LINE__, QString("Cannot load from [%1]. File cannot be opened.").arg(_sourceFile));
+            QFile file;
+            if (_sourceFile == "-") {
+                if (!file.open(0, (QIODevice::ReadOnly | QIODevice::Text))) {
+                    throw new IOException(__FILE__, __LINE__, QString("Cannot load from stdin. File cannot be opened."));
+                }
+            } else {
+                file.setFileName(_sourceFile);
+                if (!file.exists()) {
+                    throw new IOException(__FILE__, __LINE__, QString("Cannot load from [%1]. File does not exist.").arg(_sourceFile));
+                } else if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    throw new IOException(__FILE__, __LINE__, QString("Cannot load from [%1]. File cannot be opened.").arg(_sourceFile));
+                }
             }
 
             QXmlStreamReader reader(&file);
@@ -323,9 +330,16 @@ namespace anno {
         }
 
         void AnnoProject::writeToFile() const throw(IOException *, XmlException *) {
-            QFile file(_sourceFile);
-            if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-                throw new IOException(__FILE__, __LINE__, QString("Cannot write to [%1]. File cannot be opened.").arg(_sourceFile));
+            QFile file;
+            if (_sourceFile == "-") {
+                if (!file.open(1, (QIODevice::WriteOnly | QIODevice::Text))) {
+                    throw new IOException(__FILE__, __LINE__, QString("Cannot write to stdout. File cannot be opened."));
+                }
+            } else {
+                file.setFileName(_sourceFile);
+                if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                    throw new IOException(__FILE__, __LINE__, QString("Cannot write to [%1]. File cannot be opened.").arg(_sourceFile));
+                }
             }
 
             QXmlStreamWriter writer(&file);
@@ -334,15 +348,19 @@ namespace anno {
             toXml(writer);
             writer.writeEndDocument();
             file.flush();
-            file.close();
+            if (_sourceFile != "-") {
+                file.close();
+            }
         }
 
-        AnnoProject *AnnoProject::fromFile(const QString &path, filter::AnnoFilterManager *filterMan)
+        AnnoProject *AnnoProject::fromFile(const QString &path, filter::AnnoFilterManager *filterMan, bool globalFilters)
                 throw(IOException *, XmlException *) {
             AnnoProject *data = new AnnoProject(path);
             filterMan->setProject(data); // Complete the initialization of the filter manager
 
-            data->loadGlobalFilters();
+            if (globalFilters) {
+                data->loadGlobalFilters();
+            }
 
             data->loadFromFile();
             return data;

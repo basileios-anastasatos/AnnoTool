@@ -120,7 +120,7 @@ class AnnoToolMainWindow : public QMainWindow {
 
     public:
         static void updateUI();
-        void openAnnoProject(const QString fileName);
+        void openAnnoProject(const QString fileName, bool globalFilters = true);
 
         // public slot interface
     public slots:

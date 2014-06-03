@@ -416,12 +416,12 @@ void AnnoToolMainWindow::on_actionFileNew_triggered() {
     }
 }
 
-void AnnoToolMainWindow::openAnnoProject(const QString filePath) {
+void AnnoToolMainWindow::openAnnoProject(const QString filePath, bool globalFilters) {
     if (!filePath.isEmpty()) {
         const QFileInfo fi(filePath);
         try {
             GlobalProjectManager *pm = GlobalProjectManager::instance();
-            pm->loadFromFile(filePath, true);
+            pm->loadFromFile(filePath, true, globalFilters);
             GlobalLogger::instance()->logInfo(QString("Loaded project '%1': %2 classes, %3 AnnotationFiles.").arg(pm->project()->projectName()).arg(pm->classCount()).arg(pm->fileCount()));
             configUIproject(true);
             setDocumentName(pm->project()->projectName());
