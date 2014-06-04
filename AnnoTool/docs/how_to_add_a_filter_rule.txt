@@ -1,0 +1,28 @@
+# vim:ts=2:sts=2:sw=2:tw=80:expandtab
+
+How to add an Anno Filter Rule (Afr) class.
+
+New files:
+
+  src/annoFilter/include/AfrMyRule.h
+  src/annoFilter/AfrMyRule.cpp
+
+Modify:
+
+  src/annoFilter/AnnoFilterXmlLoader.cpp:
+  
+    } else if (AfrMyRule::isXmlName(curName)) {
+        pRule = AfrMyRule::fromXml(reader);
+    }
+
+  src/annoFilter/include/AllAnnoFilterRules.h:
+  
+    #include "AfrMyRule.h"
+
+  src/annoFilter/include/annoFiltersForward.h:
+  
+    class AfrMyRule;
+
+  uiStuff/helper/AnnoFilterHighlighter.cpp:
+  
+    rule.pattern = QRegExp(QString("\\b%1\\b").arg(anno::filter::AfrMyRule::xmlName()));
