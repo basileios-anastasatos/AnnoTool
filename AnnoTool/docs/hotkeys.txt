@@ -17,16 +17,17 @@ Note that there are no further explanations on the hotkey functions here.
 Ctrl + N      Start the "New Project" Dialog.
 Ctrl + O      Open an existing AnnoTool project.
 Ctrl + S      Save the currently opened project.
+Ctrl + Q      Quit.
 
 
-Future Hotkeys
-~~~~~~~~~~~~~~~~~~~~~~~
+<< Future Hotkeys >>
+~~~~~~~~~~~~~~~~~~~~
 Ctrl + A      Select all annotations of the current image.
 Ctrl + C      Copy all currently selected annotations to the clipboard.
 Ctrl + P      Paste annotations from the clipboard.
 Ctrl + X      Copy all currently selected annotations to the clipboard and delete them on
               the current image.
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 
 
@@ -47,6 +48,6 @@ Ctrl + F      Bring the currently selected annotations to the front (z-order).
 Ctrl + B      Bring the currently selected annotations to the back (z-order).
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-
-
-
+<< Fast Labeling Hotkeys >>
+---------------------------
+F1 - F12
