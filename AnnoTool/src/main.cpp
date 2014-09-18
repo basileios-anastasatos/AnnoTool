@@ -13,11 +13,13 @@ int main(int argc, char *argv[]) {
     // Parse command line options
     const std::string help_message(
         "Usage:\n"
-        "  -h|--help             : print this help message and exit\n"
-        "  -o|--open <filename>  : open <filename>\n"
-        "  -G|--noglobalfilters  : do not load global filters\n"
+        "  -h|--help              : print this help message and exit\n"
+        "  -o|--open <filename>   : open <filename>\n"
+        "  -G|--noglobalfilters   : do not load global filters\n"
+        "  -l|--labels <filename> : specify labels files\n"
     );
     QString project_file;
+    std::string label_file;
     bool    globalFilters = true;
     for (int ii = 1; ii < argc; ++ii) {
         std::string ss(argv[ii]);
@@ -38,6 +40,15 @@ int main(int argc, char *argv[]) {
         } else if ((ss == "-G") ||
                    (ss == "--noglobalfilters")) {
             globalFilters = false;
+        } else if ((ss == "-l") ||
+                   (ss == "--labels")) {
+            if (ii + 1 < argc) {
+                label_file = argv[++ii];
+            } else {
+                std::cerr << "Error: missing argument to " << argv[ii] << std::endl;
+                std::cerr << help_message;
+                return -1;
+            }
         } else {
             std::cerr << "Error: Unrecognized argument " << argv[ii] << std::endl;
             std::cerr << help_message;
@@ -74,6 +85,9 @@ int main(int argc, char *argv[]) {
     // Process command line options
     if (!project_file.isNull()) {
          w.openAnnoProject(project_file, globalFilters);
+    }
+    if (!label_file.empty()) {
+        w.loadLabels(label_file);
     }
     w.show();
     a.connect(&a, SIGNAL(aboutToQuit()), &w, SLOT(onAppClose()));

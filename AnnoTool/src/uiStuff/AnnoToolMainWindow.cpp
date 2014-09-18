@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "include/AnnoToolMainWindow.h"
 #include "include/ZoomControl.h"
@@ -384,6 +385,41 @@ void AnnoToolMainWindow::wheelEvent(QWheelEvent *event) {
     }
 }
 
+void AnnoToolMainWindow::keyPressEvent(QKeyEvent *event) {
+    GlobalLogger::instance()->logDebug("MW: keyPressEvent");
+
+    unsigned key = 0;
+    switch (event->key()) {
+        case Qt::Key_F1:  key = 1;  break;
+        case Qt::Key_F2:  key = 2;  break;
+        case Qt::Key_F3:  key = 3;  break;
+        case Qt::Key_F4:  key = 4;  break;
+        case Qt::Key_F5:  key = 5;  break;
+        case Qt::Key_F6:  key = 6;  break;
+        case Qt::Key_F7:  key = 7;  break;
+        case Qt::Key_F8:  key = 8;  break;
+        case Qt::Key_F9:  key = 9;  break;
+        case Qt::Key_F10: key = 10; break;
+        case Qt::Key_F11: key = 11; break;
+        case Qt::Key_F12: key = 12; break;
+        default:          return;   break;
+    }
+
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+    QString label = pm->getLabel(key);
+
+    anno::dt::Annotation *currAnno = pm->selectedAnno();
+    if ((currAnno != NULL) &&
+        (!label.isEmpty())) {
+        if (currAnno->classes().contains(label)) {
+            currAnno->removeClass(label);
+        } else {
+            currAnno->addClass(label);
+        }
+        updateUI();
+    }
+}
+
 void AnnoToolMainWindow::on_actionFileNew_triggered() {
     GlobalLogger::instance()->logDebug("MW: actionFileNew_triggered");
     if (checkProjectToClose()) {
@@ -418,7 +454,6 @@ void AnnoToolMainWindow::on_actionFileNew_triggered() {
 
 void AnnoToolMainWindow::openAnnoProject(const QString filePath, bool globalFilters) {
     if (!filePath.isEmpty()) {
-        const QFileInfo fi(filePath);
         try {
             GlobalProjectManager *pm = GlobalProjectManager::instance();
             pm->loadFromFile(filePath, true, globalFilters);
@@ -433,6 +468,32 @@ void AnnoToolMainWindow::openAnnoProject(const QString filePath, bool globalFilt
             QMessageBox::critical(this, "AnnoTool Exception", e->getTrace());
             GlobalLogger::instance()->logError(e->getTrace());
             delete e;
+        }
+    }
+}
+
+void AnnoToolMainWindow::loadLabels(const std::string filename) {
+    GlobalProjectManager *pm = GlobalProjectManager::instance();
+
+    if (!filename.empty()) {
+        try {
+            std::string skey, label;
+            int ikey;
+            std::ifstream ifs(filename.c_str());
+
+            std::string line;
+            while(std::getline(ifs,line))   {
+                std::stringstream iss(line);
+                std::getline(iss, skey, '\t');
+                std::getline(iss, label);
+                std::stringstream buffer(skey);
+                buffer >> ikey;
+                pm->defineLabel(ikey, QString::fromStdString(label));
+            }
+            ifs.close();
+        } catch(...) {
+            QMessageBox::critical(this, "Exception", "Error while reading label file.");
+            GlobalLogger::instance()->logError(      "Error while reading label file.");
         }
     }
 }
@@ -514,7 +575,6 @@ void AnnoToolMainWindow::on_actionGlobalFiltersSave_triggered() {
         GlobalLogger::instance()->logError("Cannot save global filters!");
     }
 }
-
 
 void AnnoToolMainWindow::on_actionFileImport_triggered() {
     DlgImporter *dlg = new DlgImporter(this);

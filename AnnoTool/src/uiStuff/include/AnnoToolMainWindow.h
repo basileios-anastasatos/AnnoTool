@@ -7,6 +7,7 @@
 #include "AnnoGraphicsScene.h"
 #include "GlobalToolManager.h"
 #include "CopyManager.h"
+#include <string>
 
 #include "annoTypesForward.h"
 
@@ -48,6 +49,7 @@ class AnnoToolMainWindow : public QMainWindow {
     protected:
         virtual void closeEvent(QCloseEvent *event);
         virtual void wheelEvent(QWheelEvent *event);
+        virtual void keyPressEvent(QKeyEvent *event);
 
         // internal slots
     private slots:
@@ -121,6 +123,7 @@ class AnnoToolMainWindow : public QMainWindow {
     public:
         static void updateUI();
         void openAnnoProject(const QString fileName, bool globalFilters = true);
+        void loadLabels(const std::string filename);
 
         // public slot interface
     public slots:

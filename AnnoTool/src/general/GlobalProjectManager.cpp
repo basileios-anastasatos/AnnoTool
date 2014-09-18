@@ -673,6 +673,19 @@ namespace anno {
         _project->saveGlobalFilters();
     }
 
+    void GlobalProjectManager::defineLabel(const int key, const QString label) {
+        if ((1 <= key) &&
+            (key <= nFunctionKeys)) {
+            this->label[key - 1] = label;
+        }
+    }
+
+    QString GlobalProjectManager::getLabel(const int key) {
+        if ((1 <= key) &&
+            (key <= nFunctionKeys)) {
+            return label[key - 1];
+        }
+    }
 }
 
 void GlobalProjectManager::setPoseMode(bool poseMode) {

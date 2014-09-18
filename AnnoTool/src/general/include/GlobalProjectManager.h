@@ -40,6 +40,8 @@ namespace anno {
             int _curSelFile;
             int _curSelAnno;
 
+#define nFunctionKeys 12
+            QString label[nFunctionKeys];
 
             /** MA: this is arguably needed in the "Pose Mode" */
 
@@ -174,6 +176,8 @@ namespace anno {
             void saveToFile(bool saveSub = false) const throw(IOException *,
                     IllegalStateException *, XmlException *);
             void saveGlobalFilters(void) const throw(IOException *, XmlException *);
+            void defineLabel(const int key, const QString label);
+            QString getLabel(const int key);
 
         signals:
             void curAnnoFileSelChanged(int curIndex, QUuid uuid, ::anno::dt::AnnoFileData *curAnnoFile);
