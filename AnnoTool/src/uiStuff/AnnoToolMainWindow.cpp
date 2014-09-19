@@ -387,26 +387,8 @@ void AnnoToolMainWindow::wheelEvent(QWheelEvent *event) {
 
 void AnnoToolMainWindow::keyPressEvent(QKeyEvent *event) {
     GlobalLogger::instance()->logDebug("MW: keyPressEvent");
-
-    unsigned key = 0;
-    switch (event->key()) {
-        case Qt::Key_F1:  key = 1;  break;
-        case Qt::Key_F2:  key = 2;  break;
-        case Qt::Key_F3:  key = 3;  break;
-        case Qt::Key_F4:  key = 4;  break;
-        case Qt::Key_F5:  key = 5;  break;
-        case Qt::Key_F6:  key = 6;  break;
-        case Qt::Key_F7:  key = 7;  break;
-        case Qt::Key_F8:  key = 8;  break;
-        case Qt::Key_F9:  key = 9;  break;
-        case Qt::Key_F10: key = 10; break;
-        case Qt::Key_F11: key = 11; break;
-        case Qt::Key_F12: key = 12; break;
-        default:          return;   break;
-    }
-
     GlobalProjectManager *pm = GlobalProjectManager::instance();
-    QString label = pm->getLabel(key);
+    QString label = pm->getHotkeyLabel(event);
 
     anno::dt::Annotation *currAnno = pm->selectedAnno();
     if ((currAnno != NULL) &&
@@ -477,23 +459,30 @@ void AnnoToolMainWindow::loadLabels(const std::string filename) {
 
     if (!filename.empty()) {
         try {
-            std::string skey, label;
-            int ikey;
+            std::string combination, label;
             std::ifstream ifs(filename.c_str());
 
             std::string line;
             while(std::getline(ifs,line))   {
+                // Ignore empty lines and lines beginning with a #
+                if (!line.size() || line[0] == '#') {
+                    continue;
+                }
                 std::stringstream iss(line);
-                std::getline(iss, skey, '\t');
+                std::getline(iss, combination, '\t');
                 std::getline(iss, label);
-                std::stringstream buffer(skey);
-                buffer >> ikey;
-                pm->defineLabel(ikey, QString::fromStdString(label));
+                pm->setHotkeyLabel(QString::fromStdString(combination),
+                                   QString::fromStdString(label));
             }
             ifs.close();
+        } catch(AnnoException *e) {
+            QMessageBox::critical(this, "AnnoTool Exception", e->getTrace());
+            GlobalLogger::instance()->logError(e->getTrace());
+            delete e;
         } catch(...) {
-            QMessageBox::critical(this, "Exception", "Error while reading label file.");
-            GlobalLogger::instance()->logError(      "Error while reading label file.");
+            const QString msg = QString("Unknown error while reading label file [%1].").arg(QString::fromStdString(filename));
+            QMessageBox::critical(this, "Exception", msg);
+            GlobalLogger::instance()->logError(      msg);
         }
     }
 }

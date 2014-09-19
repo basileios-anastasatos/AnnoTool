@@ -10,6 +10,8 @@
 #include "AnnoAvClassList.h"
 #include "AnnoFileData.h"
 #include <QList>
+#include <QMap>
+#include <QKeyEvent>
 
 class QDir;
 
@@ -40,8 +42,7 @@ namespace anno {
             int _curSelFile;
             int _curSelAnno;
 
-#define nFunctionKeys 12
-            QString label[nFunctionKeys];
+            QMap<std::pair<int, Qt::KeyboardModifiers>, QString> key2label;
 
             /** MA: this is arguably needed in the "Pose Mode" */
 
@@ -176,8 +177,8 @@ namespace anno {
             void saveToFile(bool saveSub = false) const throw(IOException *,
                     IllegalStateException *, XmlException *);
             void saveGlobalFilters(void) const throw(IOException *, XmlException *);
-            void defineLabel(const int key, const QString label);
-            QString getLabel(const int key);
+            void    setHotkeyLabel(const QString key, const QString label) throw (exc::FormatException *);
+            QString getHotkeyLabel(QKeyEvent *ee)                          throw (exc::FormatException *);
 
         signals:
             void curAnnoFileSelChanged(int curIndex, QUuid uuid, ::anno::dt::AnnoFileData *curAnnoFile);

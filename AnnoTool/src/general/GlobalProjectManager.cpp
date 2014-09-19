@@ -7,9 +7,12 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QThread>
+#include <Qt>
 
 // MA
 #include <AnnoRectangle.h>
+
+#include "Hotkeys.h"
 
 namespace anno {
     GlobalProjectManager *GlobalProjectManager::_me = NULL;
@@ -673,18 +676,19 @@ namespace anno {
         _project->saveGlobalFilters();
     }
 
-    void GlobalProjectManager::defineLabel(const int key, const QString label) {
-        if ((1 <= key) &&
-            (key <= nFunctionKeys)) {
-            this->label[key - 1] = label;
-        }
+    void GlobalProjectManager::setHotkeyLabel(const QString key, const QString label) throw (exc::FormatException *) {
+        util::String2QtKeyEnum *s2k = util::String2QtKeyEnum::instance();
+        Qt::Key                kk  = (*s2k)[key];
+        Qt::KeyboardModifiers  mm  = s2k->modifiers(key);
+        const std::pair<Qt::Key, Qt::KeyboardModifiers> pp(kk, mm);
+        key2label[pp] = label;
     }
 
-    QString GlobalProjectManager::getLabel(const int key) {
-        if ((1 <= key) &&
-            (key <= nFunctionKeys)) {
-            return label[key - 1];
-        }
+    QString GlobalProjectManager::getHotkeyLabel(QKeyEvent *ee) throw (exc::FormatException *) {
+        int                    kk  = ee->key();
+        Qt::KeyboardModifiers  mm  = ee->modifiers();
+        const std::pair<int, Qt::KeyboardModifiers> pp(kk, mm);
+        return key2label.contains(pp) ? key2label[pp] : "";
     }
 }
 

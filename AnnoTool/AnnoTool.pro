@@ -129,6 +129,7 @@ HEADERS += \
     ./src/utils/include/PriorityList.h \
     ./src/utils/include/SortedList.h \
     ./src/utils/include/GrabCut.h \
+    ./src/utils/include/Hotkeys.h \
     ./src/general/include/importGlobals.h \
     ./src/general/include/AnnoQApplication.h \
     ./src/general/include/GlobalToolManager.h \
@@ -254,6 +255,7 @@ SOURCES += ./src/uiStuff/DlgInterpolate.cpp \
     ./src/utils/PriorityList.cpp \
     ./src/utils/SortedList.cpp \
     ./src/utils/GrabCut.cpp \
+    ./src/utils/Hotkeys.cpp \
     ./src/general/GlobalToolManager.cpp \
     ./src/general/GlobalConfig.cpp \
     ./src/general/GlobalImageLoader.cpp \

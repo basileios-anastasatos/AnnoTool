@@ -50,4 +50,27 @@ Ctrl + B      Bring the currently selected annotations to the back (z-order).
 
 << Fast Labeling Hotkeys >>
 ---------------------------
-F1 - F12
+Defined in a text file whose lines obey the following format:
+
+  <modifier 0>+<modifier 1>+...+<modifier n-1>+<key><TAB><label>
+
+Empty lines, as well as lines beginning with # are ignored.
+
+Example:
+
+  # vim:ts=30
+
+  F1	First label
+  F2	Second label
+  Shift+F3	Third label
+  Control+F5	Fifth label
+  Shift+Control+F12	Twelfth label
+
+Use the -l (or --labels) flag to load the file.
+
+For the names of the keys and the modifiers, consult:
+
+  http://qt-project.org/doc/qt-4.8/qt.html#Key-enum
+  http://qt-project.org/doc/qt-4.8/qt.html#KeyboardModifier-enum
+
+Remove the "Key_" prefix and the "Modifier" suffix.
